@@ -1,0 +1,12 @@
+{
+  "name": "phlashy",
+  "version": "0.1.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {},
+  "author": "Turi",
+  "license": "GPL",
+  "dependencies": {
+    "express": "^4.15.3"
+  }
+}

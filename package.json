@@ -3,10 +3,15 @@
   "version": "0.1.0",
   "description": "",
   "main": "index.js",
-  "scripts": {},
+  "scripts": {
+    "start": "node index.js"
+  },
   "author": "Turi",
-  "license": "GPL",
+  "license": "GPL-3.0",
   "dependencies": {
-    "express": "^4.15.3"
+    "bcrypt": "^1.0.2",
+    "dotenv": "^4.0.0",
+    "express": "^4.15.3",
+    "pg": "^6.4.0"
   }
 }

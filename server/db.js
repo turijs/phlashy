@@ -9,9 +9,8 @@ const config = {
   password: process.env.DB_PW,
   port: process.env.DB_PORT,
   max: 7, // max number of clients in the pool
-  idleTimeoutMillis: 30000,
+  idleTimeoutMillis: 3000,
 }
-
 const pool = new pg.Pool(config);
 
 module.exports = {
@@ -42,7 +41,7 @@ module.exports = {
         deckID integer REFERENCES decks (ID) ON DELETE CASCADE,
         term text,
         defn text,
-        dateCreated timestamp,
+        dateCreated timestamp
       )
     `);
 

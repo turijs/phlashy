@@ -162,6 +162,6 @@ module.exports = {
 
 function throwIfEmpty(res) {
   if (res.rows.length < 1)
-    throw "No matching items found";
+    throw "Not found";
   return res;
 }

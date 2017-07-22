@@ -5,10 +5,7 @@ module.exports = {
   output: {
     path: path.resolve(__dirname, 'client/dist'),
     filename: 'bundle.js',
-    publicPath: 'dist/'
-  },
-  devServer: {
-    contentBase: './client'
+    publicPath: '/static/'
   },
   module: {
     rules: [
@@ -19,10 +16,9 @@ module.exports = {
           loader: 'babel-loader',
           options: {
             presets: [
-              // ['env', {
-              //   'targets': { 'browsers': '> 3%' }
-              // }],
-              'env',
+              ['env', {
+                'targets': { 'browsers': '> 3%' }
+              }],
               'react'
             ]
             // plugins: [require('babel-plugin-transform-object-rest-spread')]

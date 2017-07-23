@@ -56,21 +56,31 @@ module.exports = {
     return bcrypt.hash(pw, SALT_ROUNDS).then(hash => {
       return pool.query(
         `INSERT INTO users (nickname, email, password)
-         VALUES ($1, $2, $3) RETURNING ID`,
+         VALUES ($1, $2, $3) RETURNING ID, nickname, email`,
         [nickname, email, hash]
       )
-        .then(res => {
-          return res.rows[0].id;
-        })
+        .then(res => res.rows[0])
     });
   },
-  authUser(userID, pw) {
-    return pool.query(`SELECT password FROM users WHERE ID = $1`, [userID])
+  /*
+   * Accepts either userID or email. Returns User object
+   */
+  authUser(emailOrID, pw) {
+    let idColumn = (typeof emailOrID === 'number') ? 'ID' : 'email';
+
+    return pool.query(`SELECT ID, password FROM users WHERE ${idColumn} = $1`, [emailOrID])
       .then(throwIfEmpty)
       .then(res => {
-        return bcrypt.compare(pw, res.rows[0].password);
+        let user = res.rows[0];
+        return bcrypt.compare(pw, user.password)
+          .then(match => {match ? (delete user.password, user) : false});
       });
   },
+  getUser(userID) {
+    return pool.query(`SELECT ID, nickname, email FROM users WHERE ID = $1`, [userID])
+      .then(throwIfEmpty)
+      .then(res => res.rows[0]);
+  }
   updateNickname(userID, newNickname) {
     return pool.query(`UPDATE users SET nickname = $1 WHERE ID = $2`, [newNickname, userID]);
   },
@@ -83,8 +93,8 @@ module.exports = {
     });
   },
   deleteUser(userID, pw) {
-    return this.authUser(userID, pw).then(allowed => {
-      if(!allowed)
+    return this.authUser(userID, pw).then(user => {
+      if(!user)
         throw "Failed to delete user; incorrect password supplied";
 
       return pool.query(`DELETE FROM users WHERE ID = $1`, [userID]);
@@ -162,6 +172,6 @@ module.exports = {
 
 function throwIfEmpty(res) {
   if (res.rows.length < 1)
-    throw "Not found";
+    throw "not found";
   return res;
 }

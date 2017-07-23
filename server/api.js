@@ -26,8 +26,9 @@ api.post('/users', (req, res) => {
     res.status(400).send('Password too short');
 
   db.createUser(nickname, email, password)
-    .then(id => {
-      res.status(201).send({id});
+    .then(user => {
+      res.status(201).send(user);
+      req.session.userID = id;
     })
     .catch(err => {
       if(err.code == '23505')
@@ -42,7 +43,7 @@ api.post('/users', (req, res) => {
 // Update a user
 api.put('/users', async (req, res) => {
   let {oldPassword, newPassword, nickname} = req.body;
-  let userID = 1;
+  let userID = req.session.userID;
 
   if(newPassword) {
     if(!oldPassword)
@@ -54,10 +55,6 @@ api.put('/users', async (req, res) => {
   }
   if(newPassword.length < 5)
     res.status(400).send('Password too short');
-});
-
-api.get('/users/:id', (req, res) => {
-
 });
 
 api.delete('/users/:id', (req, res) => {

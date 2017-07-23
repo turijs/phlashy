@@ -1,0 +1,21 @@
+const webpack = require('webpack');
+const webpackDevMiddleware = require('webpack-dev-middleware');
+const webpackHotMiddleware = require('webpack-hot-middleware');
+
+const config = require('../webpack.config.js');
+// modify entry to include hot middleware client
+config.entry = [ 'webpack-hot-middleware/client?reload=true', './client/index.js' ];
+// add plugins to config
+config.plugins = [ new webpack.HotModuleReplacementPlugin(), new webpack.NoEmitOnErrorsPlugin() ];
+
+const compiler = webpack(config);
+
+
+module.exports = [
+  webpackDevMiddleware(compiler, {
+    publicPath: config.output.publicPath,
+    stats: { colors: true },
+    noInfo: true
+  }),
+  webpackHotMiddleware(compiler)
+];

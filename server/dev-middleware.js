@@ -8,6 +8,8 @@ config.entry = [ 'webpack-hot-middleware/client?reload=true', './client/index.js
 // add plugins to config
 config.plugins = [ new webpack.HotModuleReplacementPlugin(), new webpack.NoEmitOnErrorsPlugin() ];
 
+// config.devtool = 'cheap-module-eval-source-map';
+
 const compiler = webpack(config);
 
 

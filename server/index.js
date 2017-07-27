@@ -5,13 +5,16 @@ const path = require('path');
 const express = require('express');
 const session = require('express-session');
 const exphbs = require('express-handlebars');
-// const passport = require('passport');
 
 const db = require('./db');
 const api = require('./api');
+const auth = require('./auth');
 
 const app = express();
 const port = process.env.PORT || 3000;
+const unprotectedRoutes = [
+  '/', '/login', '/about'
+];
 
 // Configure templating
 app.set('views', __dirname + '/views');
@@ -22,33 +25,34 @@ app.engine('.hbs', exphbs({
 app.set('view engine', '.hbs');
 
 
-app.get('/', (_, res) => {
-  res.render('main', {test: 'poop'});
-});
-
 // DEV environment only
 if(process.env.NODE_ENV !== 'production') {
   app.use( require('./dev-middleware') );
 }
 
-
-// passport setup
-// require('./auth');
-
 app.use('/static', express.static( path.resolve(__dirname, '../client/dist') ));
+
 app.use(session({
   secret: process.env.APP_SECRET,
   resave: false,
-  saveUninitialized: true
+  saveUninitialized: false
 }));
-// app.use(passport.initialize());
-// app.use(passport.session());
+
+app.get('*', (req, res) => {
+  if( auth.loggedIn(req) ) {
+    res.render('main', {test: `User ID: ${id}`});
+  } else {
+    if(unprotectedRoutes.includes(req.path))
+      res.render('main', {test: 'Not logged in'});
+    else
+      res.redirect('/login');
+  }
+});
+
+
 // api route
 app.use('/api', api);
 
-app.use((req, res, next) => {
-
-})
 
 
 
@@ -56,8 +60,6 @@ app.use((req, res, next) => {
 // ============================
 db.setupTablesIfNecessary()
   .then(() => {
-    app.listen(port, () => {
-      console.log(`listening on port ${ port }`);
-    });
+    app.listen(port, () => console.log(`listening on port ${ port }`) );
   })
   .catch(err => { console.log(err); });

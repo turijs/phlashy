@@ -80,7 +80,7 @@ module.exports = {
     return pool.query(`SELECT ID, nickname, email FROM users WHERE ID = $1`, [userID])
       .then(throwIfEmpty)
       .then(res => res.rows[0]);
-  }
+  },
   updateNickname(userID, newNickname) {
     return pool.query(`UPDATE users SET nickname = $1 WHERE ID = $2`, [newNickname, userID]);
   },

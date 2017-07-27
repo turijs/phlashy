@@ -20,8 +20,22 @@ module.exports = {
                 'targets': { 'browsers': '> 3%' }
               }],
               'react'
-            ]
+            ],
+            plugins: ['transform-object-rest-spread']
             // plugins: [require('babel-plugin-transform-object-rest-spread')]
+          }
+        }
+      },
+      {
+        test: /\.css$/,
+        use: [ 'style-loader', 'css-loader' ]
+      },
+      {
+        test: /\.(eot|woff|woff2|ttf|svg)/,
+        use: {
+          loader: 'file-loader',
+          options: {
+
           }
         }
       }

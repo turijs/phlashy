@@ -1,22 +1,55 @@
-const api = require('express').Router();
 const bodyParser = require('body-parser');
-const db = require('./db');
 const validator = require('validator');
+
+const api = require('express').Router();
+const db = require('./db');
+const auth = require('./auth');
+
 
 api.use(bodyParser.json());
 
 // logging
-api.use((req, res, next) => {
-  console.log(req.body);
-  next();
-})
+api.use((req, _, next) => next( console.log(req.body) ));
+
 
 api.post('/login', (req, res) => {
+  let {email, password} = req.body;
 
+  db.authUser(email, pw).then(user => {
+    if(user) {
+      auth.login(req, user);
+      res.status(200).send(user);
+    }
+    else
+      res.status(401).send('Incorrect password');
+  }).catch(err => {
+    if(err == 'not found')
+      res.status(401).send('Email is not registered');
+    else
+      console.log(err), res.sendStatus(500);
+  });
+});
+
+api.post('/login', (req, res) => {
+  let {email, password} = req.body;
+
+  db.authUser(email, pw).then(user => {
+    if(user) {
+      auth.login(req, user);
+      res.status(200).send(user);
+    }
+    else
+      res.status(401).send('Incorrect password');
+  }).catch(err => {
+    if(err == 'not found')
+      res.status(401).send('Email is not registered');
+    else
+      console.log(err), res.sendStatus(500);
+  });
 });
 
 // Create a new user
-api.post('/users', (req, res) => {
+api.post('/user', (req, res) => {
   let {nickname, email, password} = req.body;
 
   if(!validator.isEmail(email))
@@ -35,13 +68,16 @@ api.post('/users', (req, res) => {
         res.status(400).send('Email already taken')
       else {
         console.log(err);
-        res.status(500).send();
+        res.sendStatus(500);
       }
     });
 });
 
+// Everything below this point is protected access
+api.use(auth.rejectUnauthorized);
+
 // Update a user
-api.put('/users', async (req, res) => {
+api.put('/user', async (req, res) => {
   let {oldPassword, newPassword, nickname} = req.body;
   let userID = req.session.userID;
 
@@ -57,7 +93,7 @@ api.put('/users', async (req, res) => {
     res.status(400).send('Password too short');
 });
 
-api.delete('/users/:id', (req, res) => {
+api.delete('/user', (req, res) => {
 
 });
 

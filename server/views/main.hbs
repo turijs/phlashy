@@ -4,12 +4,18 @@
     <meta charset="utf-8">
     <title>Phlashy</title>
 
+    {{#if user}}
+      <script type="text/javascript"> Window.USER = {{user}}; </script>
+    {{/if}}
+
   </head>
   <body>
-    <div>{{test}}</div>
-    <div id="app">
 
-    </div>
+    <div id="app"></div>
+
+    <noscript style="display: block; text-align: center; margin: 20px; padding: 80px; border: 5px solid #851912; font-size: 200%;">
+      Please enable Javascript to use Phlashy
+    </noscript>
     <script src="static/bundle.js"></script>
   </body>
 </html>

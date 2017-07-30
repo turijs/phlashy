@@ -1,0 +1,80 @@
+@import url('https://fonts.googleapis.com/css?family=Zilla+Slab');
+
+* { margin: 0; padding: 0; }
+body {
+  background-color: beige;
+  color: navy;
+  font-family: 'Zilla Slab', serif;
+}
+
+a { color: inherit; }
+
+form {
+  font-size: 115%;
+  label {
+    display: block;
+    padding: 10px 0;
+  }
+  input {
+    padding: 8px;
+    font-size: 130%;
+    border: 1px solid navy;
+    border-radius: 3px;
+    &.error { border-color: red; }
+  }
+  .error-msg {
+    color: red;
+    font-size: 90%;
+    padding-top: 2px;
+  }
+}
+
+.container {
+  max-width: 1080px;
+  margin: 0 auto;
+}
+
+#header {
+  background: rgb(90,106,140);
+  color: white;
+}
+
+#logo, #nav, #user-menu {
+  display: inline-block;
+}
+
+#logo {
+  padding: 0 24px;
+  font-size: 200%;
+  a {text-decoration: none; }
+}
+
+#nav {
+  > ul > li {
+    display: inline-block;
+  }
+
+  a {
+    display: block;
+    padding: 24px;
+    text-decoration: none;
+
+    &.active {
+      background: beige;
+      color: navy;
+    }
+  }
+}
+
+#user-menu {
+  float: right;
+  a {
+    display: block;
+    padding: 24px;
+    text-decoration: none;
+  }
+  ul {
+    display: none;
+    &.open { display: block; }
+  }
+}

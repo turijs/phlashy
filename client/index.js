@@ -6,34 +6,31 @@ import createHistory from 'history/createBrowserHistory';
 import { Route, Link } from 'react-router-dom';
 import { ConnectedRouter, routerReducer, routerMiddleware } from 'react-router-redux';
 
+import App from './components/App';
+
+import reducers from './reducers';
+
 // import 'bootstrap/dist/css/bootstrap.css';
-import './css/main.css';
+import './css/main.scss';
+// import './test.scss'
 
 // Create the global history object
 const history = createHistory();
 
+console.log(window.USER);
+
 const store = createStore(
   combineReducers({
+    ...reducers,
     router: routerReducer
   }),
+  {user: window.USER},
   applyMiddleware( routerMiddleware(history) )
 );
 
+delete window.USER;
 
-function App() {
-  return (
-    <div className="well">
-      <h1>Hello World!</h1>
-      <Link to="/test">Test link</Link>
-      <Route path="/test" component={Test} />
-
-    </div>
-  );
-}
-
-function Test() {
-  return <div>TEST</div>
-}
+let Test = () => <div>TEST</div>;
 
 
 // =============================
@@ -45,9 +42,5 @@ ReactDOM.render((
     </ConnectedRouter>
   </Provider>
 ),
-  document.getElementById('app')
+  document.getElementById('root')
 );
-
-//<ConnectedRouter history={history}>
-//  <App />
-//</ConnectedRouter>

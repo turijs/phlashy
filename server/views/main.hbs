@@ -5,17 +5,15 @@
     <title>Phlashy</title>
 
     {{#if user}}
-      <script type="text/javascript"> Window.USER = {{user}}; </script>
+      <script type="text/javascript"> window.USER = {{{user}}}; </script>
     {{/if}}
 
   </head>
   <body>
+    <div id="root"></div>
 
-    <div id="app"></div>
+    <noscript style="display: block; text-align: center; margin: 20px; padding: 80px; border: 5px solid #851912; font-size: 200%;"> Please enable Javascript to use Phlashy </noscript>
 
-    <noscript style="display: block; text-align: center; margin: 20px; padding: 80px; border: 5px solid #851912; font-size: 200%;">
-      Please enable Javascript to use Phlashy
-    </noscript>
     <script src="static/bundle.js"></script>
   </body>
 </html>

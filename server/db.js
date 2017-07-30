@@ -68,12 +68,12 @@ module.exports = {
   authUser(emailOrID, pw) {
     let idColumn = (typeof emailOrID === 'number') ? 'ID' : 'email';
 
-    return pool.query(`SELECT ID, password FROM users WHERE ${idColumn} = $1`, [emailOrID])
+    return pool.query(`SELECT * FROM users WHERE ${idColumn} = $1`, [emailOrID])
       .then(throwIfEmpty)
       .then(res => {
         let user = res.rows[0];
         return bcrypt.compare(pw, user.password)
-          .then(match => {match ? (delete user.password, user) : false});
+          .then(match => match ? (delete user.password, user) : false);
       });
   },
   getUser(userID) {

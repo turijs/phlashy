@@ -38,17 +38,21 @@ app.use(session({
   saveUninitialized: false
 }));
 
+// send main page
 app.get('*', (req, res) => {
   if( auth.loggedIn(req) ) {
-    res.render('main', {test: `User ID: ${id}`});
+    console.log(req.session.userID);
+
+    db.getUser(req.session.userID).then(user => {
+      res.render('main', {user: JSON.stringify(user)});
+    }).catch(e => console.log(e));
   } else {
     if(unprotectedRoutes.includes(req.path))
-      res.render('main', {test: 'Not logged in'});
+      res.render('main');
     else
       res.redirect('/login');
   }
 });
-
 
 // api route
 app.use('/api', api);

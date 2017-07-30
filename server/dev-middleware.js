@@ -4,7 +4,7 @@ const webpackHotMiddleware = require('webpack-hot-middleware');
 
 const config = require('../webpack.config.js');
 // modify entry to include hot middleware client
-config.entry = [ 'webpack-hot-middleware/client?reload=true', './client/index.js' ];
+config.entry.unshift('webpack-hot-middleware/client?reload=true'); // = [ 'webpack-hot-middleware/client?reload=true', './client/index.js' ];
 // add plugins to config
 config.plugins = [ new webpack.HotModuleReplacementPlugin(), new webpack.NoEmitOnErrorsPlugin() ];
 

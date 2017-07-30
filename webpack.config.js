@@ -1,7 +1,7 @@
 const path = require('path');
 
 module.exports = {
-  entry: './client/index.js',
+  entry: ['babel-polyfill', './client/index.js'],
   output: {
     path: path.resolve(__dirname, 'client/dist'),
     filename: 'bundle.js',
@@ -17,11 +17,15 @@ module.exports = {
           options: {
             presets: [
               ['env', {
-                'targets': { 'browsers': '> 3%' }
+                'targets': { 'browsers': '> 1%' }
               }],
               'react'
             ],
-            plugins: ['transform-object-rest-spread']
+            plugins: [
+              'transform-object-rest-spread',
+              'transform-async-functions',
+              // 'transform-regenerator',
+            ]
             // plugins: [require('babel-plugin-transform-object-rest-spread')]
           }
         }
@@ -29,6 +33,10 @@ module.exports = {
       {
         test: /\.css$/,
         use: [ 'style-loader', 'css-loader' ]
+      },
+      {
+        test: /\.scss$/,
+        use: [ 'style-loader', 'css-loader', 'sass-loader' ]
       },
       {
         test: /\.(eot|woff|woff2|ttf|svg)/,

@@ -10,6 +10,7 @@ class Login extends React.Component {
     this.handleSubmit = this.handleSubmit.bind(this);
 
     this.state = {
+
       email: {
         value: '',
         error: ''
@@ -83,7 +84,7 @@ class Login extends React.Component {
     let {email, password, isLoading} = this.state;
 
     return (
-      <form onSubmit={this.handleSubmit} noValidate>
+      <form onSubmit={this.handleSubmit} noValidate >
         <FormField
           type="email"
           name="email"

@@ -1,5 +1,4 @@
 const bodyParser = require('body-parser');
-const validator = require('validator');
 
 const api = require('express').Router();
 const db = require('./db');
@@ -39,8 +38,8 @@ api.post('/login', (req, res) => {
 api.post('/user', (req, res) => {
   let {nickname, email, password} = req.body;
 
-  if(!validator.isEmail(email))
-    res.status(400).send('Invalid email');
+  // if(!validator.isEmail(email))
+  //   res.status(400).send('Invalid email');
 
   if(!password || password.length < 6)
     res.status(400).send('Password too short');

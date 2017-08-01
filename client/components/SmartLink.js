@@ -14,12 +14,13 @@ class SmartLink extends React.Component {
   }
 
   render() {
-    let {to, replace, children} = this.props;
+    let {to, replace, children, className} = this.props;
     return <Link
       onClick={this.handleClick} {...this.linkProps}
       to={to}
       replace={replace}
       children={children}
+      className={className}
     />
   }
 }

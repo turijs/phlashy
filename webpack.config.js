@@ -23,10 +23,9 @@ module.exports = {
             ],
             plugins: [
               'transform-object-rest-spread',
-              'transform-async-functions',
+              // 'transform-async-functions',
               // 'transform-regenerator',
             ]
-            // plugins: [require('babel-plugin-transform-object-rest-spread')]
           }
         }
       },
@@ -42,8 +41,16 @@ module.exports = {
         test: /\.(eot|woff|woff2|ttf|svg)/,
         use: {
           loader: 'file-loader',
+          options: { name: '[name]-[hash:6].[ext]' }
+        }
+      },
+      {
+        test: /\.(jpg)$/,
+        use: {
+          loader: 'file-loader',
           options: {
-
+            outputPath: '/images/',
+            name: '[name]-[hash:6].[ext]'
           }
         }
       }

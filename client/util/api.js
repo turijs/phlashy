@@ -7,7 +7,7 @@ const POST   = 'POST',
 const api = {
   login(body) {
     return fetch('/api/login', options(POST, body))
-      .catch(e => console.log(e));
+      .catch(catchTimeout);
   },
 };
 

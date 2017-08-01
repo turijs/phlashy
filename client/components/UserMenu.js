@@ -26,7 +26,9 @@ class UserMenu extends React.Component {
     if(user)
       content = (
         <div>
-          <A onClick={this.toggle}>{user.nickname}</A>
+          <A onClick={this.toggle}>{user.nickname}
+            <i className="fa fa-chevron-down" />
+          </A>
           <ul className={this.state.open ? "open" : null}>
             <li><SmartLink to="/profile">Profile</SmartLink></li>
             <li><A onClick={logout}>Logout</A></li>
@@ -34,7 +36,7 @@ class UserMenu extends React.Component {
         </div>
       );
     else
-      content = <SmartLink to="/login">Login</SmartLink>;
+      content = <SmartLink className="btn" to="/login">Login</SmartLink>;
 
     return <div id="user-menu">{content}</div>;
   }

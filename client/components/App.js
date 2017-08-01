@@ -6,9 +6,10 @@ import Login from './Login';
 const App = () => (
   <div id="app">
     <Route component={Header} />
-    <Route path="/login" component={Login} />
+
     <div className="container">
-      <h1>Hello World!</h1>
+      <h1>Welcome Back!</h1>
+      <Route path="/login" component={Login} />
     </div>
 
   </div>

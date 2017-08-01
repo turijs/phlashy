@@ -11,8 +11,9 @@ import App from './components/App';
 import reducers from './reducers';
 
 // import 'bootstrap/dist/css/bootstrap.css';
-import './css/main.scss';
-// import './test.scss'
+import 'font-awesome/css/font-awesome.css';
+import './sass/main.scss';
+
 
 // Create the global history object
 const history = createHistory();

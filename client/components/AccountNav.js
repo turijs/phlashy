@@ -1,9 +1,10 @@
 import React from 'react';
 import SmartLink from './SmartLink';
 import A from './A';
+import Icon from './Icon';
 import onClickOutside from 'react-onclickoutside'
 
-class UserMenu extends React.Component {
+class AccountNav extends React.Component {
   constructor(props) {
     super(props);
     this.toggle = this.toggle.bind(this);
@@ -21,26 +22,29 @@ class UserMenu extends React.Component {
 
   render() {
     let {user, logout} = this.props;
+    let {open} = this.state;
     let content;
 
     if(user)
       content = (
-        <div>
-          <A onClick={this.toggle}>{user.nickname}
-            <i className="fa fa-chevron-down" />
+        <div id="user-menu" className={open ? "open" : null}>
+          <A onClick={this.toggle}>
+            {user.nickname} <Icon sm slug={open ? 'chevron-up' : 'chevron-down'}/>
           </A>
-          <ul className={this.state.open ? "open" : null}>
-            <li><SmartLink to="/profile">Profile</SmartLink></li>
-            <li><A onClick={logout}>Logout</A></li>
+          <ul>
+            <li><SmartLink to="/profile"><Icon slug="user"/> Profile</SmartLink></li>
+            <li><A onClick={logout}><Icon slug="power-off"/> Logout</A></li>
           </ul>
         </div>
       );
     else
       content = <SmartLink className="btn" to="/login">Login</SmartLink>;
 
-    return <div id="user-menu">{content}</div>;
+    return <div id="account-nav">{content}</div>;
   }
 }
 
+
+
 // onClickOutside creates a HOC that calls the handleClickOutside handler
-export default onClickOutside(UserMenu);
+export default onClickOutside(AccountNav);

@@ -1,24 +1,24 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import createHistory from 'history/createBrowserHistory';
 import { createStore, combineReducers, applyMiddleware } from 'redux';
 import { Provider } from 'react-redux';
-import createHistory from 'history/createBrowserHistory';
-import { Route, Link } from 'react-router-dom';
 import { ConnectedRouter, routerReducer, routerMiddleware } from 'react-router-redux';
+import createSagaMiddleware from 'redux-saga';
 
 import App from './components/App';
-
 import reducers from './reducers';
+import rootSaga from './sagas';
 
-// import 'bootstrap/dist/css/bootstrap.css';
+// CSS
 import 'font-awesome/css/font-awesome.css';
 import './sass/main.scss';
 
-
-// Create the global history object
+// init history object for router
 const history = createHistory();
 
-console.log(window.USER);
+// init Redux Saga middleware
+const sagaMiddleware = createSagaMiddleware();
 
 const store = createStore(
   combineReducers({
@@ -26,12 +26,16 @@ const store = createStore(
     router: routerReducer
   }),
   {user: window.USER},
-  applyMiddleware( routerMiddleware(history) )
+  applyMiddleware(
+    routerMiddleware(history),
+    sagaMiddleware
+  )
 );
 
-delete window.USER;
+sagaMiddleware.run(rootSaga);
 
-let Test = () => <div>TEST</div>;
+// Remove preloaded user state
+delete window.USER;
 
 
 // =============================

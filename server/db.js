@@ -31,8 +31,10 @@ module.exports = {
         ID SERIAL PRIMARY KEY,
         userID integer REFERENCES users (ID) ON DELETE CASCADE,
         name varchar(100),
-        dateCreated timestamp
-      )
+        description text,
+        dateCreated timestamptz,
+        dateModified timestamptz
+      );
     `);
     let t3 = pool.query(`
       CREATE TABLE IF NOT EXISTS cards (
@@ -41,11 +43,17 @@ module.exports = {
         deckID integer REFERENCES decks (ID) ON DELETE CASCADE,
         term text,
         defn text,
-        dateCreated timestamp
-      )
+        dateCreated timestamptz,
+        dateModified timestamptz
+      );
+    `);
+    let t4 = pool.query(`
+      CREATE OR REPLACE FUNCTION toJS(t timestamptz) RETURNS double precision
+        AS 'select round(extract(epoch from $1) * 1000);'
+        LANGUAGE SQL;
     `);
 
-    return Promise.all([t1, t2, t3]);
+    return Promise.all([t1, t2, t3, t4]);
   },
 
   ////////////////////
@@ -105,19 +113,29 @@ module.exports = {
   // Deck functions //
   ////////////////////
 
-  createDeck(userID, deckName) {
-    return pool.query(
-      `INSERT INTO decks (userID, name, dateCreated)
-       VALUES ($1, $2, CURRENT_TIMESTAMP) RETURNING ID`,
-      [userID, deckName]
+  createDeck(userID, deckName, desc) {
+    return pool.query(`
+      INSERT INTO decks (userID, name, desc, dateCreated, dateModified)
+      VALUES ($1, $2, $3, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+      RETURNING
+        ID,
+        name,
+        desc,
+        toJS(dateCreated) AS created,
+        toJS(dateModified) AS modified`,
+      [userID, deckName, desc]
     ).then(res => {
       return res.rows[0].id;
     });
   },
-  updateDeck(userID, deckID, newDeckName) {
-    return pool.query(
-      `UPDATE decks SET name = $1 WHERE ID = $2 AND userID = $3 RETURNING ID`,
-      [newDeckName, deckID, userID]
+  updateDeck(userID, deckID, newName, newDescription) {
+    return pool.query(`
+      UPDATE decks SET
+        name = $1,
+        description = $2,
+        dateModified = CURRENT_TIMESTAMP
+      WHERE ID = $3 AND userID = $4 RETURNING ID`,
+      [newName, newDescription, deckID, userID]
     ).then(throwIfEmpty);
   },
   deleteDeck(userID, deckID) {
@@ -127,7 +145,19 @@ module.exports = {
     ).then(throwIfEmpty);
   },
   getDecks(userID) {
-    return pool.query(`SELECT * FROM decks WHERE userID = $1`, [userID]).then(res => {
+    return pool.query(`
+      SELECT
+        decks.ID,
+        decks.name,
+        decks.desc,
+        toJS(decks.dateCreated) AS created,
+        toJS(decks.dateModified) AS modified,
+        array_agg(cards.ID) as cards
+      FROM decks, cards
+      WHERE decks.ID = cards.deckID AND decks.userID = $1
+      GROUP BY decks.ID`,
+      [userID]
+    ).then(res => {
       return res.rows;
     });
   },
@@ -146,11 +176,12 @@ module.exports = {
     });
   },
   updateCard(userID, cardID, newTerm, newDefn) {
-    return pool.query(
-      `UPDATE cards SET
+    return pool.query(`
+      UPDATE cards SET
         term = COALESCE($1, term),
-        defn = COALESCE($2, defn)
-       WHERE ID = $3 AND userID = $4 RETURNING ID`,
+        defn = COALESCE($2, defn),
+        dateModified = CURRENT_TIMESTAMP
+      WHERE ID = $3 AND userID = $4 RETURNING ID`,
       [newTerm, newDefn, cardID, userID]
     ).then(throwIfEmpty);
   },
@@ -175,3 +206,13 @@ function throwIfEmpty(res) {
     throw "not found";
   return res;
 }
+
+// CREATE OR REPLACE VIEW decks_v AS
+//   SELECT
+//     ID,
+//     userID,
+//     name,
+//     desc,
+//     round(extract(epoch from dateCreated) * 1000) AS dateCreated,
+//     round(extract(epoch from dateModified) * 1000) AS dateModified,
+//   FROM decks;

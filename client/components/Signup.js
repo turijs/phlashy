@@ -1,37 +1,29 @@
 import React from 'react';
 import FormField from './FormField';
 import { connect } from 'react-redux';
-import { Redirect } from 'react-router-dom';
 import api from '../util/api';
-import { LoggedInOnly } from './auth-conditional';
+import findSignupError from '../../common/report-signup-error';
 
-class Login extends React.Component {
+class Signup extends React.Component {
   constructor(props) {
     super(props);
 
     this.handleChange = this.handleChange.bind(this);
+    this.handleBlur = this.handleBlur.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
 
     this.state = {
       values: {
+        nickname: '',
         email: '',
         password: ''
       },
       errors: {
-        email: '',
-        password: ''
+        email: false,
+        password: false
       },
       isLoading: false,
       communicationError: false
-    }
-  }
-
-  findError(field, value) {
-    switch(field) {
-      case 'email':
-        return value ? false : 'Please enter your email address';
-      case 'password':
-        return value ? false : 'Please enter your password';
     }
   }
 
@@ -39,8 +31,19 @@ class Login extends React.Component {
     let {name, value} = e.target;
     this.setState(prevState => ({
       values: { ...prevState.values, [name]: value },
-      errors: { ...prevState.errors, [name]: false }
     }));
+    if(name in this.state.errors)
+      this.setState(prevState => ({
+        errors: { ...prevState.errors, [name]: false },
+      }));
+  }
+
+  handleBlur(e) {
+    let {name, value} = e.target;
+    if(name in this.state.errors)
+      this.setState(prevState => ({
+        errors: { ...prevState.errors, [name]: findError(name, value) },
+      }));
   }
 
   async handleSubmit(e) {
@@ -49,13 +52,13 @@ class Login extends React.Component {
     // validate all fields
     let errors = {};
     for(let field in this.state.errors)
-      errors[field] = this.findError(field, this.state.values[field]);
+      errors[field] = findSignupError(field, this.state.values[field]);
 
     // go ahead with the request if there are no errors
     if( !errors.email && !errors.password ) {
       this.setState({isLoading: true});
 
-      let res = await api.post('/login', this.state.values);
+      let res = await api.post('/user', this.state.values);
       let json = await res.json();
 
       if(res.ok)
@@ -75,12 +78,15 @@ class Login extends React.Component {
     let {errors, isLoading} = this.state;
 
     return (
-      <div id="login">
-        <LoggedInOnly><Redirect to="/" /></LoggedInOnly>
-
-        <h1>Login</h1>
+      <div id="signup">
+        <h1>Sign Up</h1>
 
         <form noValidate onSubmit={this.handleSubmit} onChange={this.handleChange} >
+          <FormField
+            type="text"
+            name="nickname"
+            label="Nickname (optional)"
+          />
           <FormField
             type="email"
             name="email"
@@ -93,7 +99,7 @@ class Login extends React.Component {
             label="Password"
             error={errors.password}
           />
-          <button type="submit">Login</button>
+          <button type="submit">Create Account</button>
           {isLoading && <span>loading</span>}
         </form>
       </div>
@@ -107,4 +113,4 @@ function matchDispatchToProps(dispatch) {
   }
 }
 
-export default connect(null, matchDispatchToProps)(Login);
+export default connect(null, matchDispatchToProps)(Signup);

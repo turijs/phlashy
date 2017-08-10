@@ -1,19 +1,28 @@
-const POST   = 'POST',
-      GET    = 'GET',
-      PUT    = 'PUT',
-      DELETE = 'DELETE';
-
-
 const api = {
-  login(body) {
-    return fetch('/api/login', options(POST, body))
+  post(path, body) {
+    return fetch('/api' + path, options('POST', body))
       .catch(catchTimeout);
   },
+
+  get(path) {
+    return fetch('/api' + path, {method: 'GET', credentials: 'same-origin'})
+      .catch(catchTimeout);
+  },
+
+  put(path, body) {
+    return fetch('/api' + path, options('PUT', body))
+      .catch(catchTimeout);
+  },
+
+  delete(path, body) {
+    return fetch('/api' + path, options('DELETE', body))
+      .catch(catchTimeout);
+  }
 };
 
 export default api;
 
-function options (method, body) {
+function options (method, body = {}) {
   return {
     method,
     headers: new Headers({"Content-Type": "application/json"}),

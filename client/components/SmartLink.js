@@ -16,7 +16,7 @@ class SmartLink extends React.Component {
   render() {
     let {to, replace, children, className} = this.props;
     return <Link
-      onClick={this.handleClick} {...this.linkProps}
+      onClick={this.handleClick}
       to={to}
       replace={replace}
       children={children}

@@ -41,9 +41,8 @@ app.use(session({
 // send main page
 app.get('*', (req, res) => {
   if( auth.loggedIn(req) ) {
-    console.log(req.session.userID);
-
-    db.getUser(req.session.userID).then(user => {
+    auth.loadUserID(req);
+    db.getUser(req.userID).then(user => {
       res.render('main', {user: JSON.stringify(user)});
     }).catch(e => console.log(e));
   } else {

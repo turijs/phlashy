@@ -3,6 +3,7 @@ const bodyParser = require('body-parser');
 const api = require('express').Router();
 const db = require('./db');
 const auth = require('./auth');
+const findSignupError = require('../common/report-signup-error');
 
 
 api.use(bodyParser.json());
@@ -10,7 +11,9 @@ api.use(bodyParser.json());
 // logging
 api.use((req, _, next) => next( console.log(req.body) ));
 
-
+/*
+ * Login
+ */
 api.post('/login', (req, res) => {
   let {email, password} = req.body;
 
@@ -33,25 +36,32 @@ api.post('/login', (req, res) => {
   });
 });
 
-
-// Create a new user
+/*
+ * Create a new user
+ */
 api.post('/user', (req, res) => {
   let {nickname, email, password} = req.body;
 
-  // if(!validator.isEmail(email))
-  //   res.status(400).send('Invalid email');
-
-  if(!password || password.length < 6)
-    res.status(400).send('Password too short');
+  // initial check for errors
+  let errors = {
+    email: findSignupError('email', email),
+    password: findSignupError('password', password)
+  }
+  if(errors.email || errors.password) {
+    res.status(401).send(errors);
+    return;
+  }
 
   db.createUser(nickname, email, password)
     .then(user => {
+      auth.login(req, user);
       res.status(201).send(user);
-      req.session.userID = id;
     })
     .catch(err => {
       if(err.code == '23505')
-        res.status(400).send('Email already taken')
+        res.status(401).send({
+          errors: {email: `'${email}' is already associated with an account`}
+        })
       else {
         console.log(err);
         res.sendStatus(500);
@@ -59,8 +69,20 @@ api.post('/user', (req, res) => {
     });
 });
 
+//////////////////////////////////////////////////
 // Everything below this point is protected access
 api.use(auth.rejectUnauthorized);
+// Load current user ID in to req.userID
+api.use(auth.loadUserID);
+//////////////////////////////////////////////////
+
+/*
+ * Logout
+ */
+api.post('/logout', (req, res) => {
+  auth.logout(req);
+  res.sendStatus(200);
+});
 
 // Update a user
 api.put('/user', async (req, res) => {
@@ -85,8 +107,14 @@ api.delete('/user', (req, res) => {
 
 
 
-api.post('/decks', (req, res) => {
-
+api.post('/decks', async (req, res) => {
+  let {name, description} = req.body;
+  try {
+    let id = await db.createDeck(req.userID, name, description);
+    res.status(201).send({id});
+  } catch(e) {
+    res.sendStatus(500);
+  }
 });
 
 api.put('/decks/:id', (req, res) => {

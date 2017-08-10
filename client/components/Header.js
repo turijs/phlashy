@@ -1,9 +1,9 @@
 import React from 'react';
 import { withRouter, NavLink, Link } from 'react-router-dom';
 import { connect } from 'react-redux';
-import UserMenu from './UserMenu';
+import AccountNav from './AccountNav';
 
-const Header = ({user}) => (
+const Header = ({user, logout}) => (
   <header id="header">
     <div className="container">
       <div id="logo">
@@ -21,7 +21,7 @@ const Header = ({user}) => (
         </ul>
       </nav>
 
-      <UserMenu logout={() => console.log("logout")} user={user} />
+      <AccountNav logout={logout} user={user} />
     </div>
   </header>
 );
@@ -30,4 +30,12 @@ function mapStateToProps(state) {
   return {user: state.user};
 }
 
-export default connect(mapStateToProps)(Header);
+function mapDispatchToProps(dispatch) {
+  return {
+    logout: () => dispatch({type: 'LOGOUT_REQUESTED'})
+  }
+}
+
+export default withRouter(
+  connect(mapStateToProps, mapDispatchToProps)(Header)
+);

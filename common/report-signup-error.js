@@ -6,7 +6,7 @@ function findSignupError(field, value) {
       if(!value)
         return 'This field is required';
       else if ( ! validate.email(value) )
-        return `'${val}' doesn't look like a valid email address...`;
+        return `'${value}' doesn't look like a valid email address...`;
       else
         return false;
     case 'password':

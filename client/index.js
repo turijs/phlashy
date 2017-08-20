@@ -9,6 +9,7 @@ import createSagaMiddleware from 'redux-saga';
 import App from './components/App';
 import reducers from './reducers';
 import rootSaga from './sagas';
+import { login } from './actions';
 
 // CSS
 import 'font-awesome/css/font-awesome.css';
@@ -25,17 +26,20 @@ const store = createStore(
     ...reducers,
     router: routerReducer
   }),
-  {user: window.USER},
   applyMiddleware(
     routerMiddleware(history),
     sagaMiddleware
   )
 );
 
+// Start the sagas
 sagaMiddleware.run(rootSaga);
 
-// Remove preloaded user state
-delete window.USER;
+// login with preloaded user
+if(window.USER) {
+  store.dispatch( login(window.USER) );
+  delete window.USER;
+}
 
 
 // =============================

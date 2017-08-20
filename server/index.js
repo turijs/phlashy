@@ -1,5 +1,4 @@
 require('dotenv').config();
-console.log(process.env.NODE_ENV);
 
 const path = require('path');
 const express = require('express');
@@ -15,6 +14,9 @@ const port = process.env.PORT || 3000;
 const unprotectedRoutes = [
   '/', '/login', '/about'
 ];
+
+// turn off X-Powered-By header
+app.disable('x-powered-by');
 
 // Configure templating
 app.set('views', __dirname + '/views');
@@ -38,6 +40,9 @@ app.use(session({
   saveUninitialized: false
 }));
 
+// api route
+app.use('/api', api);
+
 // send main page
 app.get('*', (req, res) => {
   if( auth.loggedIn(req) ) {
@@ -53,8 +58,6 @@ app.get('*', (req, res) => {
   }
 });
 
-// api route
-app.use('/api', api);
 
 
 
@@ -63,6 +66,8 @@ app.use('/api', api);
 // ============================
 db.setupTablesIfNecessary()
   .then(() => {
+    // db.createCard(1, 2, 'front', 'back').catch(e => console.log(e));
+    // db.getDecks(1).then(decks => console.log(decks));
     app.listen(port, () => console.log(`listening on port ${ port }`) );
   })
   .catch(err => { console.log(err); });

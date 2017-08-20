@@ -84,7 +84,9 @@ api.post('/logout', (req, res) => {
   res.sendStatus(200);
 });
 
-// Update a user
+/*
+ * Update user details
+ */
 api.put('/user', async (req, res) => {
   let {oldPassword, newPassword, nickname} = req.body;
   let userID = req.session.userID;
@@ -106,13 +108,16 @@ api.delete('/user', (req, res) => {
 });
 
 
-
+/*
+ * Create a new deck
+ */
 api.post('/decks', async (req, res) => {
   let {name, description} = req.body;
   try {
-    let id = await db.createDeck(req.userID, name, description);
-    res.status(201).send({id});
+    let deck = await db.createDeck(req.userID, name, description);
+    res.status(201).send(deck);
   } catch(e) {
+    console.log(e);
     res.sendStatus(500);
   }
 });
@@ -121,12 +126,28 @@ api.put('/decks/:id', (req, res) => {
 
 });
 
-api.get('/decks', (req, res) => {
+/*
+ * Get a list of all decks
+ */
+api.get('/decks', async (req, res) => {
+  try {
+    let decks = await db.getDecks(req.userID);
+    res.status(200).send(decks);
+  } catch (e) {
+    console.log(e);
+    res.sendStatus(500);
+  }
 
 });
 
-api.delete('/decks/:id', (req, res) => {
-
+api.delete('/decks/:id', async (req, res) => {
+  try {
+    await db.deleteDeck(req.userID, req.params.id);
+    res.sendStatus(200)
+  } catch (e) {
+    console.log(e);
+    res.sendStatus(500);
+  }
 });
 
 

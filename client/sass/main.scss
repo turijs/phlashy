@@ -16,6 +16,7 @@ a { color: inherit; }
   border-bottom: 3px solid darken($bg, 20%);
   &:hover { background: darken($bg, 3%); }
   &:active { background: darken($bg, 5%); color: $txt }
+  &[disabled] { background: mix($bg, gray, 70%)}
 
 }
 
@@ -32,9 +33,19 @@ button, .btn {
   @include button-color(rgb(190,190,190));
 
   &:active { box-shadow: inset 0 3px 10px -5px rgb(0,0,0); }
+  &[disabled] { opacity: .5; cursor: default; }
 }
-.btn-go {
-  @include button-color(rgb(145,189,20));
+.btn-go { @include button-color(rgb(145,189,20)); }
+.btn-stop { @include button-color(rgb(213,61,33), white);}
+
+.btn-row {
+  text-align: right;
+  button, .btn {
+    margin-left: 8px;
+    margin-right: 8px;
+    &:first-child { margin-left: 0; }
+    &:last-child { margin-right: 0; }
+  }
 }
 
 
@@ -45,12 +56,16 @@ form {
     margin: 10px 0;
   }
   input, textarea {
+    display: block;
+    width: 100%;
+    margin: 10px 0;
     padding: 8px;
     font-size: 130%;
     border: 1px solid navy;
     border-radius: 3px;
     &.error { border-color: red; }
   }
+  textarea { min-height: 6em}
   .error-msg {
     color: red;
     font-size: 90%;
@@ -62,6 +77,10 @@ form {
   max-width: 1080px;
   margin: 0 auto;
   padding: 0 24px;
+}
+.container-narrow {
+  max-width: 300px;
+  margin: 0 auto;
 }
 
 .fa-sm { font-size: 75%; }
@@ -146,11 +165,11 @@ $headerBG: rgb(46,66,107);
 
 .modal-window {
   position: fixed;
-  top: 40%; left: 50%;
+  top: 42%; left: 50%;
   transform: translate(-50%, -50%);
   background: white;
   border-radius: 4px;
-  padding: 50px;
+  padding: 30px;
   box-shadow: 0 0 30px rgba(0,0,0,.5);
   z-index: 102;
 
@@ -161,4 +180,10 @@ $headerBG: rgb(46,66,107);
   width: 100%; height: 100%;
   background: rgba(0,0,0,.4);
   z-index: 101;
+}
+
+.deck { cursor: default; }
+.deck.selected {
+  background: purple;
+  color: white;
 }

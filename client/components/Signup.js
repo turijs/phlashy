@@ -3,6 +3,8 @@ import FormField from './FormField';
 import { connect } from 'react-redux';
 import api from '../util/api';
 import findSignupError from '../../common/report-signup-error';
+import { login } from '../actions';
+
 
 class Signup extends React.Component {
   constructor(props) {
@@ -42,7 +44,7 @@ class Signup extends React.Component {
     let {name, value} = e.target;
     if(name in this.state.errors)
       this.setState(prevState => ({
-        errors: { ...prevState.errors, [name]: findError(name, value) },
+        errors: { ...prevState.errors, [name]: findSignupError(name, value) },
       }));
   }
 
@@ -78,10 +80,10 @@ class Signup extends React.Component {
     let {errors, isLoading} = this.state;
 
     return (
-      <div id="signup">
+      <div id="signup" className="container-narrow">
         <h1>Sign Up</h1>
 
-        <form noValidate onSubmit={this.handleSubmit} onChange={this.handleChange} >
+        <form noValidate onSubmit={this.handleSubmit} onChange={this.handleChange} onBlur={this.handleBlur} >
           <FormField
             type="text"
             name="nickname"
@@ -109,7 +111,7 @@ class Signup extends React.Component {
 
 function matchDispatchToProps(dispatch) {
   return {
-    login: user => dispatch({type: 'LOGIN', ...user})
+    login: userData => dispatch( login(userData) )
   }
 }
 

@@ -4,11 +4,11 @@ const webpackHotMiddleware = require('webpack-hot-middleware');
 
 const config = require('../webpack.config.js');
 // modify entry to include hot middleware client
-config.entry.unshift('webpack-hot-middleware/client?reload=true'); 
+config.entry.unshift('webpack-hot-middleware/client?reload=true');
 // add plugins to config
 config.plugins = [ new webpack.HotModuleReplacementPlugin(), new webpack.NoEmitOnErrorsPlugin() ];
 
-// config.devtool = 'cheap-module-eval-source-map';
+config.devtool = 'cheap-module-eval-source-map';
 
 const compiler = webpack(config);
 

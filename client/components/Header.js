@@ -32,7 +32,7 @@ function mapStateToProps(state) {
 
 function mapDispatchToProps(dispatch) {
   return {
-    logout: () => dispatch({type: 'LOGOUT_REQUESTED'})
+    logout: () => dispatch({type: 'REQUEST_LOGOUT'})
   }
 }
 

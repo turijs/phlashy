@@ -4,6 +4,7 @@ import { connect } from 'react-redux';
 import { Redirect } from 'react-router-dom';
 import api from '../util/api';
 import { LoggedInOnly } from './auth-conditional';
+import { login } from '../actions';
 
 class Login extends React.Component {
   constructor(props) {
@@ -75,7 +76,7 @@ class Login extends React.Component {
     let {errors, isLoading} = this.state;
 
     return (
-      <div id="login">
+      <div id="login" className="container-narrow">
         <LoggedInOnly><Redirect to="/" /></LoggedInOnly>
 
         <h1>Login</h1>
@@ -103,7 +104,7 @@ class Login extends React.Component {
 
 function matchDispatchToProps(dispatch) {
   return {
-    login: user => dispatch({type: 'LOGIN', ...user})
+    login: userData => dispatch( login(userData) )
   }
 }
 

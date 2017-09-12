@@ -1,26 +1,44 @@
 const api = {
   post(path, body) {
     return fetch('/api' + path, options('POST', body))
-      .catch(catchTimeout);
+      .catch(transformFailure);
   },
 
   get(path) {
     return fetch('/api' + path, {method: 'GET', credentials: 'same-origin'})
-      .catch(catchTimeout);
+      .catch(transformFailure);
   },
 
   put(path, body) {
     return fetch('/api' + path, options('PUT', body))
-      .catch(catchTimeout);
+      .catch(transformFailure);
   },
 
   delete(path, body) {
     return fetch('/api' + path, options('DELETE', body))
-      .catch(catchTimeout);
+      .catch(transformFailure);
+  },
+
+  head(path) {
+    return fetch('/api' + path, {method: 'HEAD'})
+      .catch(transformFailure);
   }
 };
 
 export default api;
+
+export function rejectErrors(res) {
+  if(res.status == 401)
+    throw 'LOGGED_OUT';
+  else if(res.status >= 500)
+    throw 'SERVER_ERROR';
+
+  return res;
+}
+
+export function toJSON(res) {
+  return rejectErrors(res).json();
+}
 
 function options (method, body = {}) {
   return {
@@ -31,6 +49,6 @@ function options (method, body = {}) {
   };
 }
 
-function catchTimeout(e) {
-  return {timeout: true}
+function transformFailure() {
+  throw 'FETCH_FAILED';
 }

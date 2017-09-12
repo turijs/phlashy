@@ -8,7 +8,7 @@ const Main = () => (
   <div className="container">
     <Route exact path="/" component={Home} />
     <Route path="/login" component={Login} />
-    <Route path="/decks" component={DecksView} />
+    <Route exact path="/decks" component={DecksView} />
   </div>
 );
 

@@ -5,7 +5,16 @@ const db = require('./db');
 const auth = require('./auth');
 const findSignupError = require('../common/report-signup-error');
 
+/*
+ * Test connection
+ */
+api.head('/ping', (req, res) => {
+  res.clearCookie('connect.sid');
+  res.removeHeader('Set-Cookie');
+  res.sendStatus(200);
+});
 
+// Parse request body
 api.use(bodyParser.json());
 
 // logging
@@ -68,6 +77,9 @@ api.post('/user', (req, res) => {
       }
     });
 });
+
+
+
 
 //////////////////////////////////////////////////
 // Everything below this point is protected access
@@ -140,6 +152,9 @@ api.get('/decks', async (req, res) => {
 
 });
 
+/*
+ * Delete a deck
+ */
 api.delete('/decks/:id', async (req, res) => {
   try {
     await db.deleteDeck(req.userID, req.params.id);
@@ -152,8 +167,14 @@ api.delete('/decks/:id', async (req, res) => {
 
 
 
-api.post('/cards', (req, res) => {
-
+api.post('/cards', async (req, res) => {
+  let {front, back, deckID} = req.body;
+  try {
+    let card = await db.createCard(req.userID, deckID, front, back);
+    res.status(201).send(deck);
+  } catch(e) {
+    console.log(e), res.sendStatus(500);
+  }
 });
 
 api.put('/cards/:id', (req, res) => {

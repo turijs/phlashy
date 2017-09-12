@@ -2,6 +2,7 @@ import React from 'react';
 import { withRouter, NavLink, Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 import AccountNav from './AccountNav';
+import { logout } from '../actions';
 
 const Header = ({user, logout}) => (
   <header id="header">
@@ -32,7 +33,7 @@ function mapStateToProps(state) {
 
 function mapDispatchToProps(dispatch) {
   return {
-    logout: () => dispatch({type: 'REQUEST_LOGOUT'})
+    logout: () => dispatch( logout() )
   }
 }
 

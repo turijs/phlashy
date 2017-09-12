@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import createHistory from 'history/createBrowserHistory';
-import { createStore, combineReducers, applyMiddleware } from 'redux';
+import { createStore, combineReducers, applyMiddleware, compose } from 'redux';
 import { Provider } from 'react-redux';
 import { ConnectedRouter, routerReducer, routerMiddleware } from 'react-router-redux';
 import createSagaMiddleware from 'redux-saga';
@@ -21,14 +21,18 @@ const history = createHistory();
 // init Redux Saga middleware
 const sagaMiddleware = createSagaMiddleware();
 
+// redux devTools
+const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
 const store = createStore(
   combineReducers({
     ...reducers,
     router: routerReducer
   }),
-  applyMiddleware(
-    routerMiddleware(history),
-    sagaMiddleware
+  composeEnhancers(
+    applyMiddleware(
+      routerMiddleware(history),
+      sagaMiddleware
+    )
   )
 );
 

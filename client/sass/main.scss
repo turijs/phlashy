@@ -132,6 +132,7 @@ $headerBG: rgb(46,66,107);
 #user-menu {
   position: relative;
   background: $headerBG;
+  z-index: 10;
 
   a {
     display: block;
@@ -169,7 +170,7 @@ $headerBG: rgb(46,66,107);
   transform: translate(-50%, -50%);
   background: white;
   border-radius: 4px;
-  padding: 30px;
+  padding: 20px 25px;
   box-shadow: 0 0 30px rgba(0,0,0,.5);
   z-index: 102;
 
@@ -182,8 +183,4 @@ $headerBG: rgb(46,66,107);
   z-index: 101;
 }
 
-.deck { cursor: default; }
-.deck.selected {
-  background: purple;
-  color: white;
-}
+@import 'decks';

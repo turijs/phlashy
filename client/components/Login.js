@@ -23,7 +23,7 @@ class Login extends React.Component {
         password: ''
       },
       isLoading: false,
-      communicationError: false
+      networkError: false
     }
   }
 
@@ -56,15 +56,24 @@ class Login extends React.Component {
     if( !errors.email && !errors.password ) {
       this.setState({isLoading: true});
 
-      let res = await api.post('/login', this.state.values);
-      let json = await res.json();
+      try {
+        let res = await api.post('/login', this.state.values);
+        let json = await res.json();
 
-      if(res.ok)
-        return this.props.login(json);
-      else if(res.status == 401)
-        errors = {...errors, ...json.errors};
-      else
-        this.setState({ communicationError: true });
+        if(res.ok)
+          return this.props.login(json);
+        else if(res.status == 401)
+          errors = {...errors, ...json.errors};
+        else
+          this.setState({
+            networkError: 'Apologies, a server error occurred - please try again'
+          });
+      } catch (e) {
+        console.log(e);
+        this.setState({
+          networkError: 'Failed to login - please check your internet connection'
+        });
+      }
 
       this.setState({isLoading: false});
     }
@@ -73,7 +82,7 @@ class Login extends React.Component {
   }
 
   render() {
-    let {errors, isLoading} = this.state;
+    let {errors, isLoading, networkError} = this.state;
 
     return (
       <div id="login" className="container-narrow">
@@ -96,7 +105,12 @@ class Login extends React.Component {
           />
           <button type="submit">Login</button>
           {isLoading && <span>loading</span>}
+
+          {!!networkError &&
+            <div className="error-msg">{networkError}</div>}
         </form>
+
+
       </div>
     )
   }

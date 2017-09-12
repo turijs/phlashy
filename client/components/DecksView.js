@@ -2,26 +2,58 @@ import React from 'react';
 import { connect } from 'react-redux';
 import FlexibleItemView from './FlexibleItemView';
 import Modal from './Modal';
-import { addDeckTemp, deleteDeck } from '../actions';
+import { Link, Redirect } from 'react-router-dom';
+import Tappable from 'react-tappable/lib/Tappable';
+import {LoggedOutOnly} from './auth-conditional';
 
-function Deck({id, name, onClick, selected}) {
-  let selClass = selected ? 'selected' : '';
+import {
+  addDeck, deleteDeck,
+  setFilter, clearFilter,
+  setSort,
+  select, deselect,
+  beginEdit, cancelEdit
+} from '../actions';
+
+function Deck({id, name, onMouseDown, onClick, onPress, isSelected}) {
+  let selClass = isSelected ? 'selected' : '';
   return (
-    <div className={`deck ${selClass}`} onClick={onClick}>
-      id: {id} | name: <b>{name}</b>
-    </div>
+    <Link to={`/decks/${id}`}>
+      <Tappable
+        className={`deck ${selClass}`}
+        onMouseDown={onMouseDown}
+        onClick={onClick}
+        onPress={onPress}
+        pressDelay={600}
+      >
+        <div className="deck-name">{name}</div>
+      </Tappable>
+    </Link>
+
   )
 }
 Deck.filterableProps = ['name'];
 
 
 
-class NewDeckModal extends React.Component {
+class EditDeckModal extends React.Component {
   constructor(props) {
     super(props);
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
-    this.state = {name: '', description: ''};
+    this.state = this.getNewState();
+  }
+
+  componentWillReceiveProps(nextProps) {
+    if(nextProps.deck != this.props.deck)
+      this.setState( this.getNewState() );
+  }
+
+  getNewState() {
+    let deck = this.props.deck;
+    if(!deck || deck == 'NEW')
+      return {name: '', description: ''}
+
+    return {name: deck.name, description: deck.description};
   }
 
   handleChange(e) {
@@ -32,16 +64,14 @@ class NewDeckModal extends React.Component {
   handleSubmit(e) {
     e.preventDefault();
     let {name, description} = this.state;
-    this.props.onAdd({name, description});
-    // reset form
-    this.setState({name: '', description: ''})
+    this.props.onSave({name, description});
   }
 
   render() {
-    let {onCancel, onSubmit, ...rest} = this.props;
+    let {deck, onCancel, onSave, ...rest} = this.props;
     let {name, description} = this.state;
     return (
-      <Modal onClickOutside={onCancel} {...rest}>
+      <Modal show={!!deck} onClickOutside={onCancel} className="edit-deck-modal" {...rest}>
         <form onSubmit={this.handleSubmit} onChange={this.handleChange}>
           <input type="text" name="name" value={name} placeholder="Name" />
           <textarea name="description" value={description} placeholder="Description" />
@@ -60,8 +90,7 @@ class DecksView extends React.Component {
     super(props);
 
     this.toggleModal = this.toggleModal.bind(this);
-    this.handleAdd = this.handleAdd.bind(this);
-    this.handleItemClick = this.handleItemClick.bind(this);
+    this.handleSave = this.handleSave.bind(this);
     this.handleDelete = this.handleDelete.bind(this);
 
     this.state = {
@@ -76,57 +105,64 @@ class DecksView extends React.Component {
     this.setState({newDeck: !this.state.newDeck});
   }
 
-  handleAdd(deckData) {
+  handleSave(deckData) {
     this.props.addDeck(deckData);
-    this.toggleModal();
   }
 
   handleDelete() {
-    for(let id in this.state.selectedItems)
+    for(let id of this.props.selectedDecks)
       this.props.deleteDeck(id);
   }
 
-  handleItemClick(itemID, e) {
-    if(e.metaKey || e.ctrlKey) {
-
-    }
-    let sel = this.state.selectedItems;
-    this.setState({
-      selectedItems: {...sel, [itemID]: !sel[itemID]}
-    });
-  }
-
   render() {
-    let {newDeck, filter, sort, selectedItems} = this.state;
+    let {
+      decks, sortBy, sortDesc, selectedDecks, selectMode, filter, beginEdit, cancelEdit,
+      addDeck, deleteDeck, setFilter, clearFilter, setSort, select, deselect, editing
+    } = this.props;
+
+    // replace ID with deck that it references
+    editing = decks[editing] || editing;
+
     return (
       <div id="decks">
         <h1>Decks</h1>
 
         <input
           type="text"
-          onChange={e => this.setState({filter: e.target.value})}
+          onChange={e => setFilter(e.target.value)}
           placeholder="filter by name"
+          style={{padding: 2}}
         /> &nbsp;
 
         Sort:
-        <select value={sort} onChange={e => this.setState({sort: e.target.value})}>
-          <option value="id">ID</option>
+        <select value={sortBy} onChange={e => setSort(e.target.value, false)}>
+          <option value="created">Date Created</option>
           <option value="name">Name</option>
-        </select>
+        </select> &nbsp;
 
-        <FlexibleItemView
-          items={this.props.decks}
-          itemComponent={Deck}
-          filter={filter}
-          sort={sort}
-          onItemClick={this.handleItemClick}
-          selectedItems={selectedItems}
+        Select Mode? &nbsp;
+        <input
+          type="checkbox"
+          checked={selectMode}
+          onChange={e => selectMode ? deselect() : select([])}
         />
 
-        <button className="btn-stop" disabled={!Object.values(selectedItems).includes(true)} onClick={this.handleDelete}>Delete</button>
-        <button onClick={this.toggleModal}>Add</button>
+        <FlexibleItemView
+          items={decks}
+          itemComponent={Deck}
+          filter={filter}
+          sortBy={sortBy}
+          selectedItems={selectedDecks}
+          onSelect={select}
+          selectMode={selectMode}
+        />
 
-        <NewDeckModal show={newDeck} onCancel={this.toggleModal} onAdd={this.handleAdd}/>
+        <button className="btn-stop" disabled={!selectedDecks.length} onClick={this.handleDelete}>Delete</button>
+        <button onClick={() => beginEdit()}>Add</button>
+
+        <EditDeckModal deck={editing} onCancel={cancelEdit} onSave={this.handleSave}/>
+
+        <LoggedOutOnly><Redirect to="/login" /></LoggedOutOnly>
       </div>
     );
   }
@@ -134,16 +170,31 @@ class DecksView extends React.Component {
 
 function mapStateToProps(state) {
   let decks = [];
-  for(let id in state.decks) {
+  for(let id in state.decks)
     decks.push({id, ...state.decks[id]});
-  }
-  return {decks};
+
+  return {
+    decks,
+    sortBy: state.viewPrefs.sort.decks.by,
+    sortDesc: state.viewPrefs.sort.decks.desc,
+    selectedDecks: state.activeView.selected,
+    selectMode: state.activeView.selectMode,
+    filter: state.activeView.filter,
+    editing: state.activeView.editingItem
+  };
 }
 
 function mapDispatchToProps(dispatch) {
   return {
-    addDeck: (deckData) => dispatch( addDeckTemp(deckData) ),
-    deleteDeck: (id) => dispatch( deleteDeck(id) )
+    addDeck: (deckData) => dispatch( addDeck(deckData) ),
+    deleteDeck: (id) => dispatch( deleteDeck(id) ),
+    setFilter: (filter) => dispatch( setFilter(filter) ),
+    clearFilter: () => dispatch( clearFilter() ),
+    setSort: (by, desc) => dispatch ( setSort('decks', by, desc) ),
+    select: (items, e) => dispatch( select(items) ),
+    deselect: () => dispatch( deselect() ),
+    beginEdit: (id) => dispatch( beginEdit(id) ),
+    cancelEdit: () => dispatch( cancelEdit() ),
   }
 }
 

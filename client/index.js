@@ -13,7 +13,9 @@ import { login } from './actions';
 
 // CSS
 import 'font-awesome/css/font-awesome.css';
-import './sass/main.scss';
+// import 'react-select/dist/react-select.css';
+import './sass/base.scss';
+
 
 // init history object for router
 const history = createHistory();

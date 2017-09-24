@@ -97,10 +97,24 @@ function activeView(state = defaultActiveView, action) {
 
 import {SET_VIEW_MODE, SET_SORT} from './actions';
 
-function viewPrefs(state = {
-  mode: {},
-  sort: {cards:{}, decks:{}}
-}, action) {
+const defaultViewPrefs = {
+  mode: {
+    cards: 'grid',
+    decks: 'grid'
+  },
+  sort: {
+    cards: {
+      by: 'created',
+      descending: false
+    },
+    decks: {
+      by: 'created',
+      descending: false
+    },
+  }
+};
+
+function viewPrefs(state = defaultViewPrefs, action) {
   switch(action.type) {
     case SET_VIEW_MODE:
       return {

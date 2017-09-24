@@ -1,0 +1,83 @@
+/*
+ * App header styles
+ */
+
+$header-height: 66px;
+
+#header {
+  background: $header-bg;
+  color: white;
+  margin-bottom: 24px;
+  height: $header-height;
+  .container { padding-right: 0; }
+}
+
+#logo, #nav, #user-menu {
+  display: inline-block;
+}
+
+#logo {
+  position: relative; top: 4px;
+  margin-right: 40px;
+  font-size: 200%;
+  a { text-decoration: none; }
+}
+
+#nav {
+
+  > ul > li {
+    display: inline-block;
+  }
+
+  a {
+    display: block;
+    height: $header-height;
+    padding: 24px 24px 0;
+    text-decoration: none;
+
+
+    &.active {
+      background: mix($header-bg, white, 90%);
+      border-bottom: 5px solid rgb(224,90,47);
+    }
+  }
+}
+
+#account-nav {
+  float: right;
+}
+
+#user-menu {
+  position: relative;
+  background: $header-bg;
+  z-index: 10;
+
+  a {
+    display: block;
+    height: $header-height;
+    padding: 24px 24px 0;
+    text-decoration: none;
+  }
+
+
+  ul {
+    display: none;
+    list-style: none;
+    position: absolute;
+    right: 0;
+    background: inherit;
+
+    a {
+      white-space: nowrap;
+      height: auto;
+      padding: 5px 24px;
+    }
+    li:first-child a { padding-top: 10px; }
+    li:last-child a { padding-bottom: 10px; }
+  }
+
+  &.open {
+    background: mix($header-bg, white, 90%);
+    ul { display: block; }
+  }
+}

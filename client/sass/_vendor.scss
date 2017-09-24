@@ -1,0 +1,16 @@
+/*
+ * react-select overrides
+ */
+$select-input-height: 32px;
+
+/*
+ * font awesome
+ */
+
+// extra fa class
+.fa-sm { font-size: 75%; }
+
+
+
+
+@import '../../node_modules/react-select/scss/default';

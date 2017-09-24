@@ -8,7 +8,6 @@ class FlexibleItemView extends React.Component {
     this.handleClick = this.handleClick.bind(this);
     this.handlePress = this.handlePress.bind(this);
 
-    this.pressed = false;
   }
 
   handleMouseDown(e, id) {
@@ -27,14 +26,13 @@ class FlexibleItemView extends React.Component {
   handleClick(e, id) {
     let { onOpen, selectMode } = this.props;
 
-    if(this.press || selectMode)
+    if(selectMode)
       e.preventDefault(); // prevent links from being followed
     else if(onOpen)
       onOpen(id, e);
   }
 
   handlePress(e, id) {
-    e.preventDefault();
     let { onSelect, selectMode } = this.props;
 
     if(!onSelect || selectMode) return;
@@ -67,7 +65,11 @@ class FlexibleItemView extends React.Component {
 
     // do sorting
     let sortedItems = filteredItems.sort((a, b) => {
-      return a[sortBy] < b[sortBy] ? -1 : +(a[sortBy] != b[sortBy]);
+      a = a[sortBy], b = b[sortBy];
+      if(typeof a == 'string')
+        a = a.toLowerCase(), b = b.toLowerCase();
+
+      return a < b ? -1 : +(a != b);
     });
 
     if(sortDesc)

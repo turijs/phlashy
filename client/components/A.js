@@ -3,16 +3,17 @@
  */
 import React from 'react';
 
-const A = ({onClick, children, className}) => (
+const A = ({onClick, ...rest}) => (
   <a
     href="#"
     onClick={e => {
       e.preventDefault();
       onClick(e);
     }}
-    className={className}
+    role="button"
+    {...rest}
   >
-    {children}
+    {/* {children} */}
   </a>
 );
 

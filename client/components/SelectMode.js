@@ -1,8 +1,15 @@
 import React from 'react';
+import Icon from './Icon';
+import A from './A';
 
-function SelectMode() {
+function SelectMode({active, onClick}) {
+  let extraClass = active ? 'active' : '';
   return (
-    <button className="slim">Select</button>
+    <A className={`btn btn-slim select-mode ${extraClass}`} onClick={onClick}>
+      <Icon fw slug={active ? 'times' : 'check'} />
+      &nbsp;
+      Select
+    </A>
   )
 }
 

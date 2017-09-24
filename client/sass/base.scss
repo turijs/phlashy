@@ -1,0 +1,33 @@
+@import url('https://fonts.googleapis.com/css?family=Zilla+Slab');
+
+$select-col: rgb(43,128,255); //rgb(43,96,255);
+$header-bg: rgb(46,66,107);
+$warm-highlight: rgb(224,90,47);
+$standard-br: 3px;
+$light-button: rgb(232,232,229);
+
+* { margin: 0; padding: 0; box-sizing: border-box;}
+
+body {
+  background-color: beige;
+  color: navy;
+  font-family: 'Zilla Slab', serif;
+}
+
+a { color: inherit; }
+
+input, textarea {
+  font-family: inherit;
+}
+
+:focus::placeholder {
+  color: transparent;
+}
+
+
+@import 'layout';
+@import 'header';
+@import 'vendor';
+@import 'controls';
+@import 'item-management/index.scss';
+@import 'misc';

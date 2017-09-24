@@ -1,0 +1,18 @@
+/*
+ * Containers and layout
+ */
+.container {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+.container-narrow {
+  max-width: 300px;
+  margin: 0 auto;
+}
+.full-width-breakout {
+  position: relative;
+  width: 100vw;
+  left: 50%;
+  margin-left: -50vw;
+}

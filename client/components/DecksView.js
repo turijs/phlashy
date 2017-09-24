@@ -1,37 +1,66 @@
 import React from 'react';
 import { connect } from 'react-redux';
+
 import FlexibleItemView from './FlexibleItemView';
 import Modal from './Modal';
 import { Link, Redirect } from 'react-router-dom';
-import Tappable from 'react-tappable/lib/Tappable';
 import {LoggedOutOnly} from './auth-conditional';
+import SelectMode from './SelectMode';
+import Pressable from './Pressable';
+import A from './A';
+import Icon from './Icon';
+import Select from 'react-select';
+import RadioBar from './RadioBar';
+
+import renderDate from '../util/render-date';
+
 
 import {
   addDeck, deleteDeck,
   setFilter, clearFilter,
-  setSort,
+  setSort, setViewMode,
   select, deselect,
   beginEdit, cancelEdit
 } from '../actions';
 
-function Deck({id, name, onMouseDown, onClick, onPress, isSelected}) {
+function Deck({
+  id,
+  name,
+  description,
+  created,
+  modified,
+  onMouseDown,
+  onClick,
+  onPress,
+  isSelected
+}) {
   let selClass = isSelected ? 'selected' : '';
   return (
     <Link to={`/decks/${id}`}>
-      <Tappable
+      <Pressable
         className={`deck ${selClass}`}
-        onMouseDown={onMouseDown}
+        onDown={onMouseDown}
         onClick={onClick}
         onPress={onPress}
         pressDelay={600}
       >
         <div className="deck-name">{name}</div>
-      </Tappable>
+        <div className="deck-description">{description}</div>
+        <div className="deck-modified">{renderDate(modified)}</div>
+        <div className="deck-created">{renderDate(created)}</div>
+      </Pressable>
     </Link>
 
   )
 }
+Deck.publicProps = [
+  {value: 'name', label: 'Name'},
+  {value: 'description', label: 'Description'},
+  {value: 'modified', label: 'Date Modified'},
+  {value: 'created', label: 'Date Created'},
+]
 Deck.filterableProps = ['name'];
+Deck.prefix = 'deck';
 
 
 
@@ -117,48 +146,114 @@ class DecksView extends React.Component {
   render() {
     let {
       decks, sortBy, sortDesc, selectedDecks, selectMode, filter, beginEdit, cancelEdit,
-      addDeck, deleteDeck, setFilter, clearFilter, setSort, select, deselect, editing
+      addDeck, deleteDeck, setFilter, clearFilter, setSort, select, deselect, editing,
+      viewMode, setViewMode,
     } = this.props;
 
     // replace ID with deck that it references
     editing = decks[editing] || editing;
 
     return (
-      <div id="decks">
-        <h1>Decks</h1>
+      <div id="decks" className={`flexible-item-manager ${viewMode}`}>
 
-        <input
-          type="text"
-          onChange={e => setFilter(e.target.value)}
-          placeholder="filter by name"
-          style={{padding: 2}}
-        /> &nbsp;
+        <div className="item-manager-header">
+          <div className="container">
+            <h1>Decks</h1>
 
-        Sort:
-        <select value={sortBy} onChange={e => setSort(e.target.value, false)}>
-          <option value="created">Date Created</option>
-          <option value="name">Name</option>
-        </select> &nbsp;
+            <div className="item-view-toolbar">
+              <SelectMode
+                active={selectMode}
+                onClick={e => selectMode ? deselect() : select([])}
+              />
 
-        Select Mode? &nbsp;
-        <input
-          type="checkbox"
-          checked={selectMode}
-          onChange={e => selectMode ? deselect() : select([])}
-        />
+              <input
+                className="input-slim item-filter"
+                type="text"
+                onChange={e => setFilter(e.target.value)}
+                placeholder="filter by name..."
+              />
+
+              <RadioBar
+                value={viewMode}
+                options={[
+                  {value: 'grid', label: <Icon slug="th" alt="Grid"/>},
+                  {value: 'list', label: <Icon slug="list" alt="List" />}
+                ]}
+                onChange={o => setViewMode(o.value)}
+              />
+            </div>
+          </div>
+        </div>
+
+        <div className="item-sort">
+          {viewMode == 'grid' ? (
+            <div className="grid-sort">
+              <Select
+                value={sortBy}
+                options={Deck.publicProps}
+                onChange={o => setSort(o.value, sortDesc)}
+                clearable={false}
+              />
+              <RadioBar
+                value={sortDesc ? 'DESC' : 'ASC'}
+                options={[
+                  {value: 'ASC', label: '↑'},
+                  {value: 'DESC', label: '↓'}
+                ]}
+                onChange={o => setSort(sortBy, o.value == 'DESC')}
+              />
+            </div>
+          ) : (
+            <div className="item-col-headers">
+              {Deck.publicProps.map(prop => {
+                let active = prop.value == sortBy;
+                return (
+                  <div
+                    key={prop.value}
+                    className={`item-col-header ${Deck.prefix}-${prop.value} ${active ? ' active' : ''}`}
+                  >
+                    <A onClick={() => setSort(prop.value, active ? !sortDesc : false)} >
+                      <div className="item-col-header-inner">{prop.label}</div>
+                      {active &&
+                        <Icon sm slug={'chevron-'+(sortDesc ? 'down' : 'up')} />}
+                    </A>
+                  </div>
+                )
+              })}
+            </div>
+          )}
+        </div>
+
+
 
         <FlexibleItemView
           items={decks}
           itemComponent={Deck}
           filter={filter}
           sortBy={sortBy}
+          sortDesc={sortDesc}
           selectedItems={selectedDecks}
           onSelect={select}
           selectMode={selectMode}
+          viewMode={viewMode}
         />
 
-        <button className="btn-stop" disabled={!selectedDecks.length} onClick={this.handleDelete}>Delete</button>
-        <button onClick={() => beginEdit()}>Add</button>
+
+        <div className="actions-bar">
+          <A onClick={() => beginEdit()}>
+            <Icon slug="plus"/>
+            <span className="sr-only">Add Deck</span>
+          </A>
+
+          <A
+            disabled={!selectedDecks.length}
+            onClick={this.handleDelete}
+            className="delete-item"
+          >
+            <Icon slug="trash" />
+            <span className="sr-only">Delete Deck</span>
+          </A>
+        </div>
 
         <EditDeckModal deck={editing} onCancel={cancelEdit} onSave={this.handleSave}/>
 
@@ -177,6 +272,7 @@ function mapStateToProps(state) {
     decks,
     sortBy: state.viewPrefs.sort.decks.by,
     sortDesc: state.viewPrefs.sort.decks.desc,
+    viewMode: state.viewPrefs.mode.decks,
     selectedDecks: state.activeView.selected,
     selectMode: state.activeView.selectMode,
     filter: state.activeView.filter,
@@ -190,7 +286,8 @@ function mapDispatchToProps(dispatch) {
     deleteDeck: (id) => dispatch( deleteDeck(id) ),
     setFilter: (filter) => dispatch( setFilter(filter) ),
     clearFilter: () => dispatch( clearFilter() ),
-    setSort: (by, desc) => dispatch ( setSort('decks', by, desc) ),
+    setSort: (by, desc) => dispatch( setSort('decks', by, desc) ),
+    setViewMode: (mode) => dispatch( setViewMode('decks', mode) ),
     select: (items, e) => dispatch( select(items) ),
     deselect: () => dispatch( deselect() ),
     beginEdit: (id) => dispatch( beginEdit(id) ),

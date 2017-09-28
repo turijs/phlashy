@@ -1,7 +1,8 @@
 import React from 'react';
 
 
-class FormField extends React.Component {
+class LabelledField extends React.Component {
+  // currently only works for <input> form elements
 
   render() {
     let {type, name, value, label, placeHolder, error} = this.props;
@@ -24,4 +25,4 @@ class FormField extends React.Component {
   }
 }
 
-export default FormField;
+export default LabelledField;

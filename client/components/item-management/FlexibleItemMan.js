@@ -1,12 +1,12 @@
 import React from 'react';
 import { connect } from 'react-redux';
 
-
+import FlexibleItemView from './item-management/FlexibleItemView';
 import Modal from './Modal';
 import { Link, Redirect } from 'react-router-dom';
 import {LoggedOutOnly} from './auth-conditional';
+import A from './A';
 
-import FlexibleItemView from './item-management/FlexibleItemView';
 import Deck from './item-management/Deck';
 import DeckEditor from './item-management/DeckEditor';
 import ItemViewToolbar from './item-management/ItemViewToolbar';

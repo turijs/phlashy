@@ -1,8 +1,10 @@
 import {
   LOGIN, LOGOUT, UPDATE_USER,
-  ADD_DECK, ADD_DECK_COMMIT, DELETE_DECK, LOAD_DECKS,
-  REFRESH_SUCCEEDED
+  ADD_DECK, ADD_DECK_COMMIT, UPDATE_DECK, DELETE_DECK, LOAD_DECKS,
+  ADD_CARD, ADD_CARD_COMMIT, UPDATE_CARD, DELETE_CARD,
+  REFRESH_SUCCEEDED,
 } from './actions';
+import { REHYDRATE } from 'redux-persist/constants';
 
 
 function user(state = null, action) {
@@ -23,14 +25,17 @@ function user(state = null, action) {
 function decks(state = null, action) {
   switch(action.type) {
     case ADD_DECK: {
-      let {id, ...data} = action.deckData;
-      return {...state, [id]: data };
+      return {...state, [action.id]: action.deckData};
     }
     case ADD_DECK_COMMIT: {
-      let {id, ...data} = action.deckData;
-      let newState = {...state, [id]: data };
-      if(action.replaceTemp) delete newState[action.replaceTemp];
+      let newState = {...state, [action.id]: action.deckData };
+      if(action.tempId) delete newState[action.tempId];
       return newState;
+    }
+    case UPDATE_DECK: {
+      let {id, deckData: newData} = action;
+      let oldData = state[id];
+      return {...state, [id]: {...oldData, ...newData}};
     }
     case DELETE_DECK: {
       let newState = {...state}
@@ -39,15 +44,78 @@ function decks(state = null, action) {
     }
     case LOAD_DECKS:
     case REFRESH_SUCCEEDED: {
-      let newState = {...state};
+      let newState = {};
       for(let deck of action.decks) {
         let {id, ...data} = deck;
         newState[id] = data;
       }
       return newState;
     }
+    case ADD_CARD:
+    case ADD_CARD_COMMIT:
+    case UPDATE_CARD:
+    case DELETE_CARD: {
+      let id = action.deckId;
+      return {
+        ...state,
+        [id]: {
+          ...state[id],
+          modified: action.date,
+          cards: deckCards(state[id].cards, action)
+        }
+      }
+    }
+    default:
+      return state;
+  }
+}
+
+// sub-reducer for cards list within deck
+function deckCards(state, action) {
+  switch(action.type) {
+    case ADD_CARD:
+      return [...state, action.id];
+    case ADD_CARD_COMMIT: {
+      let newState = [...state, action.id];
+      if(action.tempId)
+        return newState.filter(id => id != action.tempId);
+      return newState;
+    }
+    case DELETE_CARD:
+      return state.filter(id => id != action.id)
+    default: return state;
+  }
+}
 
 
+function cards(state = null, action) {
+  switch(action.type) {
+    case ADD_CARD: {
+      return {...state, [action.id]: action.cardData};
+    }
+    case ADD_CARD_COMMIT: {
+      let newState = {...state, [action.id]: action.cardData };
+      if(action.tempId) delete newState[action.tempId];
+      return newState;
+    }
+    case UPDATE_CARD: {
+      let {id, cardData: newData} = action;
+      let oldData = state[id];
+      return {...state, [id]: {...oldData, ...newData}};
+    }
+    case DELETE_CARD: {
+      let newState = {...state}
+      delete newState[action.id];
+      return newState;
+    }
+    case REFRESH_SUCCEEDED: {
+      let newState = {};
+      for(let card of action.cards) {
+        let {id, ...data} = card;
+        newState[id] = data;
+      }
+      return newState;
+    }
     default:
       return state;
   }
@@ -55,7 +123,7 @@ function decks(state = null, action) {
 
 
 import {
-  SELECT, DESELECT,
+  SELECT, DESELECT, TOGGLE_SELECTING,
   SET_FILTER, CLEAR_FILTER,
   BEGIN_EDIT, CANCEL_EDIT,
 } from './actions';
@@ -63,17 +131,20 @@ import {
 const defaultActiveView = {
   selected: [],
   filter: '',
-  selectMode: false,
-  editingItem: false
+  isSelecting: false,
+  isEditing: false
 }
 
 function activeView(state = defaultActiveView, action) {
   switch(action.type) {
     case SELECT:
-      return {...state, selected: action.items, selectMode: true};
+      return {...state, selected: action.items, isSelecting: true};
 
     case DESELECT:
-      return {...state, selected: [], selectMode: false};
+      return {...state, selected: [], isSelecting: false};
+
+    case TOGGLE_SELECTING:
+      return {...state, selected: [], isSelecting: !state.isSelecting};
 
     case SET_FILTER:
       return {...state, filter: action.filter};
@@ -82,11 +153,11 @@ function activeView(state = defaultActiveView, action) {
       return {...state, filter: ''};
 
     case BEGIN_EDIT:
-      return {...state, editingItem: action.item};
+      return {...state, isEditing: true};
 
     case CANCEL_EDIT:
     case ADD_DECK:
-      return {...state, editingItem: false};
+      return {...state, isEditing: false};
 
 
     default:
@@ -126,8 +197,8 @@ function viewPrefs(state = defaultViewPrefs, action) {
         ...state,
         sort: { ...state.sort, [action.itemType]: action.sort }
       }
-    default:
-      return state;
+    case REHYDRATE: return action.payload.viewPrefs;
+    default: return state;
   }
 }
 
@@ -169,21 +240,26 @@ function outbound(state = [], action) {
 }
 
 
-export default {
+
+import { routerReducer as router } from 'react-router-redux';
+import { combineReducers } from 'redux';
+
+export default combineReducers({
   user,
   decks,
   activeView,
   viewPrefs,
   offline,
   modal,
-  outbound
-}
+  outbound,
+  router
+});
 
 /*
 {
   activeView: {
     selected: [],
-    selectMode: false,
+    isSelecting: false,
     filter: '',
     currentlyEditing
   }

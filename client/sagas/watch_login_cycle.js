@@ -1,5 +1,5 @@
 import { all, call, fork, put, race, take } from 'redux-saga/effects';
-import { LOGIN, LOGOUT, logout } from '../actions';
+import { LOGIN, LOGOUT, SKIP_REHYDRATION, logout } from '../actions';
 import { REHYDRATE } from 'redux-persist/constants';
 import api from '../util/api';
 
@@ -15,11 +15,11 @@ function* subTasks() {
 
 export default function* watchLoginCycle() {
   while(true) {
-    let { willRehydrate } = yield take(LOGIN);
+    let { automatic } = yield take(LOGIN);
 
     // wait for rehydration if necessary
-    if(willRehydrate)
-      yield take(REHYDRATE);
+    if(automatic)
+      yield take([REHYDRATE, SKIP_REHYDRATION]);
 
     try {
       yield race({

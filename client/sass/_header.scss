@@ -9,7 +9,7 @@ $header-height: 66px;
   color: white;
   margin-bottom: 24px;
   height: $header-height;
-  .container { padding-right: 0; }
+  // .container { padding-right: 0; }
 }
 
 #logo, #nav, #user-menu {
@@ -51,6 +51,7 @@ $header-height: 66px;
   position: relative;
   background: $header-bg;
   z-index: 10;
+  margin-right: -24px;
 
   a {
     display: block;
@@ -59,25 +60,28 @@ $header-height: 66px;
     text-decoration: none;
   }
 
-
-  ul {
-    display: none;
-    list-style: none;
+  .popup-menu {
+    background: inherit;
     position: absolute;
     right: 0;
-    background: inherit;
+
+    ul { list-style: none; }
 
     a {
       white-space: nowrap;
       height: auto;
-      padding: 5px 24px;
+      padding: 5px 24px 5px 20px;
     }
+
     li:first-child a { padding-top: 10px; }
     li:last-child a { padding-bottom: 10px; }
   }
 
   &.open {
     background: mix($header-bg, white, 90%);
-    ul { display: block; }
+
+    .popup-link .fa {
+      @extend .fa-chevron-up;
+    }
   }
 }

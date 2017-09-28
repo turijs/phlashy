@@ -40,6 +40,8 @@ export function toJSON(res) {
   return rejectErrors(res).json();
 }
 
+/*=== Helper functions ===*/
+
 function options (method, body = {}) {
   return {
     method,

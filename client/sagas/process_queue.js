@@ -86,8 +86,8 @@ function sendAction(action) {
 function* commitAction(action, res) {
   switch(action.type) {
     case ADD_DECK:
-      let deckData = yield res.json();
-      return yield put.resolve( addDeckCommit(deckData, action.deckData.id) );
+      let {id, ...deckData} = yield res.json();
+      return yield put.resolve( addDeckCommit(id, deckData, action.id) );
 
     default:
       return yield put.resolve( genericActionCommit(action) );

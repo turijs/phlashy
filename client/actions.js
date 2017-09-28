@@ -1,8 +1,8 @@
 import generateTempID from './util/generate-temp-id';
 
 export const LOGIN = 'LOGIN';
-export function login(userData) {
-  return {type: LOGIN, userData}
+export function login(userData, automatic = false) {
+  return {type: LOGIN, userData, automatic}
 }
 
 export const REQUEST_LOGOUT = 'REQUEST_LOGOUT';
@@ -31,8 +31,8 @@ export const ADD_DECK = 'ADD_DECK';
 export function addDeck({name, description}) {
   return {
     type: ADD_DECK,
+    id: generateTempID(),
     deckData: {
-      id: generateTempID(),
       name,
       description,
       created: new Date().toJSON(),
@@ -42,9 +42,22 @@ export function addDeck({name, description}) {
   }
 }
 
+export const UPDATE_DECK = 'UPDATE_DECK';
+export function updateDeck(id, {name, description}) {
+  return {
+    type: UPDATE_DECK,
+    id,
+    deckData: {
+      name,
+      description,
+      modified: new Date().toJSON()
+    }
+  }
+}
+
 export const ADD_DECK_COMMIT = 'ADD_DECK_COMMIT';
-export function addDeckCommit(deckData, replaceTemp = false) {
-  return {type: ADD_DECK_COMMIT, deckData, replaceTemp, shouldDequeueOutbound: true}
+export function addDeckCommit(id, deckData, tempId = false) {
+  return {type: ADD_DECK_COMMIT, id, deckData, tempId, shouldDequeueOutbound: true}
 }
 
 export const DELETE_DECK = 'DELETE_DECK';
@@ -52,15 +65,63 @@ export function deleteDeck(id) {
   return {type: DELETE_DECK, id, outbound: true}
 }
 
-export const FETCH_DECKS = 'FETCH_DECKS';
-export function fetchDecks() {
-  return {type: FETCH_DECKS}
+/*========== Cards ===========*/
+
+// note: all card actions must have a 'date' field, which is
+// used for updating 'date modified' on the corresponding deck
+
+export const ADD_CARD = 'ADD_CARD';
+export function addCard({front, back}, deckId) {
+  let date = new Date().toJSON();
+  return {
+    type: ADD_CARD,
+    id: generateTempID(),
+    deckData: {
+      front,
+      back,
+      created: date,
+      modified: date
+    },
+    deckId,
+    date,
+    // outbound: true
+  }
 }
 
-export const LOAD_DECKS = 'LOAD_DECKS';
-export function loadDecks(decks) {
-  return {type: LOAD_DECKS, decks}
+export const UPDATE_CARD = 'UPDATE_CARD';
+export function updateCard(id, {front, back}, deckId) {
+  let date = new Date().toJSON();
+  return {
+    type: UPDATE_CARD,
+    id,
+    deckData: {
+      front,
+      back,
+      modified: date
+    },
+    deckId,
+    date
+  }
 }
+
+export const ADD_CARD_COMMIT = 'ADD_CARD_COMMIT';
+export function addCardCommit(id, cardData, deckId, tempId = false) {
+  return {
+    type: ADD_CARD_COMMIT,
+    id,
+    cardData,
+    deckId,
+    tempId,
+    date: cardData.modified,
+  /*shouldDequeueOutbound: true*/}
+}
+
+export const DELETE_CARD = 'DELETE_CARD';
+export function deleteCard(id, deckId) {
+  let date = new Date().toJSON();
+  return {type: DELETE_CARD, id, deckId, date, /*outbound: true*/}
+}
+
 
 /*======== Decks & Cards General ========*/
 
@@ -82,8 +143,8 @@ export function refresh_failed() {
 /*====== Active Item View =======*/
 
 export const BEGIN_EDIT = 'BEGIN_EDIT';
-export function beginEdit(item = 'NEW') {
-  return {type: BEGIN_EDIT, item}
+export function beginEdit() {
+  return {type: BEGIN_EDIT}
 }
 
 export const CANCEL_EDIT = 'CANCEL_EDIT';
@@ -100,6 +161,9 @@ export const DESELECT = 'DESELECT';
 export function deselect() {
   return {type: DESELECT}
 }
+
+export const TOGGLE_SELECTING = 'TOGGLE_SELECTING';
+export const toggleSelecting = $basicAC(TOGGLE_SELECTING);
 
 export const SET_FILTER = 'SET_FILTER';
 export function setFilter(filter) {
@@ -153,6 +217,12 @@ export function genericActionFailed(action) {
   }
 }
 
+export const SKIP_REHYDRATION  = 'SKIP_REHYDRATION';
+export function skipRehydration() {
+  return {type: SKIP_REHYDRATION}
+}
+
+
 export const SHOW_MODAL = 'SHOW_MODAL';
 export function showModal(modalName) {
   return {type: SHOW_MODAL, modalName}
@@ -166,4 +236,15 @@ export function hideModal() {
 export const DEQUEUE_OUTBOUND  = 'DEQUEUE_OUTBOUND';
 export function dequeueOutbound() {
   return {type: DEQUEUE_OUTBOUND}
+}
+
+/*===== Helper functions =====*/
+
+function $basicAC(type, ...params) {
+  return (...args) => {
+    let action = {type};
+    for(let i = 0; i < params.length; i++)
+      action[params[i]] = args[i];
+    return action;
+  }
 }

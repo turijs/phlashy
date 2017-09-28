@@ -1,6 +1,6 @@
 import React from 'react';
 
-let lastMouseDown;
+const defaultPressDelay = 600;
 
 class Pressable extends React.Component {
   constructor(props) {
@@ -15,7 +15,7 @@ class Pressable extends React.Component {
   }
 
   handleTouchStart() {
-    let {onPress, pressDelay = 700} = this.props;
+    let {onPress, pressDelay = defaultPressDelay} = this.props;
 
     if(onPress)
       this.pressTimer = setTimeout(this.handlePress, pressDelay);
@@ -27,7 +27,7 @@ class Pressable extends React.Component {
   }
 
   handleMouseDown(e) {
-    let {onDown, onPress, pressDelay = 700} = this.props;
+    let {onDown, onPress, pressDelay = defaultPressDelay} = this.props;
 
     this.press = false;
 

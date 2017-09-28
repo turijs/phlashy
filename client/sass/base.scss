@@ -2,6 +2,7 @@
 
 $select-col: rgb(43,128,255); //rgb(43,96,255);
 $header-bg: rgb(46,66,107);
+$select-col: mix($header-bg, white, 80%);
 $warm-highlight: rgb(224,90,47);
 $standard-br: 3px;
 $light-button: rgb(232,232,229);
@@ -25,9 +26,9 @@ input, textarea {
 }
 
 
+@import 'vendor';
 @import 'layout';
 @import 'header';
-@import 'vendor';
 @import 'controls';
 @import 'item-management/index.scss';
 @import 'misc';

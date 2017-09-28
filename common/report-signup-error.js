@@ -16,6 +16,7 @@ function findSignupError(field, value) {
         return 'Please enter at least 6 characters';
       else
         return false;
+    default: return false;
   }
 }
 

@@ -3,14 +3,13 @@
  */
 $select-input-height: 32px;
 
+@import '~react-select/scss/default';
+
 /*
  * font awesome
  */
 
+@import '~font-awesome/scss/font-awesome';
+
 // extra fa class
 .fa-sm { font-size: 75%; }
-
-
-
-
-@import '../../node_modules/react-select/scss/default';

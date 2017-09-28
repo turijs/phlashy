@@ -22,7 +22,7 @@ export default function* watchRefresh() {
     } catch (e) {
       yield put( refresh_failed() );
       switch(e) {
-        case 'SERVER_ERROR': break;
+        case 'SERVER_ERROR': break; // ignore and continue
         case 'FETCH_FAILED': yield catchOffline(); break;
         default: throw e;
       }

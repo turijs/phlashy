@@ -5,17 +5,16 @@ import { createStore, combineReducers, applyMiddleware, compose } from 'redux';
 import { Provider } from 'react-redux';
 import { ConnectedRouter, routerReducer, routerMiddleware } from 'react-router-redux';
 import createSagaMiddleware from 'redux-saga';
+import localForage from 'localforage';
+import { createPersistor, getStoredState } from 'redux-persist';
 
 import App from './components/App';
-import reducers from './reducers';
+import reducer from './reducers';
 import rootSaga from './sagas';
-import { login } from './actions';
+import { login, skipRehydration } from './actions';
 
-// CSS
-import 'font-awesome/css/font-awesome.css';
-// import 'react-select/dist/react-select.css';
+// styles
 import './sass/base.scss';
-
 
 // init history object for router
 const history = createHistory();
@@ -25,11 +24,9 @@ const sagaMiddleware = createSagaMiddleware();
 
 // redux devTools
 const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
+
 const store = createStore(
-  combineReducers({
-    ...reducers,
-    router: routerReducer
-  }),
+  reducer,
   composeEnhancers(
     applyMiddleware(
       routerMiddleware(history),
@@ -38,17 +35,17 @@ const store = createStore(
   )
 );
 
-// Start the sagas
 sagaMiddleware.run(rootSaga);
 
-// login with preloaded user
-if(window.USER) {
-  store.dispatch( login(window.USER) );
-  delete window.USER;
-}
+// login with preloaded user, BEFORE persistor created
+if(window.USER)
+  store.dispatch( login(USER) );
+
+handlePersistence();
 
 
-// =============================
+// =================================================
+
 ReactDOM.render((
   <Provider store={store}>
     { /* ConnectedRouter will use the store from Provider automatically */ }
@@ -59,3 +56,33 @@ ReactDOM.render((
 ),
   document.getElementById('root')
 );
+
+/*===== Helper functions =====*/
+
+async function handlePersistence() {
+  const persistConfig = {
+    storage: localForage,
+    keyPrefix: 'phlashy:',
+    blacklist: ['router']
+  }
+  // persist the store
+  const persistor = createPersistor(store, persistConfig);
+  persistor.pause();
+
+  // handle rehydration
+  try {
+    if(window.USER) {
+      let state = await getStoredState(persistConfig);
+      if(state.user && state.user.id == window.USER.id)
+        persistor.rehydrate(state);
+      else
+        store.dispatch( skipRehydration() );
+    } else {
+      store.dispatch( skipRehydration() );
+      persistor.purge();
+    }
+  } catch(e) { console.log(e) }
+
+  persistor.resume();
+  delete window.USER;
+}

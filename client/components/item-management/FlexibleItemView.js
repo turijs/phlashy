@@ -11,9 +11,9 @@ class FlexibleItemView extends React.Component {
   }
 
   handleMouseDown(e, id) {
-    let { selectMode, selectedItems, onSelect } = this.props;
+    let { isSelecting, selectedItems, onSelect } = this.props;
 
-    if(!selectMode) return;
+    if(!isSelecting || !onSelect) return;
 
     let newSelected = selectedItems.filter(thisId => thisId != id);
     // if nothing was removed, add instead
@@ -24,18 +24,18 @@ class FlexibleItemView extends React.Component {
   }
 
   handleClick(e, id) {
-    let { onOpen, selectMode } = this.props;
+    let { onOpen, isSelecting } = this.props;
 
-    if(selectMode)
+    if(isSelecting)
       e.preventDefault(); // prevent links from being followed
     else if(onOpen)
       onOpen(id, e);
   }
 
   handlePress(e, id) {
-    let { onSelect, selectMode } = this.props;
+    let { onSelect, isSelecting } = this.props;
 
-    if(!onSelect || selectMode) return;
+    if(!onSelect || isSelecting) return;
 
     onSelect([id], e);
   }
@@ -111,7 +111,7 @@ class FlexibleItemView extends React.Component {
 // sort
 // sortDesc
 // filter
-// selectMode
+// isSelecting
 //
 
 export default FlexibleItemView;

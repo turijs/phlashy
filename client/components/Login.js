@@ -1,5 +1,5 @@
 import React from 'react';
-import FormField from './FormField';
+import ValidForm from './ValidForm';
 import { connect } from 'react-redux';
 import { Redirect } from 'react-router-dom';
 import api from '../util/api';
@@ -9,22 +9,8 @@ import { login } from '../actions';
 class Login extends React.Component {
   constructor(props) {
     super(props);
-
-    this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
-
-    this.state = {
-      values: {
-        email: '',
-        password: ''
-      },
-      errors: {
-        email: '',
-        password: ''
-      },
-      isLoading: false,
-      networkError: false
-    }
+    this.state = {networkError: false};
   }
 
   findError(field, value) {
@@ -36,81 +22,47 @@ class Login extends React.Component {
     }
   }
 
-  handleChange(e) {
-    let {name, value} = e.target;
-    this.setState(prevState => ({
-      values: { ...prevState.values, [name]: value },
-      errors: { ...prevState.errors, [name]: false }
-    }));
-  }
+  async handleSubmit(values) {
+    try {
+      let res = await api.post('/login', values);
 
-  async handleSubmit(e) {
-    e.preventDefault();
-
-    // validate all fields
-    let errors = {};
-    for(let field in this.state.errors)
-      errors[field] = this.findError(field, this.state.values[field]);
-
-    // go ahead with the request if there are no errors
-    if( !errors.email && !errors.password ) {
-      this.setState({isLoading: true});
-
-      try {
-        let res = await api.post('/login', this.state.values);
-        let json = await res.json();
-
+      if(res.status < 500) {
+        let body = await res.json();
         if(res.ok)
-          return this.props.login(json);
-        else if(res.status == 401)
-          errors = {...errors, ...json.errors};
-        else
-          this.setState({
-            networkError: 'Apologies, a server error occurred - please try again'
-          });
-      } catch (e) {
-        console.log(e);
+          this.props.login(body);
+        else // 401
+          return body.errors;
+      } else { // server error
         this.setState({
-          networkError: 'Failed to login - please check your internet connection'
+          networkError: 'Apologies, a server error occurred - please try again'
         });
       }
-
-      this.setState({isLoading: false});
+    } catch (e) {
+      this.setState({
+        networkError: 'Failed to login - please check your internet connection'
+      });
     }
-
-    this.setState({errors});
   }
 
   render() {
-    let {errors, isLoading, networkError} = this.state;
-
     return (
       <div id="login" className="container-narrow">
-        <LoggedInOnly><Redirect to="/" /></LoggedInOnly>
-
         <h1>Login</h1>
 
-        <form noValidate onSubmit={this.handleSubmit} onChange={this.handleChange} >
-          <FormField
-            type="email"
-            name="email"
-            label="Email"
-            error={errors.email}
-          />
-          <FormField
-            type="password"
-            name="password"
-            label="Password"
-            error={errors.password}
-          />
-          <button type="submit">Login</button>
-          {isLoading && <span>loading</span>}
+        <ValidForm
+          onSubmit={this.handleSubmit}
+          findError={this.findError}
+          buttonText="Login"
+          fields={[
+            {type: 'email', name: 'email', label: "Email"},
+            {type: 'password', name: 'password', label: "Password"}
+          ]}
+        />
 
-          {!!networkError &&
-            <div className="error-msg">{networkError}</div>}
-        </form>
+        {!!this.state.networkError &&
+          <div className="error-msg">{this.state.networkError}</div>}
 
-
+        <LoggedInOnly><Redirect to="/"/></LoggedInOnly>
       </div>
     )
   }

@@ -52,4 +52,4 @@ class CardEditor extends React.Component {
   }
 }
 
-export default DeckEditor;
+export default CardEditor;

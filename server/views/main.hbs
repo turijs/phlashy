@@ -5,8 +5,10 @@
     <title>Phlashy</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    {{#if user}}
-      <script type="text/javascript"> window.USER = {{{user}}}; </script>
+    {{#if preloaded}}
+      <script type="text/javascript">
+        window.PRELOADED_STATE = {{{preloaded}}};
+      </script>
     {{/if}}
 
   </head>

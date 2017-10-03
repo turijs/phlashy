@@ -11,7 +11,7 @@ const auth = require('./auth');
 
 const app = express();
 const port = process.env.PORT || 3000;
-const unprotectedRoutes = [
+const publicRoutes = [
   '/', '/login', '/about'
 ];
 
@@ -43,19 +43,40 @@ app.use(session({
 // api route
 app.use('/api', api);
 
-// send main page
+// login checkpoint
+app.get('*', (req, res, next) => {
+  if( auth.loggedIn(req) )
+    next();
+  else if(publicRoutes.includes(req.path))
+    res.render('main');
+  else
+    res.redirect('/login');
+
+}, auth.loadUserID);
+
+// preload user details
+app.get('*', (req, res, next) => {
+  db.getUser(req.userID).then(user => {
+    req.preloadedData = { user };
+    next();
+  }).catch(e => next(e));
+});
+
+// preload specific deck details
+app.get('/decks/:id', (req, res, next) => {
+  db.getDeckBasic(req.userID, req.params.id).then(deck => {
+    req.preloadedData.decks = {[deck.id]: deck};
+    next();
+  }).catch(e => {
+    res.redirect('/decks');
+  });
+});
+
+// final response for logged in users
 app.get('*', (req, res) => {
-  if( auth.loggedIn(req) ) {
-    auth.loadUserID(req);
-    db.getUser(req.userID).then(user => {
-      res.render('main', {user: JSON.stringify(user)});
-    }).catch(e => console.log(e));
-  } else {
-    if(unprotectedRoutes.includes(req.path))
-      res.render('main');
-    else
-      res.redirect('/login');
-  }
+  res.render('main', {
+    preloaded: JSON.stringify(req.preloadedData).replace(/</g, '\\u003c')
+  });
 });
 
 
@@ -64,10 +85,7 @@ app.get('*', (req, res) => {
 
 // Start listening for requests
 // ============================
-db.setupTablesIfNecessary()
-  .then(() => {
-    // db.createCard(1, 2, 'front', 'back').catch(e => console.log(e));
-    // db.getDecks(1).then(decks => console.log(decks));
-    app.listen(port, () => console.log(`listening on port ${ port }`) );
-  })
-  .catch(err => { console.log(err); });
+db.setupTablesIfNecessary().then(() => {
+  // db.createCard(1, 7, 'one', 'uno').then(res => console.log(res))
+  app.listen(port, () => console.log(`listening on port ${ port }`) );
+}).catch(err => console.log(err));

@@ -1,10 +1,6 @@
 import { delay } from 'redux-saga';
 import { fork, put, select } from 'redux-saga/effects';
 import api, { rejectErrors } from '../util/api';
-import {
-  ADD_DECK, DELETE_DECK,
-  addDeckCommit, genericActionCommit, genericActionFailed
-} from '../actions';
 import catchOffline from './util';
 
 /*
@@ -65,17 +61,36 @@ function* handleAction(action) {
   yield failAction(action);
 }
 
+import {
+  ADD_DECK, DELETE_DECK, UPDATE_DECK,
+  ADD_CARD, DELETE_CARD, UPDATE_CARD,
+  addDeckCommit, addCardCommit,
+  genericActionCommit, genericActionFailed
+} from '../actions';
+
 /*
  * Makes the appropriate api request for the provided action
  */
 function sendAction(action) {
   switch (action.type) {
     case ADD_DECK: {
-      let {name, description} = action.deckData;
-      return api.post('/decks', {name, description});
+      return api.post('/decks', action.deckData);
+    }
+    case UPDATE_DECK: {
+      return api.put(`/decks/${action.id}`, action.deckData);
     }
     case DELETE_DECK: {
       return api.delete(`/decks/${action.id}`);
+    }
+    
+    case ADD_CARD: {
+      return api.post('/cards', {...action.cardData, deckId: action.deckId});
+    }
+    case UPDATE_CARD: {
+      return api.put(`/cards/${action.id}`, action.cardData);
+    }
+    case DELETE_CARD: {
+      return api.delete(`/cards/${action.id}?when=${encodeURIComponent(action.date)}`);
     }
   }
 }
@@ -85,10 +100,14 @@ function sendAction(action) {
  */
 function* commitAction(action, res) {
   switch(action.type) {
-    case ADD_DECK:
+    case ADD_DECK: {
       let {id, ...deckData} = yield res.json();
       return yield put.resolve( addDeckCommit(id, deckData, action.id) );
-
+    }
+    case ADD_CARD: {
+      let {id, ...cardData} = yield res.json();
+      return yield put.resolve( addCardCommit(id, cardData, action.deckId, action.id) );
+    }
     default:
       return yield put.resolve( genericActionCommit(action) );
   }

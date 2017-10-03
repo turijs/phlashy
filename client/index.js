@@ -5,12 +5,10 @@ import { createStore, combineReducers, applyMiddleware, compose } from 'redux';
 import { Provider } from 'react-redux';
 import { ConnectedRouter, routerReducer, routerMiddleware } from 'react-router-redux';
 import createSagaMiddleware from 'redux-saga';
-import localForage from 'localforage';
-import { createPersistor, getStoredState } from 'redux-persist';
-
 import App from './components/App';
 import reducer from './reducers';
 import rootSaga from './sagas';
+import handlePersistence from './persistence';
 import { login, skipRehydration } from './actions';
 
 // styles
@@ -25,8 +23,12 @@ const sagaMiddleware = createSagaMiddleware();
 // redux devTools
 const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
 
+const preloadedState = window.PRELOADED_STATE || {};
+delete window.PRELOADED_STATE;
+
 const store = createStore(
   reducer,
+  preloadedState,
   composeEnhancers(
     applyMiddleware(
       routerMiddleware(history),
@@ -37,11 +39,11 @@ const store = createStore(
 
 sagaMiddleware.run(rootSaga);
 
-// login with preloaded user, BEFORE persistor created
-if(window.USER)
-  store.dispatch( login(USER) );
+// // login with preloaded user, BEFORE persistor created
+// if(window.USER)
+//   store.dispatch( login(USER) );
 
-handlePersistence();
+handlePersistence(store);
 
 
 // =================================================
@@ -56,33 +58,3 @@ ReactDOM.render((
 ),
   document.getElementById('root')
 );
-
-/*===== Helper functions =====*/
-
-async function handlePersistence() {
-  const persistConfig = {
-    storage: localForage,
-    keyPrefix: 'phlashy:',
-    blacklist: ['router']
-  }
-  // persist the store
-  const persistor = createPersistor(store, persistConfig);
-  persistor.pause();
-
-  // handle rehydration
-  try {
-    if(window.USER) {
-      let state = await getStoredState(persistConfig);
-      if(state.user && state.user.id == window.USER.id)
-        persistor.rehydrate(state);
-      else
-        store.dispatch( skipRehydration() );
-    } else {
-      store.dispatch( skipRehydration() );
-      persistor.purge();
-    }
-  } catch(e) { console.log(e) }
-
-  persistor.resume();
-  delete window.USER;
-}

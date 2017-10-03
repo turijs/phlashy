@@ -15,11 +15,9 @@ function* subTasks() {
 
 export default function* watchLoginCycle() {
   while(true) {
-    let { automatic } = yield take(LOGIN);
-
-    // wait for rehydration if necessary
-    if(automatic)
-      yield take([REHYDRATE, SKIP_REHYDRATION]);
+    // wait for a login, or if already logged-in,
+    // wait for rehydration stage to complete
+    yield take([LOGIN, REHYDRATE, SKIP_REHYDRATION]);
 
     try {
       yield race({

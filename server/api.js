@@ -18,12 +18,12 @@ api.head('/ping', (req, res) => {
 api.use(bodyParser.json());
 
 // logging
-api.use((req, _, next) => next( console.log(req.body) ));
+api.use((req, _, next) => next( console.log('Req Body:', req.body) ));
 
 /*
  * Login
  */
-api.post('/login', (req, res) => {
+api.post('/login', (req, res, next) => {
   let {email, password} = req.body;
 
   db.authUser(email, password).then(user => {
@@ -35,20 +35,19 @@ api.post('/login', (req, res) => {
       res.status(401).send({
         errors: {password: 'Incorrect password'}
       });
-  }).catch(err => {
-    if(err == 'not found')
+  }).catch(e => {
+    if(e == 'NOT_FOUND')
       res.status(401).send({
         errors: {email: `'${email}' is not registered`}
       });
-    else
-      console.log(err), res.sendStatus(500);
+    else next(e);
   });
 });
 
 /*
  * Create a new user
  */
-api.post('/user', (req, res) => {
+api.post('/user', (req, res, next) => {
   let {nickname, email, password} = req.body;
 
   // initial check for errors
@@ -71,10 +70,7 @@ api.post('/user', (req, res) => {
         res.status(401).send({
           errors: {email: `'${email}' is already associated with an account`}
         })
-      else {
-        console.log(err);
-        res.sendStatus(500);
-      }
+      else next(err);
     });
 });
 
@@ -99,7 +95,8 @@ api.post('/logout', (req, res) => {
 /*
  * Update user details
  */
-api.put('/user', async (req, res) => {
+api.put('/user', async (req, res, next) => {
+  // FIXME: this method is incomplete
   let {oldPassword, newPassword, nickname} = req.body;
   let userID = req.session.userID;
 
@@ -123,73 +120,108 @@ api.delete('/user', (req, res) => {
 /*
  * Create a new deck
  */
-api.post('/decks', async (req, res) => {
-  let {name, description} = req.body;
+api.post('/decks', async (req, res, next) => {
+  let {name, description, created} = req.body;
+  created = maybeDate(created);
   try {
-    let deck = await db.createDeck(req.userID, name, description);
+    let deck = await db.createDeck(req.userID, name, description, created);
     res.status(201).send(deck);
-  } catch(e) {
-    console.log(e);
-    res.sendStatus(500);
-  }
+  } catch(e) { next(e) }
 });
 
-api.put('/decks/:id', (req, res) => {
-
+api.put('/decks/:id', async (req, res, next) => {
+  let {name, description, modified} = req.body;
+  modified = maybeDate(modified);
+  try {
+    let deck = await db.updateDeck(req.userID, req.params.id, name, description, modified);
+    res.send(deck);
+  } catch(e) {
+    if(e == 'NOT_FOUND') res.send('No such deck');
+    else next(e);
+  }
 });
 
 /*
  * Get a list of all decks
  */
-api.get('/decks', async (req, res) => {
+api.get('/decks', async (req, res, next) => {
   try {
     let decks = await db.getDecks(req.userID);
-    res.status(200).send(decks);
-  } catch (e) {
-    console.log(e);
-    res.sendStatus(500);
-  }
-
+    res.send(decks);
+  } catch(e) { next(e) }
 });
 
 /*
  * Delete a deck
  */
-api.delete('/decks/:id', async (req, res) => {
+api.delete('/decks/:id', async (req, res, next) => {
   try {
     await db.deleteDeck(req.userID, req.params.id);
-    res.sendStatus(200)
-  } catch (e) {
-    console.log(e);
-    res.sendStatus(500);
-  }
+    res.sendStatus(200);
+  } catch (e) { next(e) }
 });
 
+//////////////////////////////////////////////
+//                Cards
+//////////////////////////////////////////////
 
 
-api.post('/cards', async (req, res) => {
-  let {front, back, deckID} = req.body;
+/*
+ * Create a new card
+ */
+api.post('/cards', async (req, res, next) => {
+  let {front, back, deckId, created} = req.body;
+  created = maybeDate(created);
   try {
-    let card = await db.createCard(req.userID, deckID, front, back);
-    res.status(201).send(deck);
+    let card = await db.createCard(req.userID, deckId, front, back, created);
+    res.status(201).send(card);
+  } catch(e) { next(e) }
+});
+
+api.put('/cards/:id', async (req, res, next) => {
+  let {front, back, modified} = req.body;
+  modified = maybeDate(modified);
+  try {
+    let card = await db.updateCard(req.userID, req.params.id, front, back, modified);
+    res.send(card);
   } catch(e) {
-    console.log(e), res.sendStatus(500);
+    if(e == 'NOT_FOUND') res.send('No such card');
+    else next(e);
   }
 });
 
-api.put('/cards/:id', (req, res) => {
-
+api.get('/cards', async (req, res, next) => {
+  try {
+    let cards = await db.getCards(req.userID);
+    res.send(cards);
+  } catch(e) { next(e) }
 });
 
-api.get('/cards', (req, res) => {
-
+api.delete('/cards/:id', async (req, res, next) => {
+  let when = maybeDate(req.query.when);
+  console.log(when);
+  try {
+    await db.deleteCard(req.userID, req.params.id, when);
+    res.sendStatus(200);
+  } catch (e) { next(e) }
 });
 
-api.delete('/cards/:id', (req, res) => {
-
+/*==== Error Handling ====*/
+api.use((e, req, res, next) => {
+  console.log(e);
+  res.sendStatus(500);
 });
-
-
-
 
 module.exports = api;
+
+/*==== Helper Functions ====*/
+function maybeDate(d) {
+  if(d) {
+    if( !(d instanceof Date) )
+      d = new Date(d);
+
+    if( !isNaN(d) )
+      return d;
+  }
+  return undefined;
+}

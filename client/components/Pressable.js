@@ -12,16 +12,20 @@ class Pressable extends React.Component {
     this.handlePress = this.handlePress.bind(this);
 
     this.press = false;
+    this.touchStarted = false;
   }
 
   handleTouchStart() {
     let {onPress, pressDelay = defaultPressDelay} = this.props;
+
+    this.touchStarted = true;
 
     if(onPress)
       this.pressTimer = setTimeout(this.handlePress, pressDelay);
   }
 
   resetPressTimer() {
+    if(this.touchStarted) this.touchStarted = false;
     if(this.pressTimer)
       this.pressTimer = clearTimeout(this.pressTimer);
   }
@@ -34,7 +38,7 @@ class Pressable extends React.Component {
     if(onDown)
       onDown(e);
 
-    if(onPress && !this.pressTimer)
+    if(onPress && !this.pressTimer && e.button == 0)
       this.pressTimer = setTimeout(this.handlePress, pressDelay)
   }
 
@@ -72,7 +76,10 @@ class Pressable extends React.Component {
         onTouchStart={this.handleTouchStart}
         onTouchEnd={this.resetPressTimer}
         onTouchMove={this.resetPressTimer}
-        onContextMenu={e => e.preventDefault()}
+        onContextMenu={e => {
+          if(this.touchStarted || this.press)
+            e.preventDefault();
+        }}
         {...rest}
       >
         {children}

@@ -13,7 +13,7 @@ class FlexibleItemView extends React.Component {
   handleMouseDown(e, id) {
     let { isSelecting, selectedItems, onSelect } = this.props;
 
-    if(!isSelecting || !onSelect) return;
+    if(!isSelecting || !onSelect || e.button > 0) return;
 
     let newSelected = selectedItems.filter(thisId => thisId != id);
     // if nothing was removed, add instead
@@ -82,7 +82,6 @@ class FlexibleItemView extends React.Component {
     let {items, itemComponent: ItemComp, onItemClick, selectedItems} = this.props;
 
     items = this.filterAndSortItems(items);
-    // let mapSelected = arrayToMap(selectedItems);
 
     return (
       <div className="flexible-item-view">

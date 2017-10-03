@@ -13,6 +13,7 @@ const config = {
 }
 const pool = new pg.Pool(config);
 
+
 module.exports = {
   /*
    * Create all tables if they don't already exist
@@ -41,8 +42,8 @@ module.exports = {
         ID SERIAL PRIMARY KEY,
         userID integer REFERENCES users (ID) ON DELETE CASCADE,
         deckID integer REFERENCES decks (ID) ON DELETE CASCADE,
-        term text,
-        defn text,
+        front text,
+        back text,
         created timestamptz,
         modified timestamptz
       );
@@ -108,31 +109,32 @@ module.exports = {
   // Deck functions //
   ////////////////////
 
-  createDeck(userID, deckName, description) {
+  createDeck(userID, deckName, description, created = new Date()) {
     return pool.query(`
       INSERT INTO decks (userID, name, description, created, modified)
-      VALUES ($1, $2, $3, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+      VALUES ($1, $2, $3, $4, $4)
       RETURNING ID, name, description, created, modified`,
-      [userID, deckName, description]
-    ).then(res => {
-      return res.rows[0];
-    });
+      [userID, deckName, description, created]
+    ).then(res => res.rows[0]);
   },
-  updateDeck(userID, deckID, newName, newDescription) {
+  updateDeck(userID, deckID, newName, newDescription, modified = new Date()) {
     return pool.query(`
       UPDATE decks SET
-        name = $1,
-        description = $2,
-        modified = CURRENT_TIMESTAMP
-      WHERE ID = $3 AND userID = $4 RETURNING ID`,
-      [newName, newDescription, deckID, userID]
-    ).then(throwIfEmpty);
+        name = $3,
+        description = $4,
+        modified = $5
+      WHERE ID = $2 AND userID = $1
+      RETURNING ID, name, description, created, modified`,
+      [userID, deckID, newName, newDescription, modified]
+    )
+      .then(throwIfEmpty)
+      .then(res => res.rows[0])
   },
   deleteDeck(userID, deckID) {
-    pool.query(
+    return pool.query(
       `DELETE FROM decks WHERE ID = $1 AND userID = $2 RETURNING ID`,
       [deckID, userID]
-    );
+    ).then(res => res.rowCount);
   },
   getDecks(userID) {
     return pool.query(`
@@ -151,51 +153,102 @@ module.exports = {
       return res.rows;
     });
   },
+  getDeckBasic(userID, deckID) {
+    return pool.query(`
+      SELECT ID, name, description
+      FROM decks
+      WHERE userID = $1 AND ID = $2`,
+      [userID, deckID]
+    )
+      .then(throwIfEmpty)
+      .then(res => Object.assign({cards: []}, res.rows[0]));
+  },
 
   /////////////////////
   // Card functions  //
   /////////////////////
 
-  createCard(userID, deckID, term, defn) {
-    return pool.query(
-      `INSERT INTO cards (userID, deckID, term, defn, created, modified)
-       VALUES ($1, $2, $3, $4, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
-       RETURNING ID, term, defn, created, modified`,
-      [userID, deckID, term, defn]
-    ).then(res => {
-      return res.rows[0].id;
+  async createCard(userID, deckID, front, back, created = new Date()) {
+    return transaction(async (query, commit) => {
+      let {rows:[card]} = await query(
+        `INSERT INTO cards (userID, deckID, front, back, created, modified)
+         VALUES ($1, $2, $3, $4, $5, $5)
+         RETURNING ID, front, back, created, modified`,
+        [userID, deckID, front, back, created]
+      );
+      await query(
+        `UPDATE decks SET modified = $3 WHERE ID = $2 AND userID = $1`,
+        [userID, deckID, created]
+      );
+      await commit();
+      return card;
     });
   },
-  updateCard(userID, cardID, newTerm, newDefn) {
-    return pool.query(`
-      UPDATE cards SET
-        term = COALESCE($1, term),
-        defn = COALESCE($2, defn),
-        modified = CURRENT_TIMESTAMP
-      WHERE ID = $3 AND userID = $4 RETURNING ID`,
-      [newTerm, newDefn, cardID, userID]
-    ).then(throwIfEmpty);
+  updateCard(userID, cardID, newFront, newBack, modified = new Date()) {
+    return transaction(async (query, commit) => {
+      let {rows:[card]} = await query(`
+        UPDATE cards SET
+          front = COALESCE($3, front),
+          back = COALESCE($4, back),
+          modified = $5
+        WHERE ID = $2 AND userID = $1
+        RETURNING ID, deckID, front, back, created, modified`,
+        [userID, cardID, newFront, newBack, modified]
+      ).then(throwIfEmpty);
+      await query(
+        `UPDATE decks SET modified = $3 WHERE ID = $2 AND userID = $1`,
+        [userID, card.deckid, modified]
+      );
+      await commit();
+      delete card.deckid;
+      return card;
+    });
   },
-  deleteCard(userID, cardID) {
-    pool.query(
-      `DELETE FROM cards WHERE ID = $1 AND userID = $2 RETURNING ID`,
-      [cardID, userID]
-    ).then(throwIfEmpty);
+  deleteCard(userID, cardID, when = new Date()) {
+    return transaction(async (query, commit) => {
+      let res = await query(
+        `DELETE FROM cards WHERE ID = $1 AND userID = $2
+         RETURNING ID, deckID`,
+        [cardID, userID]
+      );
+      if(res.rowCount > 0) {
+        await query(
+          `UPDATE decks SET modified = $3 WHERE ID = $2 AND userID = $1`,
+          [userID, res.rows[0].deckid, when]
+        );
+      }
+      await commit();
+      return res.rowCount;
+    });
   },
   getCards(userID) {
     return pool.query(
       `SELECT * FROM cards WHERE userID = $1`,
       [userID]
-    ).then(res => {
-      return res.rows;
-    });
+    ).then(res => res.rows);
   }
 }
 
+/*===== Helper Functions =====*/
+
 function throwIfEmpty(res) {
-  if (res.rows.length < 1)
-    throw 'not found';
+  if (res.rowCount < 1)
+    throw 'NOT_FOUND';
   return res;
+}
+
+async function transaction(execute) {
+  let client = await pool.connect();
+  let query = client.query.bind(client);
+  let commit = () => query('COMMIT');
+  let rollback = () => query('ROLLBACK');
+  try {
+    await query('BEGIN');
+    return await execute(query, commit, rollback);
+  } catch(e) {
+    await rollback();
+    throw e;
+  } finally { client.release() }
 }
 
 // CREATE OR REPLACE VIEW decks_v AS

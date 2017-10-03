@@ -1,4 +1,5 @@
 import generateTempID from './util/generate-temp-id';
+import itemListToIdMap from './util/item-list-to-id-map';
 
 export const LOGIN = 'LOGIN';
 export function login(userData, automatic = false) {
@@ -51,7 +52,8 @@ export function updateDeck(id, {name, description}) {
       name,
       description,
       modified: new Date().toJSON()
-    }
+    },
+    outbound: true
   }
 }
 
@@ -76,7 +78,7 @@ export function addCard({front, back}, deckId) {
   return {
     type: ADD_CARD,
     id: generateTempID(),
-    deckData: {
+    cardData: {
       front,
       back,
       created: date,
@@ -84,7 +86,7 @@ export function addCard({front, back}, deckId) {
     },
     deckId,
     date,
-    // outbound: true
+    outbound: true
   }
 }
 
@@ -94,13 +96,14 @@ export function updateCard(id, {front, back}, deckId) {
   return {
     type: UPDATE_CARD,
     id,
-    deckData: {
+    cardData: {
       front,
       back,
       modified: date
     },
     deckId,
-    date
+    date,
+    outbound: true
   }
 }
 
@@ -113,13 +116,14 @@ export function addCardCommit(id, cardData, deckId, tempId = false) {
     deckId,
     tempId,
     date: cardData.modified,
-  /*shouldDequeueOutbound: true*/}
+    shouldDequeueOutbound: true
+  }
 }
 
 export const DELETE_CARD = 'DELETE_CARD';
 export function deleteCard(id, deckId) {
   let date = new Date().toJSON();
-  return {type: DELETE_CARD, id, deckId, date, /*outbound: true*/}
+  return {type: DELETE_CARD, id, deckId, date, outbound: true}
 }
 
 
@@ -132,7 +136,9 @@ export function refresh(auto = false) {
 
 export const REFRESH_SUCCEEDED = 'REFRESH_SUCCEEDED';
 export function refresh_succeeded(decks, cards) {
-  return {type: REFRESH_SUCCEEDED, cards, decks};
+  cards = itemListToIdMap(cards);
+  decks = itemListToIdMap(decks);
+  return { type: REFRESH_SUCCEEDED, cards, decks };
 }
 
 export const REFRESH_FAILED = 'REFRESH_FAILED';
@@ -188,6 +194,10 @@ export const SET_VIEW_MODE = 'SET_VIEW_MODE';
 export function setViewMode(itemType, mode) {
   return {type: SET_VIEW_MODE, itemType, mode}
 }
+
+export const FLIP_CARDS = 'FLIP_CARDS';
+export const flipCards = $basicAC(FLIP_CARDS, 'ids');
+
 
 /*======== Connection ========== */
 

@@ -1,7 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
 
-
 import Modal from './Modal';
 import { Link, Redirect } from 'react-router-dom';
 import {LoggedOutOnly} from './auth-conditional';
@@ -22,7 +21,7 @@ class DecksView extends React.Component {
     // helper functions
     this.handleClose = () => this.setState({ isAdding: false, isEditing: false });
     this.handleAdd = () => this.setState({ isAdding: true });
-    this.handleEdit = () => this.setState({ isEditing: true });
+    this.handleEdit = () => {this.setState({ isEditing: true })};
     this.handleDelete = () => this.props.selectedDecks.forEach(id => props.deleteDeck(id));
 
     this.handleSave = (deckData) => {
@@ -32,7 +31,7 @@ class DecksView extends React.Component {
         this.props.addDeck(deckData);
 
       this.handleClose();
-    }
+    };
   }
 
   render() {

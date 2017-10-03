@@ -16,9 +16,10 @@ export default function* watchRefresh() {
       yield processQueue();
 
       let {cards, decks} = yield all({
-        decks: api.get('/decks').then(toJSON)
+        decks: api.get('/decks').then(toJSON),
+        cards: api.get('/cards').then(toJSON)
       });
-      yield put( refresh_succeeded(decks) );
+      yield put( refresh_succeeded(decks, cards) );
     } catch (e) {
       yield put( refresh_failed() );
       switch(e) {

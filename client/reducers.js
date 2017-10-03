@@ -6,6 +6,8 @@ import {
 } from './actions';
 import { REHYDRATE } from 'redux-persist/constants';
 
+import itemListToIdMap from './util/item-list-to-id-map';
+
 
 function user(state = null, action) {
   switch(action.type) {
@@ -44,12 +46,7 @@ function decks(state = null, action) {
     }
     case LOAD_DECKS:
     case REFRESH_SUCCEEDED: {
-      let newState = {};
-      for(let deck of action.decks) {
-        let {id, ...data} = deck;
-        newState[id] = data;
-      }
-      return newState;
+      return action.decks;
     }
     case ADD_CARD:
     case ADD_CARD_COMMIT:
@@ -88,7 +85,7 @@ function deckCards(state, action) {
 }
 
 
-function cards(state = null, action) {
+function cards(state = {}, action) {
   switch(action.type) {
     case ADD_CARD: {
       return {...state, [action.id]: action.cardData};
@@ -109,15 +106,12 @@ function cards(state = null, action) {
       return newState;
     }
     case REFRESH_SUCCEEDED: {
-      let newState = {};
-      for(let card of action.cards) {
-        let {id, ...data} = card;
-        newState[id] = data;
-      }
-      return newState;
+      return action.cards;
     }
-    default:
-      return state;
+    case REHYDRATE:
+      return action.payload.cards || state;
+
+    default: return state;
   }
 }
 
@@ -126,10 +120,12 @@ import {
   SELECT, DESELECT, TOGGLE_SELECTING,
   SET_FILTER, CLEAR_FILTER,
   BEGIN_EDIT, CANCEL_EDIT,
+  FLIP_CARDS,
 } from './actions';
 
 const defaultActiveView = {
   selected: [],
+  flipped: {},
   filter: '',
   isSelecting: false,
   isEditing: false
@@ -158,6 +154,14 @@ function activeView(state = defaultActiveView, action) {
     case CANCEL_EDIT:
     case ADD_DECK:
       return {...state, isEditing: false};
+
+    case FLIP_CARDS: {
+      let newFlipped = {...state.flipped};
+      for(let id of action.ids)
+        newFlipped[id] = !newFlipped[id];
+      return {...state, flipped: newFlipped}
+    }
+
 
 
     default:
@@ -197,7 +201,9 @@ function viewPrefs(state = defaultViewPrefs, action) {
         ...state,
         sort: { ...state.sort, [action.itemType]: action.sort }
       }
-    case REHYDRATE: return action.payload.viewPrefs;
+    case REHYDRATE:
+      return action.payload.viewPrefs || state;
+
     default: return state;
   }
 }
@@ -247,6 +253,7 @@ import { combineReducers } from 'redux';
 export default combineReducers({
   user,
   decks,
+  cards,
   activeView,
   viewPrefs,
   offline,
@@ -261,7 +268,8 @@ export default combineReducers({
     selected: [],
     isSelecting: false,
     filter: '',
-    currentlyEditing
+    // currentlyEditing
+    flipped: [],
   }
   viewPrefs: {
     sort: {

@@ -13,23 +13,30 @@ function Card({
   onMouseDown,
   onClick,
   onPress,
-  isSelected
+  isSelected,
+  isFlipped
 }) {
   return (
-    <Link to={`/decks/${id}`}>
       <Pressable
-        className={cn('card', {selected: isSelected})}
+        className={cn('card', {selected: isSelected, flipped: isFlipped})}
         onDown={onMouseDown}
         onClick={onClick}
         onPress={onPress}
         pressDelay={600}
       >
-        <div className="card-front">{name}</div>
-        <div className="card-back">{description}</div>
+        <div className="card-front">
+          <div className="card-text-wrap">
+            {front}
+          </div>
+        </div>
+        <div className="card-back">
+          <div className="card-text-wrap">
+            {back}
+          </div>
+        </div>
         <div className="card-modified">{renderDate(modified)}</div>
         <div className="card-created">{renderDate(created)}</div>
       </Pressable>
-    </Link>
   )
 }
 Card.publicProps = [

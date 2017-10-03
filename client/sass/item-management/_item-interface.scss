@@ -8,11 +8,21 @@
   background: white;
   margin-top: -24px;
   border-bottom: 1px solid gray;
+
   // box-shadow: 0 0 20px rgba(0,0,0, .5);
 
   h1 {
+    @extend .container;
+    position: relative;
     padding: 15px 0 5px;
     text-align: center;
+  }
+
+  .deck-return {
+    position: absolute;
+    left: 24px;
+    text-decoration: none;
+    font-size: 120%;
   }
 }
 

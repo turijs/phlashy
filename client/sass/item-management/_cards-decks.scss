@@ -21,10 +21,7 @@
 .deck {
   background: white;
 
-  &.selected {
-    background: $select-col;
-    color: white;
-  }
+
 
   .grid & {
     @include card-basic;
@@ -66,6 +63,11 @@
     .deck-modified {
       display: none;
     }
+
+    &.selected {
+      background: $select-col;
+      color: white;
+    }
   }
 
   .list & {
@@ -76,9 +78,89 @@
 
 }
 
+.card {
+  cursor: pointer;
+
+  .grid & {
+    position: relative;
+    display: inline-block;
+    perspective: 700px;
+
+    width: 210px;
+    height: 260px;
+    margin: 20px;
+
+    font-size: 120%;
+    font-weight: bold;
+    text-align: center;
+
+    .card-front, .card-back {
+      transition: transform .4s;
+      position: absolute;
+      width: 100%; height: 100%;
+      top: 0; left: 0;
+      backface-visibility: hidden;
+
+      box-shadow: 0 0 20px -5px black;
+      background: white;
+      border: 2px solid navy;
+      border-radius: 5px;
+    }
+
+    .card-front {
+      transform: rotateY(0deg);
+      z-index: 2;
+    }
+    .card-back {
+      transform: rotateY(180deg);
+      color: rgb(59,147,126);
+      border-color: rgb(59,147,126);
+    }
+
+    .card-text-wrap {
+      position: absolute;
+      width: 100%;
+      top: 50%;
+      transform: translateY(-50%);
+    }
+
+    &.flipped {
+      .card-front { transform: rotateY(-180deg); }
+      .card-back { transform: rotateY(0deg); }
+    }
+
+    &.selected {
+      .card-front, .card-back {
+        background: $select-col;
+        color: white;
+      }
+    }
+
+    .card-created,
+    .card-modified { display: none; }
+  }
+
+  .list & {
+    @include list-row;
+    background: white;
+
+    &.selected {
+      background: $select-col;
+      color: white;
+    }
+  }
+
+
+}
+
 .list {
   .deck-name { width: 25%; }
   .deck-description { width: 35%; }
   .deck-created { width: 20%; }
   .deck-modified { width: 20%; }
+
+  .card-front { width: 30%; }
+  .card-back { width: 30%; }
+  .card-modified { width: 20%; }
+  .card-created { width: 20%; }
 }

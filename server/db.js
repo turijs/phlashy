@@ -2,16 +2,11 @@ const pg = require('pg');
 const bcrypt = require('bcrypt');
 const SALT_ROUNDS = 10;
 
-const config = {
-  host: process.env.DB_HOST,
-  user: process.env.DB_USER,
-  database: process.env.DB_NAME,
-  password: process.env.DB_PW,
-  port: process.env.DB_PORT,
+const pool = new pg.Pool({
+  connectionString: process.env.DATABASE_URL,
   max: 7, // max number of clients in the pool
   idleTimeoutMillis: 3000,
-}
-const pool = new pg.Pool(config);
+});
 
 
 module.exports = {

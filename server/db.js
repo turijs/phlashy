@@ -14,15 +14,14 @@ module.exports = {
    * Create all tables if they don't already exist
    */
   setupTablesIfNecessary() {
-    let t1 = pool.query(`
+    return pool.query(`
       CREATE TABLE IF NOT EXISTS users (
         ID SERIAL PRIMARY KEY,
         nickname varchar(50),
         email varchar(100) UNIQUE,
         password char(60)
-      )
-    `);
-    let t2 = pool.query(`
+      );
+
       CREATE TABLE IF NOT EXISTS decks (
         ID SERIAL PRIMARY KEY,
         userID integer REFERENCES users (ID) ON DELETE CASCADE,
@@ -31,8 +30,7 @@ module.exports = {
         created timestamptz,
         modified timestamptz
       );
-    `);
-    let t3 = pool.query(`
+
       CREATE TABLE IF NOT EXISTS cards (
         ID SERIAL PRIMARY KEY,
         userID integer REFERENCES users (ID) ON DELETE CASCADE,
@@ -43,8 +41,6 @@ module.exports = {
         modified timestamptz
       );
     `);
-
-    return Promise.all([t1, t2, t3]);
   },
 
   ////////////////////

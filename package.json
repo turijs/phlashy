@@ -6,10 +6,11 @@
     "node": "8.0"
   },
   "scripts": {
-    "start": "webpack && NODE_ENV=production node server/index.js",
+    "start": "NODE_ENV=production node server/index.js",
     "dev": "NODE_ENV=development nodemon --ignore 'client' server/index.js",
     "build": "webpack",
-    "clean": "rm -r client/dist/*"
+    "clean": "rm -r client/dist/*",
+    "heroku-postbuild": "webpack"
   },
   "author": "Turi",
   "license": "GPL-3.0",
@@ -34,9 +35,8 @@
     "react-router-redux": "^5.0.0-alpha.6",
     "react-select": "^1.0.0-rc.10",
     "redux": "^3.7.2",
-    "redux-persist": "^4.10.0"
-  },
-  "devDependencies": {
+    "redux-persist": "^4.10.0",
+
     "babel-core": "^6.25.0",
     "babel-loader": "^7.1.1",
     "babel-plugin-transform-object-rest-spread": "^6.23.0",
@@ -50,7 +50,9 @@
     "resolve-url-loader": "^2.1.0",
     "sass-loader": "^6.0.6",
     "style-loader": "^0.18.2",
-    "webpack": "^3.3.0",
+    "webpack": "^3.3.0"
+  },
+  "devDependencies": {
     "webpack-dev-middleware": "^1.11.0",
     "webpack-hot-middleware": "^2.18.2"
   }

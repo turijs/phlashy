@@ -2,7 +2,7 @@ require('dotenv').config();
 
 const path = require('path');
 const express = require('express');
-const session = require('express-session');
+const sessionMiddleware = require('./session');
 const exphbs = require('express-handlebars');
 
 const db = require('./db');
@@ -34,11 +34,7 @@ if(process.env.NODE_ENV !== 'production') {
 
 app.use('/static', express.static( path.resolve(__dirname, '../client/dist') ));
 
-app.use(session({
-  secret: process.env.APP_SECRET,
-  resave: false,
-  saveUninitialized: false
-}));
+app.use(sessionMiddleware);
 
 // api route
 app.use('/api', api);

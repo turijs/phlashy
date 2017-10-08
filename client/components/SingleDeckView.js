@@ -126,9 +126,9 @@ function mapStateToProps(state, ownProps) {
   return {
     deck,
     cards,
-    sortBy: state.viewPrefs.sort.cards.by,
-    sortDesc: state.viewPrefs.sort.cards.desc,
-    viewMode: state.viewPrefs.mode.cards,
+    sortBy: state.prefs.view.sort.cards.by,
+    sortDesc: state.prefs.view.sort.cards.desc,
+    viewMode: state.prefs.view.mode.cards,
     selectedCards: state.activeView.selected,
     isSelecting: state.activeView.isSelecting,
     filter: state.activeView.filter,

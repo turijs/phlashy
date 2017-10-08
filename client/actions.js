@@ -211,7 +211,55 @@ export function connectionGained() {
   return {type: CONNECTION_GAINED}
 }
 
-/*======== Other ========== */
+/*========= Study ========== */
+
+// hacky way to have STUDY_INIT_CONFIRM inherit args from
+// preceding STUDY_INIT. Avoids adding an otherwise pointless
+// extra field to the store
+var lastStudyInitArgs = {};
+
+export const STUDY_INIT = 'STUDY_INIT';
+export function studyInit({cards, decks}) {
+  lastStudyInitArgs = {cards, decks};
+  return {type: STUDY_INIT, cards, decks};
+}
+
+export const STUDY_INIT_CONFIRM = 'STUDY_INIT_CONFIRM';
+export function studyInitConfirm() {
+  return {type: STUDY_INIT_CONFIRM, ...lastStudyInitArgs};
+}
+
+export const STUDY_BEGIN = 'STUDY_BEGIN';
+export const studyBegin = $basicAC(STUDY_BEGIN);
+
+export const STUDY_GO_BACK = 'STUDY_GO_BACK';
+export const studyGoBack = $basicAC(STUDY_GO_BACK);
+
+export const STUDY_EXIT = 'STUDY_EXIT';
+export const studyExit = $basicAC(STUDY_EXIT);
+
+export const NEXT_CARD = 'NEXT_CARD';
+export const nextCard = $basicAC(NEXT_CARD);
+
+export const PREV_CARD = 'PREV_CARD';
+export const prevCard = $basicAC(PREV_CARD);
+
+export const CARD_KNOWN = 'CARD_KNOWN';
+export const cardKnown = $basicAC(CARD_KNOWN);
+
+export const CARD_UNKNOWN = 'CARD_UNKNOWN';
+export const cardUnknown = $basicAC(CARD_UNKNOWN);
+
+/*========= Study Prefs ========== */
+
+export const TOGGLE_SHUFFLE = 'TOGGLE_SHUFFLE';
+export const toggleShuffle = $basicAC(TOGGLE_SHUFFLE);
+
+export const TOGGLE_STUDY_MODE = 'TOGGLE_STUDY_MODE';
+export const toggleStudyMode = $basicAC(TOGGLE_STUDY_MODE);
+
+
+/*========= Other ========== */
 
 export function genericActionCommit(action) {
   return {

@@ -3,8 +3,10 @@ import {
   NEXT_CARD, PREV_CARD,
   CARD_KNOWN, CARD_UNKNOWN,
 } from '../actions';
+import { REHYDRATE } from 'redux-persist/constants';
 
-const stages = {
+
+export const stages = {
   CHOOSE_SRC: 'CHOOSE_SRC',
   CHOOSE_OPTS: 'CHOOSE_OPTS',
   STUDY: 'STUDY',
@@ -29,7 +31,8 @@ function study(state = defaultStudy, action, fullState) {
       let newSelection = cards ? 'CUSTOM' : decks;
 
       let combinedCards = [];
-      combinedCards.push(...cards);
+      if(cards)
+        combinedCards.push(...cards);
       for(let deckId of decks)
         combinedCards.push(...fullState.decks[deckId].cards);
 
@@ -55,6 +58,9 @@ function study(state = defaultStudy, action, fullState) {
         lastSelectedDecks: state.lastSelectedDecks,
       }
     }
+
+    case REHYDRATE:
+      return action.payload.study || state;
 
     case NEXT_CARD:
     case PREV_CARD:

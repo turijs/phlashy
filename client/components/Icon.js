@@ -1,7 +1,7 @@
 import React from 'react';
 
 const Icon = ({slug, sm, lg, xl, fw, alt, ...rest}) => {
-  let classes = 'fa';
+  let classes = 'icon fa';
   if(slug) classes += ` fa-${slug}`
   if(sm) classes += ' fa-sm';
   if(lg) classes += ' fa-lg';

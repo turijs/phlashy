@@ -163,6 +163,32 @@
   .fa-pencil { font-size: 92%; bottom: 1px; }
 }
 
+.deck-picker {
+  $deck-picker-height: 45px;
+
+  .Select-control {
+    height: $deck-picker-height;
+
+    .Select-value {
+      height: $deck-picker-height - 10;
+    }
+    .Select-value-icon, .Select-value-label {
+      height: 100%;
+      line-height: $deck-picker-height - 14;
+      padding: 0 8px;
+    }
+
+    .Select-value-icon, .Select-clear {
+      font-size: 150%;
+    }
+
+    .Select-placeholder, .Select-input {
+      height: $deck-picker-height;
+      line-height: $deck-picker-height - 2;
+    }
+  }
+}
+
 .deck-editor .modal-window {
   padding-bottom: 10px;
   border: 2px solid navy;

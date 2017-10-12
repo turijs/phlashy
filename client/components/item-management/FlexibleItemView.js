@@ -90,7 +90,7 @@ class FlexibleItemView extends React.Component {
             key={item.id}
             isSelected={selectedItems.includes(item.id)}
             onMouseDown={(e) => this.handleMouseDown(e, item.id)}
-            onClick={(e, isPress) => this.handleClick(e, item.id, isPress)}
+            onClick={(e) => this.handleClick(e, item.id)}
             onPress={(e) => this.handlePress(e, item.id)}
             {...item}
           />

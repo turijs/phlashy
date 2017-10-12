@@ -15,7 +15,12 @@ body {
   font-family: 'Zilla Slab', serif;
 }
 
-a { color: inherit; }
+h2 { text-align: center; }
+
+a {
+  color: inherit;
+  &[disabled] { pointer-events: none; }
+}
 
 input, textarea {
   font-family: inherit;
@@ -25,10 +30,16 @@ input, textarea {
   color: transparent;
 }
 
+@mixin margin-auto {
+  margin-left: auto;
+  margin-right: auto;
+}
+
 
 @import 'vendor';
 @import 'layout';
 @import 'header';
 @import 'controls';
 @import 'item-management/index.scss';
+@import 'study';
 @import 'misc';

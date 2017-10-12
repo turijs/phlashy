@@ -112,12 +112,8 @@ import {
 } from '../actions';
 
 function mapStateToProps(state) {
-  let decks = [];
-  for(let id in state.decks)
-    decks.push({id, ...state.decks[id]});
-
   return {
-    decks,
+    decks: Object.values(state.decks),
     sortBy: state.prefs.view.sort.decks.by,
     sortDesc: state.prefs.view.sort.decks.desc,
     viewMode: state.prefs.view.mode.decks,

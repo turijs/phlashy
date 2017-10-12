@@ -6,7 +6,7 @@ import {
 } from '../actions';
 import { REHYDRATE } from 'redux-persist/constants';
 
-function decks(state = null, action) {
+function decks(state = {}, action) {
   switch(action.type) {
     case ADD_DECK: {
       return {...state, [action.id]: action.deckData};

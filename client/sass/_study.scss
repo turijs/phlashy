@@ -1,0 +1,58 @@
+#study {
+  position: relative;
+  max-width: 1000px;
+  @include margin-auto;
+  min-height: 400px;
+  padding-bottom: 1px; //prevent margin collapse;
+}
+
+.choose-opts {
+  .spacious {font-size: 125%;}
+}
+
+.study-nav-top {
+  text-align: center;
+  > * { display: inline-block; }
+  .progress { margin: 0 16px; }
+}
+
+
+
+.study-card-wrap {
+  position: relative;
+  width: 250px;
+  height: 300px;
+  @include margin-auto;
+
+  .flippable-card, .card-wrap {
+    position: absolute;
+    left: 0;
+    transition: .5s;
+
+    &.curr { z-index: 10; }
+    &.next, &.prev { opacity: 0; }
+    &.prev { transform: translateX(-200%); }
+    &.next { transform: translateX(200%); }
+
+  }
+}
+
+.show-next-card, .show-prev-card {
+  position: absolute;
+  top: 210px;
+  font-size: 40px;
+  &[disabled] { opacity: .3; }
+}
+.show-next-card { right: 0; }
+.show-prev-card { left: 0; }
+
+.study-nav-bottom {
+  position: absolute;
+  width: 100%;
+  top: 100%;
+
+  .study-cards & {
+    text-align: center;
+    button { margin: 0 8px; }
+  }
+}

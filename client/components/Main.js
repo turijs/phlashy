@@ -4,6 +4,7 @@ import Login from './Login';
 import Home from './Home';
 import DecksView from './DecksView';
 import SingleDeckView from './SingleDeckView';
+import Study from './Study';
 
 const Main = () => (
   <div className="container">
@@ -11,6 +12,7 @@ const Main = () => (
     <Route path="/login" component={Login} />
     <Route exact path="/decks" component={DecksView} />
     <Route path="/decks/:id" component={SingleDeckView} />
+    <Route path="/study" component={Study} />
   </div>
 );
 

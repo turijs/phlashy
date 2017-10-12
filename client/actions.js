@@ -238,6 +238,9 @@ export const studyGoBack = $basicAC(STUDY_GO_BACK);
 export const STUDY_EXIT = 'STUDY_EXIT';
 export const studyExit = $basicAC(STUDY_EXIT);
 
+export const STUDY_FINISH_EARLY = 'STUDY_FINISH_EARLY';
+export const studyFinishEarly = $basicAC(STUDY_FINISH_EARLY);
+
 export const NEXT_CARD = 'NEXT_CARD';
 export const nextCard = $basicAC(NEXT_CARD);
 
@@ -255,8 +258,9 @@ export const cardUnknown = $basicAC(CARD_UNKNOWN);
 export const TOGGLE_SHUFFLE = 'TOGGLE_SHUFFLE';
 export const toggleShuffle = $basicAC(TOGGLE_SHUFFLE);
 
-export const TOGGLE_STUDY_MODE = 'TOGGLE_STUDY_MODE';
-export const toggleStudyMode = $basicAC(TOGGLE_STUDY_MODE);
+// study mode refers to front-back vs. back-front
+export const TOGGLE_FRONT_BACK = 'TOGGLE_FRONT_BACK';
+export const toggleFrontBack = $basicAC(TOGGLE_FRONT_BACK);
 
 
 /*========= Other ========== */

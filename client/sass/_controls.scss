@@ -36,6 +36,7 @@ form {
 
 button, .btn {
   display: inline-block;
+  vertical-align: middle;
   font-family: inherit;
   text-decoration: none;
   padding: 8px 18px;
@@ -43,6 +44,7 @@ button, .btn {
   font-size: 16px;
   border-radius: $standard-br;
   cursor: pointer;
+  transition: .2s;
 
   @include button-color(rgb(190,190,190));
 
@@ -50,10 +52,11 @@ button, .btn {
   &[disabled] { opacity: .5; cursor: default; }
 }
 .btn-go { @include button-color(rgb(132,190,48)); }
+.btn-slow { @include button-color(rgb(204,190,0)); }
 .btn-stop { @include button-color(rgb(213,61,33), white);}
 
 .btn-row {
-  text-align: right;
+  // text-align: right;
   button, .btn {
     margin-left: 8px;
     margin-right: 8px;
@@ -64,7 +67,7 @@ button, .btn {
 
 .popup {
   .popup-menu { display: none; }
-  
+
   &.open {
     .popup-menu { display: block; }
   }
@@ -104,6 +107,17 @@ button, .btn {
       border-top-right-radius: 0;
       border-bottom-right-radius: 0;
     }
+  }
+}
+
+.check {
+  width: 25px; height: 25px;
+  font-size: 21px;
+  padding: 0;
+  margin: 0;
+  .icon {
+    position: relative;
+    bottom: 2px; left: 1px;
   }
 }
 

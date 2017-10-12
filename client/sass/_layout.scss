@@ -10,9 +10,22 @@
   max-width: 300px;
   margin: 0 auto;
 }
+.container-med {
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.spacious {
+  margin-top: 50px;
+  margin-bottom: 50px;
+}
+
 .full-width-breakout {
   position: relative;
   width: 100vw;
   left: 50%;
   margin-left: -50vw;
 }
+
+.right { float: right; }
+.left { float: left; }

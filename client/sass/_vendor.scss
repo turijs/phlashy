@@ -3,6 +3,14 @@
  */
 $select-input-height: 32px;
 
+$select-option-focused-color: white;
+$select-option-focused-bg: $select-col;
+$select-option-selected-color: $select-option-focused-color;
+$select-option-selected-bg: $select-option-focused-bg;
+
+$select-item-color: white;
+$select-item-bg: $select-col;
+
 @import '~react-select/scss/default';
 
 /*

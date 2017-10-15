@@ -15,15 +15,17 @@ module.exports = {
    */
   setupTablesIfNecessary() {
     return pool.query(`
+      CREATE SEQUENCE IF NOT EXISTS id_seq;
+
       CREATE TABLE IF NOT EXISTS users (
-        ID SERIAL PRIMARY KEY,
+        ID integer DEFAULT nextval(id_seq) PRIMARY KEY,
         nickname varchar(50),
         email varchar(100) UNIQUE,
         password char(60)
       );
 
       CREATE TABLE IF NOT EXISTS decks (
-        ID SERIAL PRIMARY KEY,
+        ID integer DEFAULT nextval(id_seq) PRIMARY KEY,
         userID integer REFERENCES users (ID) ON DELETE CASCADE,
         name varchar(100),
         description text,
@@ -32,7 +34,7 @@ module.exports = {
       );
 
       CREATE TABLE IF NOT EXISTS cards (
-        ID SERIAL PRIMARY KEY,
+        ID integer DEFAULT nextval(id_seq) PRIMARY KEY,
         userID integer REFERENCES users (ID) ON DELETE CASCADE,
         deckID integer REFERENCES decks (ID) ON DELETE CASCADE,
         front text,

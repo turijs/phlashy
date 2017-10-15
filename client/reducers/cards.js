@@ -38,7 +38,7 @@ function cards(state = {}, action, fullState) {
       let deckId = action.id;
       let cardsToDelete = fullState.decks[deckId].cards;
 
-      for(let id of cards)
+      for(let id of cardsToDelete)
         delete newState[id];
 
       return newState;

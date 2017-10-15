@@ -216,7 +216,8 @@ module.exports = {
   },
   getCards(userID) {
     return pool.query(
-      `SELECT * FROM cards WHERE userID = $1`,
+      `SELECT ID, front, back, created, modified
+       FROM cards WHERE userID = $1`,
       [userID]
     ).then(res => res.rows);
   }

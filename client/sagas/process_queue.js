@@ -82,7 +82,7 @@ function sendAction(action) {
     case DELETE_DECK: {
       return api.delete(`/decks/${action.id}`);
     }
-    
+
     case ADD_CARD: {
       return api.post('/cards', {...action.cardData, deckId: action.deckId});
     }
@@ -101,12 +101,12 @@ function sendAction(action) {
 function* commitAction(action, res) {
   switch(action.type) {
     case ADD_DECK: {
-      let {id, ...deckData} = yield res.json();
-      return yield put.resolve( addDeckCommit(id, deckData, action.id) );
+      let deckData = yield res.json();
+      return yield put.resolve( addDeckCommit(deckData, action.id) );
     }
     case ADD_CARD: {
-      let {id, ...cardData} = yield res.json();
-      return yield put.resolve( addCardCommit(id, cardData, action.deckId, action.id) );
+      let cardData = yield res.json();
+      return yield put.resolve( addCardCommit(cardData, action.deckId, action.id) );
     }
     default:
       return yield put.resolve( genericActionCommit(action) );

@@ -30,16 +30,25 @@ export function updateUser(userData) {
 
 export const ADD_DECK = 'ADD_DECK';
 export function addDeck({name, description}) {
+  let id = generateTempID();
+  let date = new Date().toJSON();
+
   return {
     type: ADD_DECK,
-    id: generateTempID(),
-    deckData: {
-      name,
-      description,
-      created: new Date().toJSON(),
-      modified: new Date().toJSON()
-    },
+    id,
+    deckData: { id, name, description, created: date, modified: date },
     outbound: true
+  }
+}
+
+export const ADD_DECK_COMMIT = 'ADD_DECK_COMMIT';
+export function addDeckCommit(deckData, tempId = false) {
+  return {
+    type: ADD_DECK_COMMIT,
+    id: deckData.id,
+    deckData,
+    tempId,
+    shouldDequeueOutbound: true
   }
 }
 
@@ -48,19 +57,12 @@ export function updateDeck(id, {name, description}) {
   return {
     type: UPDATE_DECK,
     id,
-    deckData: {
-      name,
-      description,
-      modified: new Date().toJSON()
-    },
+    deckData: { name, description, modified: new Date().toJSON() },
     outbound: true
   }
 }
 
-export const ADD_DECK_COMMIT = 'ADD_DECK_COMMIT';
-export function addDeckCommit(id, deckData, tempId = false) {
-  return {type: ADD_DECK_COMMIT, id, deckData, tempId, shouldDequeueOutbound: true}
-}
+
 
 export const DELETE_DECK = 'DELETE_DECK';
 export function deleteDeck(id) {
@@ -74,16 +76,13 @@ export function deleteDeck(id) {
 
 export const ADD_CARD = 'ADD_CARD';
 export function addCard({front, back}, deckId) {
+  let id = generateTempID();
   let date = new Date().toJSON();
+
   return {
     type: ADD_CARD,
     id: generateTempID(),
-    cardData: {
-      front,
-      back,
-      created: date,
-      modified: date
-    },
+    cardData: { id, front, back, created: date, modified: date },
     deckId,
     date,
     outbound: true
@@ -96,11 +95,7 @@ export function updateCard(id, {front, back}, deckId) {
   return {
     type: UPDATE_CARD,
     id,
-    cardData: {
-      front,
-      back,
-      modified: date
-    },
+    cardData: { front, back, modified: date },
     deckId,
     date,
     outbound: true
@@ -108,10 +103,10 @@ export function updateCard(id, {front, back}, deckId) {
 }
 
 export const ADD_CARD_COMMIT = 'ADD_CARD_COMMIT';
-export function addCardCommit(id, cardData, deckId, tempId = false) {
+export function addCardCommit(cardData, deckId, tempId = false) {
   return {
     type: ADD_CARD_COMMIT,
-    id,
+    id: cardData.id,
     cardData,
     deckId,
     tempId,

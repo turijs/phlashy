@@ -3,16 +3,16 @@
  */
 .container {
   max-width: 1280px;
-  margin: 0 auto;
+  @include margin-auto;
   padding: 0 24px;
 }
 .container-narrow {
   max-width: 300px;
-  margin: 0 auto;
+  @include margin-auto;
 }
 .container-med {
   max-width: 600px;
-  margin: 0 auto;
+  @include margin-auto;
 }
 
 .spacious {

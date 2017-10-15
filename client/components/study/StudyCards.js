@@ -3,64 +3,82 @@ import {connect} from 'react-redux';
 import A from '../A';
 import Icon from '../Icon';
 import Progress from '../Progress';
-import FlippableCard from './FlippableCard';
 import Card from '../item-management/Card';
 
-function StudyCards({
-  curCard, prevCard, nextCard,
-  showNextCard, showPrevCard,
-  cardKnown, cardUnknown,
-  exit, finishEarly,
-  progress, isRevisit,
-  backToFront
-}) {
-  let cards = [
-    generateCard(prevCard, 'prev', backToFront),
-    generateCard(curCard, 'curr', backToFront),
-    generateCard(nextCard, 'next', backToFront)
-  ]
 
-  return (
-    <div className="study-cards">
-      <div className="study-nav-top">
-        <A className="study-exit" onClick={exit}>Exit</A>
-        <Progress percent={progress} />
-        <A className="study-finish-early" onClick={finishEarly}>Finish Early</A>
+
+class StudyCards extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {isCurFlipped: props.backToFront}
+    this.handleFlip = () => this.setState({isCurFlipped: !this.state.isCurFlipped});
+  }
+
+  componentWillReceiveProps(next) {
+    if(next.curCard != this.props.curCard)
+      this.setState({isCurFlipped: next.backToFront});
+  }
+
+  render() {
+    let {
+      curCard, prevCard, nextCard,
+      showNextCard, showPrevCard,
+      cardKnown, cardUnknown,
+      exit, finishEarly,
+      progress, isRevisit,
+      backToFront
+    } = this.props;
+
+    let cards = [
+      generateCard(prevCard, 'prev', backToFront),
+      generateCard(curCard, 'curr', this.state.isCurFlipped),
+      generateCard(nextCard, 'next', backToFront)
+    ]
+
+    return (
+      <div className="study-cards">
+        <div className="study-nav-top spacious">
+          <A className="study-exit" onClick={exit}>Exit</A>
+          <Progress percent={progress} />
+          <A className="study-finish-early" onClick={finishEarly}>Finish Early</A>
+        </div>
+
+        <div className="study-card-wrap grid spacious" onClick={this.handleFlip}>
+          {cards}
+        </div>
+
+        <div className="study-nav-bottom centered">
+          <button tabIndex="2" className="btn-slow"
+            onClick={cardUnknown} disabled={isRevisit}>Uh.. no</button>
+          <button tabIndex="1" className="btn-go"
+            onClick={cardKnown} disabled={isRevisit}>Know it!</button>
+        </div>
+
+        <A className="show-prev-card" onClick={showPrevCard} disabled={!prevCard}>
+          <Icon slug="chevron-left" />
+        </A>
+        <A className="show-next-card" onClick={showNextCard} disabled={!isRevisit}>
+          <Icon slug="chevron-right" />
+        </A>
       </div>
-
-      <div className="study-card-wrap grid spacious">
-        {cards}
-      </div>
-
-      <div className="study-nav-bottom">
-        <button tabIndex="2" className="btn-slow" onClick={cardUnknown}>Uhh.. no</button>
-        <button tabIndex="1" className="btn-go" onClick={cardKnown}>Know it</button>
-      </div>
-
-      <A className="show-prev-card" onClick={showPrevCard} disabled={!prevCard}>
-        <Icon slug="chevron-left" />
-      </A>
-      <A className="show-next-card" onClick={showNextCard} disabled={!isRevisit}>
-        <Icon slug="chevron-right" />
-      </A>
-    </div>
-  )
+    )
+  }
 }
 
 
 
 
 function mapState(state) {
-  let {study, cards} = state;
+  let {study} = state;
   let sess = study.session;
   let i = sess.curIndex;
 
   return {
-    curCard: cards[ sess.cards[i] ],
-    prevCard: sess.cards[i-1] && cards[ sess.cards[i-1] ],
-    nextCard: sess.cards[i+1] && cards[ sess.cards[i+1] ],
-    progress: sess.highestIndexReached / sess.cards.length,
-    isRevisit: i < sess.highestIndexReached,
+    curCard: sess.cards[i],
+    prevCard: sess.cards[i-1],
+    nextCard: sess.cards[i+1],
+    progress: 100 * sess.numCompleted / sess.cards.length,
+    isRevisit: i < sess.numCompleted,
     backToFront: state.prefs.study.backToFront
   }
 }
@@ -82,13 +100,10 @@ const mapDispatch =  {
 export default connect(mapState, mapDispatch)(StudyCards);
 
 
-function generateCard(card, clss, initFlipped) {
+function generateCard(card, clss, flipped) {
   return card ? (
-    <FlippableCard
-      {...card}
-      key={card.id}
-      className={clss}
-      initFlipped={initFlipped}
-    />
+    <div className={`card-wrap ${clss}`} key={card.id}>
+      <Card {...card} isFlipped={flipped} />
+    </div>
   ) : null;
 }

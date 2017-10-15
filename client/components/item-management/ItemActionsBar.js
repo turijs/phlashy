@@ -9,7 +9,6 @@ const ItemActionsBar = ({actions, numPrimary}) => {
   let additional = actions.slice(numPrimary);
 
   return (
-    <div className="actions-bar-wrap">
       <div className="actions-bar">
         {primary.map(action => (
           <A
@@ -35,8 +34,7 @@ const ItemActionsBar = ({actions, numPrimary}) => {
             ))}
           </Popup>}
       </div>
-    </div>
-  )
+  );
 };
 
 /*

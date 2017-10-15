@@ -1,11 +1,15 @@
 @import url('https://fonts.googleapis.com/css?family=Zilla+Slab');
 
-$select-col: rgb(43,128,255); //rgb(43,96,255);
 $header-bg: rgb(46,66,107);
-$select-col: mix($header-bg, white, 80%);
+$select-col: mix($header-bg, white, 80%); // rgb(43,128,255); //rgb(43,96,255);
 $warm-highlight: rgb(224,90,47);
 $standard-br: 3px;
+$btn-color: rgb(190,190,190);
 $light-button: rgb(232,232,229);
+
+$stop-col: rgb(213,61,33);
+$go-col: rgb(132,190,48);
+$slow-col: rgb(214,203,45);
 
 * { margin: 0; padding: 0; box-sizing: border-box;}
 

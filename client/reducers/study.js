@@ -5,6 +5,8 @@ import {
 } from '../actions';
 import { REHYDRATE } from 'redux-persist/constants';
 
+import shuffle from '../util/shuffle';
+
 
 export const stages = {
   CHOOSE_SRC: 'CHOOSE_SRC',
@@ -16,35 +18,59 @@ export const stages = {
 const defaultStudy = {
   stage: stages.CHOOSE_SRC,
   session: {
-    cards: null,
+    cards: [],
     curIndex: 0,
-    highestIndexReached: 0,
-    numKnown: 0,
+    numCompleted: 0,
+    unknown: [],
   },
-  lastSelectedDecks: [],
+  source: {
+    cards: null,
+    decks: null
+  },
 }
 
 function study(state = defaultStudy, action, fullState) {
   switch(action.type) {
     case STUDY_INIT: {
-      let {decks, cards} = action;
-      let newSelection = cards ? 'CUSTOM' : decks;
-
-      let combinedCards = [];
-      if(cards)
-        combinedCards.push(...cards);
-      for(let deckId of decks)
-        combinedCards.push(...fullState.decks[deckId].cards);
+      let source = action.source || state.source;
 
       return {
         stage: stages.CHOOSE_OPTS,
-        session: { ...defaultStudy.session, cards: combinedCards },
-        lastSelectedDecks: newSelection,
+        session: defaultStudy.session,
+        source,
       }
     }
 
-    case STUDY_BEGIN:
-      return {...state, stage: stages.STUDY}
+    case STUDY_BEGIN: {
+      let {cards, decks} = state.source;
+      let fullCards = [];
+
+      if(cards) {
+        for(let cardId of cards) {
+          let fullCard = fullState.cards[cardId];
+          if(fullCard)
+            fullCards.push(fullCard);
+        }
+      }
+
+      if(decks) {
+        for(let deckId of decks) {
+          let fullDeck = fullState.decks[deckId];
+          if(fullDeck)
+            fullCards.push(...fullDeck.cards.map(id => fullState.cards[id]))
+        }
+      }
+
+
+      if(fullState.prefs.study.shuffle)
+        shuffle(fullCards)
+
+      return {
+        ...state,
+        session: {...defaultStudy.session, cards: fullCards},
+        stage: stages.STUDY
+      };
+    }
 
     case STUDY_GO_BACK: {
       if(state.stage == stages.CHOOSE_OPTS)
@@ -55,7 +81,7 @@ function study(state = defaultStudy, action, fullState) {
     case STUDY_EXIT: {
       return {
         ...defaultStudy,
-        lastSelectedDecks: state.lastSelectedDecks,
+        source: state.source,
       }
     }
 
@@ -73,14 +99,11 @@ function study(state = defaultStudy, action, fullState) {
   }
   switch(action.type) {
     case NEXT_CARD:
-      if(session.curIndex == session.highestIndexReached) return state;
+      if(session.curIndex == session.numCompleted) return state;
 
       return {
         ...state,
-        session: {
-          ...session,
-          curIndex: session.curIndex + 1,
-        }
+        session: { ...session, curIndex: session.curIndex + 1, }
       };
 
     case PREV_CARD:
@@ -88,44 +111,37 @@ function study(state = defaultStudy, action, fullState) {
 
       return {
         ...state,
-        session: {
-          ...session,
-          curIndex: session.curIndex - 1,
-        }
+        session: { ...session, curIndex: session.curIndex - 1, }
       };
 
-    case CARD_KNOWN: {
-      let newSession = {...session, numKnown: session.numKnown + 1};
-      let newState = {...state, session: newSession};
-
-
-      if(session.curIndex == session.cards.length - 1) {
-        // at the last card
-        newState.stage = stages.SHOW_RESULTS;
-      } else {
-        newSession.highestIndexReached += 1;
-        newSession.curIndex = newSession.highestIndexReached;
-      }
-      return newState;
-    }
-
-    case CARD_UNKNOWN: {
-      let newState = {...state};
-
-      if(session.curIndex == session.cards.length - 1) {
-        newState.stage = stages.SHOW_RESULTS;
-      } else {
-        newState.session = {
-          ...session,
-          highestIndexReached: session.highestIndexReached + 1,
-          curIndex: session.highestIndexReached + 1,
-        }
-      }
-      return newState;
-    }
+    case CARD_KNOWN:
+    case CARD_UNKNOWN:
+      return completeCard(state, action)
 
     default: return state;
   }
 }
 
 export default study;
+
+/*======= Reducer helpers ========*/
+
+function completeCard(state, action) {
+  let {session} = state;
+
+  // ignore these actions user is revisiting a completed card
+  if(session.curIndex != session.numCompleted) return state;
+
+  let newSession = {...session, numCompleted: session.numCompleted + 1};
+  let newState = {...state, session: newSession};
+
+  if(action.type == CARD_UNKNOWN)
+    newSession.unknown = session.unknown.concat(session.cards[session.curIndex].id);
+
+  if(newSession.numCompleted == session.cards.length) // at the last card
+    newState.stage = stages.SHOW_RESULTS;
+  else
+    newSession.curIndex++;
+
+  return newState;
+}

@@ -40,7 +40,7 @@ class CardEditor extends React.Component {
     return (
       <Modal onClickOutside={onCancel} className="card-editor" {...rest}>
         <form onSubmit={this.handleSubmit} onChange={this.handleChange}>
-          <textarea name="front" defaultValue={front} placeholder="Front" />
+          <textarea autoFocus name="front" defaultValue={front} placeholder="Front" />
           <textarea name="back" defaultValue={back} placeholder="Back" />
         </form>
         <div className="btn-row">

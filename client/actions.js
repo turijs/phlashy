@@ -213,21 +213,13 @@ export function connectionGained() {
 
 /*========= Study ========== */
 
-// hacky way to have STUDY_INIT_CONFIRM inherit args from
-// preceding STUDY_INIT. Avoids adding an otherwise pointless
-// extra field to the store
-var lastStudyInitArgs = {};
 
 export const STUDY_INIT = 'STUDY_INIT';
-export function studyInit({cards, decks}) {
-  lastStudyInitArgs = {cards, decks};
-  return {type: STUDY_INIT, cards, decks};
+export function studyInit({cards = null, decks = null} = {}) {
+  let source = (cards || decks) && {cards, decks};
+  return {type: STUDY_INIT, source};
 }
 
-export const STUDY_INIT_CONFIRM = 'STUDY_INIT_CONFIRM';
-export function studyInitConfirm() {
-  return {type: STUDY_INIT_CONFIRM, ...lastStudyInitArgs};
-}
 
 export const STUDY_BEGIN = 'STUDY_BEGIN';
 export const studyBegin = $basicAC(STUDY_BEGIN);

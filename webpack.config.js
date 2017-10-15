@@ -23,8 +23,7 @@ module.exports = {
             ],
             plugins: [
               'transform-object-rest-spread',
-              // 'transform-async-functions',
-              // 'transform-regenerator',
+              'transform-class-properties'
             ]
           }
         }

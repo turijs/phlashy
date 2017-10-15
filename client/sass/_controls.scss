@@ -12,13 +12,13 @@ form {
     font-size: 120%;
     border: 1px solid navy;
     border-radius: $standard-br;
-    &.error { border-color: red; }
+    &.error { border-color: $stop-col; }
   }
   textarea { min-height: 6em}
 }
 
 .error-msg {
-  color: red;
+  color: $stop-col;
   font-size: 90%;
   padding-top: 2px;
 }
@@ -46,17 +46,18 @@ button, .btn {
   cursor: pointer;
   transition: .2s;
 
-  @include button-color(rgb(190,190,190));
+  @include button-color($btn-color);
 
   &:active, &.active { box-shadow: inset 0 3px 10px -5px rgb(0,0,0); }
   &[disabled] { opacity: .5; cursor: default; }
 }
-.btn-go { @include button-color(rgb(132,190,48)); }
-.btn-slow { @include button-color(rgb(204,190,0)); }
-.btn-stop { @include button-color(rgb(213,61,33), white);}
+.btn-go { @include button-color($go-col); }
+.btn-slow { @include button-color($slow-col); }
+.btn-stop { @include button-color($stop-col, white); }
+.btn-dark { @include button-color($header-bg, white); }
 
 .btn-row {
-  // text-align: right;
+  text-align: right;
   button, .btn {
     margin-left: 8px;
     margin-right: 8px;
@@ -118,6 +119,22 @@ button, .btn {
   .icon {
     position: relative;
     bottom: 2px; left: 1px;
+  }
+}
+
+.progress {
+  background: $btn-color;
+  border-radius: $standard-br;
+  height: 10px;
+  min-width: 100px;
+
+  &.thick { height: 30px; }
+
+  .progress-bar {
+    height: 100%;
+    border-radius: inherit;
+    background: $header-bg;
+    transition: width .5s;
   }
 }
 

@@ -84,14 +84,13 @@
 
 /*==== Actions Bar ====*/
 
-.actions-bar-wrap {
+.actions-bar {
   position: fixed;
   bottom: 60px;
-  left: 0; right: 0;
-  text-align: center;
-}
-.actions-bar {
-  display: inline-flex;
+  left: 50%;
+  transform: translateX(-50%);
+
+  display: flex;
   background: $header-bg;
   color: white;
   padding: 17px;

@@ -1,4 +1,5 @@
 import React from 'react';
+import {connect} from 'react-redux';
 import Check from '../Check';
 
 function ChooseOptions({
@@ -17,8 +18,8 @@ function ChooseOptions({
       </div>
 
       <div className="study-nav-bottom">
-        <button onClick={onNext} className="right">
-          Next
+        <button onClick={onNext} className="right btn-go">
+          Begin
         </button>
 
         <button onClick={onBack}>
@@ -30,4 +31,18 @@ function ChooseOptions({
   );
 }
 
-export default ChooseOptions;
+
+import {studyBegin, studyGoBack, toggleShuffle, toggleFrontBack} from '../../actions';
+
+export default connect(
+  state => ({
+    shuffle: state.prefs.study.shuffle,
+    flip: state.prefs.study.backToFront
+  }),
+  {
+    onNext: studyBegin,
+    onBack: studyGoBack,
+    toggleShuffle,
+    toggleFlip: toggleFrontBack
+  }
+)(ChooseOptions);

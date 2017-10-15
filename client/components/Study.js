@@ -4,40 +4,22 @@ import { stages } from '../reducers/study';
 import ChooseSource from './study/ChooseSource';
 import ChooseOptions from './study/ChooseOptions';
 import StudyCards from './study/StudyCards';
+import Results from './study/Results';
 
-function Study({
-  stage,
-  selected,
-  decks,
-  nextCard, prevCard, cardKnown, cardUnknown,
-  studyInit, studyBegin, studyGoBack, studyExit,
-  shuffle, toggleShuffle,
-  backToFront, toggleFrontBack,
-}) {
+function Study({ stage }) {
   let comp;
   switch(stage) {
-    case stages.CHOOSE_SRC: comp =
-      <ChooseSource
-        decks={decks}
-        chosen={selected}
-        onNext={(chosen) => studyInit({decks: chosen})}
-      />;
+    case stages.CHOOSE_SRC:
+      comp = <ChooseSource />;
       break;
-    case stages.CHOOSE_OPTS: comp =
-      <ChooseOptions
-        shuffle={shuffle}
-        toggleShuffle={toggleShuffle}
-        flip={backToFront}
-        toggleFlip={toggleFrontBack}
-        onNext={studyBegin}
-        onBack={studyGoBack}
-      />
+    case stages.CHOOSE_OPTS:
+      comp = <ChooseOptions />
       break;
     case stages.STUDY:
       comp = <StudyCards />;
       break;
     case stages.SHOW_RESULTS:
-
+      comp = <Results />;
   }
   return (
     <div id="study">
@@ -47,27 +29,7 @@ function Study({
   )
 }
 
-function mapState(state) {
-  let {study} = state;
-  return {
-    stage: study.stage,
-    selected: study.lastSelectedDecks,
-    decks: Object.values(state.decks),
-    shuffle: state.prefs.study.shuffle,
-    backToFront: state.prefs.study.backToFront,
-  }
-}
 
-import {
-  nextCard, prevCard, cardKnown, cardUnknown,
-  studyInit, studyBegin, studyGoBack, studyExit,
-  toggleShuffle, toggleFrontBack
-} from '../actions';
-
-const mapDispatch = {
-  nextCard, prevCard, cardKnown, cardUnknown,
-  studyInit, studyBegin, studyGoBack, studyExit,
-  toggleShuffle, toggleFrontBack,
-}
-
-export default connect(mapState, mapDispatch)(Study);
+export default connect(
+  state => ({stage: state.study.stage})
+)(Study);

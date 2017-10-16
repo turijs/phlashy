@@ -36,6 +36,7 @@ class SingleDeckView extends React.Component {
 
   render() {
     let {
+      noSuchDeck,
       deck,
       cards, addCard, updateCard, deleteCard,
       selectedCards, isSelecting, select, toggleSelecting,
@@ -43,9 +44,11 @@ class SingleDeckView extends React.Component {
       filter, setFilter, clearFilter,
       viewMode, setViewMode,
       flip,
+      hasHydrated,
     } = this.props;
-
     let {isEditing, isAdding} = this.state;
+
+    if(noSuchDeck) return <Redirect to="/decks" />
 
     return (
       <div id="cards" className={`flexible-item-manager ${viewMode}`}>
@@ -53,7 +56,7 @@ class SingleDeckView extends React.Component {
         <div className="item-manager-header">
           <h1>
             <Link to="/decks" className="deck-return">&larr;</Link>
-            {deck.name}
+            {deck.name || '...'}
           </h1>
 
           <ItemViewToolbar
@@ -84,6 +87,8 @@ class SingleDeckView extends React.Component {
           isSelecting={isSelecting}
           viewMode={viewMode}
           onOpen={flip}
+          placeholder="This deck is currently empty. Click '+' (below) to add a card"
+          isLoading={!hasHydrated}
         />
 
         <ItemActionsBar
@@ -109,6 +114,14 @@ class SingleDeckView extends React.Component {
   }
 }
 
+const defaultDeck = {
+  name: '...',
+  description: '...',
+  cards: [],
+  created: '...',
+  modified: '...'
+}
+
 import {
   addCard, updateCard, deleteCard,
   setFilter, clearFilter,
@@ -121,11 +134,15 @@ function mapStateToProps(state, ownProps) {
   let deckId = ownProps.match.params.id;
   let deck = state.decks[deckId];
 
+  if(!deck) {
+    if(state.hasHydrated) // assume deck doesn't exist
+      return {noSuchDeck: true};
+    else
+      deck = defaultDeck; // temporary values until real ones are loaded
+  }
+
   let flipped = state.activeView.flipped;
-  let cards = deck ? deck.cards.map(id => ({
-    ...state.cards[id]
-    isFlipped: flipped[id],
-  })) : [];
+  let cards = deck.cards.map(id => ({ ...state.cards[id], isFlipped: flipped[id], }));
 
   return {
     deck,
@@ -136,6 +153,7 @@ function mapStateToProps(state, ownProps) {
     selectedCards: state.activeView.selected,
     isSelecting: state.activeView.isSelecting,
     filter: state.activeView.filter,
+    hasHydrated: state.hasHydrated
   };
 }
 

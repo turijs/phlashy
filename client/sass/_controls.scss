@@ -138,6 +138,13 @@ button, .btn {
   }
 }
 
+.spinner {
+  img {
+    animation: 1s linear 0 spin;
+    animation-iteration-count: infinite;
+  }
+}
+
 .modal-window {
   position: fixed;
   top: 42%; left: 50%;

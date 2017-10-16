@@ -1,4 +1,5 @@
 import React from 'react';
+import Spinner from '../Spinner';
 
 class FlexibleItemView extends React.Component {
   constructor(props) {
@@ -79,13 +80,20 @@ class FlexibleItemView extends React.Component {
   }
 
   render() {
-    let {items, itemComponent: ItemComp, onItemClick, selectedItems} = this.props;
+    let {
+      items,
+      itemComponent: ItemComp,
+      onItemClick,
+      selectedItems,
+      placeholder = 'Nothing to show',
+      isLoading,
+    } = this.props;
 
     items = this.filterAndSortItems(items);
 
     return (
       <div className="flexible-item-view">
-        { items.map(item => (
+        { items.length ? items.map(item => (
           <ItemComp
             key={item.id}
             isSelected={selectedItems.includes(item.id)}
@@ -94,7 +102,11 @@ class FlexibleItemView extends React.Component {
             onPress={(e) => this.handlePress(e, item.id)}
             {...item}
           />
-        )) }
+        )) : (
+          <div className="placeholder">
+            {isLoading ? <Spinner /> : placeholder}
+          </div>
+        ) }
       </div>
     );
   }

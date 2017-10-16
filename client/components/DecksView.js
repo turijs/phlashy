@@ -41,6 +41,7 @@ class DecksView extends React.Component {
       sortBy, sortDesc, setSort,
       filter, setFilter, clearFilter,
       viewMode, setViewMode,
+      hasHydrated,
     } = this.props;
 
     let {isEditing, isAdding} = this.state;
@@ -78,6 +79,8 @@ class DecksView extends React.Component {
           onSelect={select}
           isSelecting={isSelecting}
           viewMode={viewMode}
+          placeholder="You have no decks. Click '+' (below) to create one"
+          isLoading={!hasHydrated}
         />
 
         <ItemActionsBar
@@ -120,7 +123,7 @@ function mapStateToProps(state) {
     selectedDecks: state.activeView.selected,
     isSelecting: state.activeView.isSelecting,
     filter: state.activeView.filter,
-    isEditing: state.activeView.isEditing
+    hasHydrated: state.hasHydrated
   };
 }
 

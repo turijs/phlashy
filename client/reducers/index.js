@@ -7,6 +7,7 @@ import activeView from './active-view';
 import study from './study';
 import prefs from './prefs';
 import offline from './offline';
+import hasHydrated from './has-hydrated';
 import outbound from './outbound';
 import { routerReducer as router } from 'react-router-redux';
 
@@ -18,6 +19,7 @@ export default combineReducers({
   prefs,
   study,
   offline,
+  hasHydrated,
   outbound,
   router
 });

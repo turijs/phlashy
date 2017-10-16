@@ -73,11 +73,18 @@
 
 .flexible-item-view {
   clear: both;
+  padding-top: 1px;
 
   .list & { @extend .full-width-breakout; }
 
-
   .grid & { margin: 0 -15px; }
+
+  .placeholder {
+    @extend .spacious;
+    opacity: .5;
+    text-align: center;
+    font-size: 140%;
+  }
 
   a { text-decoration: none; }
 }

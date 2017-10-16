@@ -4,7 +4,8 @@ import { connect } from 'react-redux';
 import { Redirect } from 'react-router-dom';
 import api from '../util/api';
 import { LoggedInOnly } from './auth-conditional';
-import { login } from '../actions';
+import querystring from 'querystring';
+
 
 class Login extends React.Component {
   constructor(props) {
@@ -38,6 +39,7 @@ class Login extends React.Component {
         });
       }
     } catch (e) {
+      console.log(e);
       this.setState({
         networkError: 'Failed to login - please check your internet connection'
       });
@@ -62,16 +64,14 @@ class Login extends React.Component {
         {!!this.state.networkError &&
           <div className="error-msg">{this.state.networkError}</div>}
 
-        <LoggedInOnly><Redirect to="/"/></LoggedInOnly>
+        <LoggedInOnly>
+          <Redirect to={querystring.parse(this.props.location.search.substring(1)).then || '/'}/>
+        </LoggedInOnly>
       </div>
     )
   }
 }
 
-function matchDispatchToProps(dispatch) {
-  return {
-    login: userData => dispatch( login(userData) )
-  }
-}
+import { login } from '../actions';
 
-export default connect(null, matchDispatchToProps)(Login);
+export default connect(null, {login})(Login);

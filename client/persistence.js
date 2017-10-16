@@ -18,9 +18,9 @@ async function handlePersistence(store) {
   try {
     let { user } = store.getState();
     if(user) {
-      let state = await getStoredState(persistConfig);
-      if(state.user && state.user.id == user.id)
-        persistor.rehydrate(state);
+      let storedState = await getStoredState(persistConfig);
+      if(storedState.user && storedState.user.id == user.id)
+        persistor.rehydrate(storedState);
       else
         store.dispatch( skipRehydration() );
     } else {

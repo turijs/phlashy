@@ -1,6 +1,7 @@
 require('dotenv').config();
 
 const path = require('path');
+const querystring = require('querystring');
 const express = require('express');
 const sessionMiddleware = require('./session');
 const exphbs = require('express-handlebars');
@@ -46,7 +47,7 @@ app.get('*', (req, res, next) => {
   else if(publicRoutes.includes(req.path))
     res.render('main');
   else
-    res.redirect('/login');
+    res.redirect('/login?then=' + querystring.escape(req.path));
 
 }, auth.loadUserID);
 

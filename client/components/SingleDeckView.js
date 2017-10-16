@@ -120,8 +120,12 @@ import {
 function mapStateToProps(state, ownProps) {
   let deckId = ownProps.match.params.id;
   let deck = state.decks[deckId];
+
   let flipped = state.activeView.flipped;
-  let cards = deck.cards.map(id => ({ id, isFlipped: flipped[id], ...state.cards[id] }));
+  let cards = deck ? deck.cards.map(id => ({
+    ...state.cards[id]
+    isFlipped: flipped[id],
+  })) : [];
 
   return {
     deck,
@@ -132,7 +136,6 @@ function mapStateToProps(state, ownProps) {
     selectedCards: state.activeView.selected,
     isSelecting: state.activeView.isSelecting,
     filter: state.activeView.filter,
-    isEditing: state.activeView.isEditing
   };
 }
 

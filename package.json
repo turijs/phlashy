@@ -37,6 +37,7 @@
     "localforage": "^1.5.0",
     "node-sass": "^4.5.3",
     "pg": "^6.4.0",
+    "postcss-loader": "^2.0.8",
     "react": "^15.6.1",
     "react-dom": "^15.6.1",
     "react-onclickoutside": "^6.4.0",

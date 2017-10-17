@@ -1,5 +1,6 @@
-var temp = 1;
+// var temp = 1;
+import shortid from 'shortid';
 
 export default function generateTempID() {
-  return `temp_${temp++}`;
+  return shortid.generate();
 }

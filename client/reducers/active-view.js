@@ -3,6 +3,7 @@ import {
   SET_FILTER, CLEAR_FILTER,
   BEGIN_EDIT, CANCEL_EDIT,
   FLIP_CARDS,
+  ADD_DECK_COMMIT, ADD_CARD_COMMIT
 } from '../actions';
 
 const defaultActiveView = {
@@ -35,6 +36,17 @@ function activeView(state = defaultActiveView, action) {
         newFlipped[id] = !newFlipped[id];
       return {...state, flipped: newFlipped}
     }
+
+    // resolve IDs
+    case ADD_DECK_COMMIT:
+    case ADD_CARD_COMMIT: {
+      let {flipped, selected} = state;
+      let newSelected = selected.map(id => id === action.tempId ? action.id : id);
+      let newFlipped = flipped[action.tempId] ? {...state.flipped, [action.id]: true} : flipped;
+      return {...state, flipped: newFlipped, selected: newSelected};
+    }
+
+
 
     default:
       return state;

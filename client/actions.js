@@ -210,8 +210,11 @@ export function connectionGained() {
 
 
 export const STUDY_INIT = 'STUDY_INIT';
-export function studyInit({cards = null, decks = null} = {}) {
-  let source = (cards || decks) && {cards, decks};
+export function studyInit(source) {
+  if(source) {
+    source.cards = source.cards || [];
+    source.decks = source.decks || [];
+  }
   return {type: STUDY_INIT, source};
 }
 

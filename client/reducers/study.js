@@ -2,6 +2,7 @@ import {
   STUDY_INIT, STUDY_BEGIN, STUDY_GO_BACK, STUDY_EXIT,
   NEXT_CARD, PREV_CARD,
   CARD_KNOWN, CARD_UNKNOWN,
+  ADD_DECK_COMMIT, ADD_CARD_COMMIT,
 } from '../actions';
 import { REHYDRATE } from 'redux-persist/constants';
 
@@ -24,8 +25,8 @@ const defaultStudy = {
     unknown: [],
   },
   source: {
-    cards: null,
-    decks: null
+    cards: [],
+    decks: []
   },
 }
 
@@ -85,18 +86,43 @@ function study(state = defaultStudy, action, fullState) {
       }
     }
 
-    case REHYDRATE:
-      return action.payload.study || state;
-
     case NEXT_CARD:
     case PREV_CARD:
     case CARD_KNOWN:
     case CARD_UNKNOWN:
-      if(state.stage != stages.STUDY)
-        return state;
-      var {session} = state;
-      // continue to next switch
+      return shiftCard(state, action);
+
+    case REHYDRATE:
+      return action.payload.study || state;
+
+    case ADD_DECK_COMMIT:
+      return {...state, source: {
+        ...state.source,
+        decks: state.source.decks.map(id => id === action.tempId ? action.id : id)
+      }};
+
+    case ADD_CARD_COMMIT:
+      return {...state, source: {
+        ...state.source,
+        cards: state.source.cards.map(id => id === action.tempId ? action.id : id)
+      }};
+
+
+    default: return state;
   }
+}
+
+
+export default study;
+
+/*======= Reducer helpers ========*/
+
+function shiftCard(state, action) {
+  if(state.stage != stages.STUDY)
+    return state;
+
+  let {session} = state;
+
   switch(action.type) {
     case NEXT_CARD:
       if(session.curIndex == session.numCompleted) return state;
@@ -117,14 +143,8 @@ function study(state = defaultStudy, action, fullState) {
     case CARD_KNOWN:
     case CARD_UNKNOWN:
       return completeCard(state, action)
-
-    default: return state;
   }
 }
-
-export default study;
-
-/*======= Reducer helpers ========*/
 
 function completeCard(state, action) {
   let {session} = state;

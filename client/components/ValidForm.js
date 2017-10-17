@@ -1,5 +1,6 @@
 import React from 'react';
 import LabelledField from './LabelledField';
+import AsyncButton from './AsyncButton';
 
 class ValidForm extends React.Component {
   constructor(props) {
@@ -93,8 +94,9 @@ class ValidForm extends React.Component {
           />
         ))}
 
-        <button className={buttonClass} type="submit">{buttonText}</button>
-        {isLoading && <span>loading</span>}
+        <AsyncButton className={buttonClass} type="submit" loading={isLoading}>
+          {buttonText}
+        </AsyncButton>
       </form>
     );
   }

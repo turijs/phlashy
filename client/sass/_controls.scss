@@ -139,7 +139,11 @@ button, .btn {
 }
 
 .spinner {
+
   img {
+    display: inline-block;
+    vertical-align: middle;
+    margin-left: 3px;
     animation: 1s linear 0 spin;
     animation-iteration-count: infinite;
   }

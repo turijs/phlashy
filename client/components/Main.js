@@ -5,6 +5,7 @@ import Home from './Home';
 import DecksView from './DecksView';
 import SingleDeckView from './SingleDeckView';
 import Study from './Study';
+import About from './About';
 
 const Main = () => (
   <div className="container">
@@ -13,6 +14,7 @@ const Main = () => (
     <Route exact path="/decks" component={DecksView} />
     <Route path="/decks/:id" component={SingleDeckView} />
     <Route path="/study" component={Study} />
+    <Route path="/about" component={About} />
   </div>
 );
 

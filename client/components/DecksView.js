@@ -72,6 +72,7 @@ class DecksView extends React.Component {
         <FlexibleItemView
           items={decks}
           itemComponent={Deck}
+          getItemProp={getDeckProp}
           filter={filter}
           sortBy={sortBy}
           sortDesc={sortDesc}
@@ -145,3 +146,9 @@ function mapDispatchToProps(dispatch) {
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(DecksView);
+
+function getDeckProp(deck, prop) {
+  if(prop == 'size')
+    return deck.cards.length;
+  else return deck[prop];
+}

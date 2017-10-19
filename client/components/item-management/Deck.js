@@ -10,6 +10,7 @@ function Deck({
   description,
   created,
   modified,
+  cards,
   onMouseDown,
   onClick,
   onPress,
@@ -26,6 +27,8 @@ function Deck({
       >
         <div className="deck-name">{name}</div>
         <div className="deck-description">{description}</div>
+        <div className="deck-size">{cards.length}</div>
+
         <div className="deck-modified">{renderDate(modified)}</div>
         <div className="deck-created">{renderDate(created)}</div>
       </Pressable>
@@ -35,6 +38,7 @@ function Deck({
 Deck.publicProps = [
   {value: 'name', label: 'Name'},
   {value: 'description', label: 'Description'},
+  {value: 'size', label: 'Size'},
   {value: 'modified', label: 'Date Modified'},
   {value: 'created', label: 'Date Created'},
 ]

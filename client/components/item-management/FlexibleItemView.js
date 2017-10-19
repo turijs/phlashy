@@ -43,10 +43,11 @@ class FlexibleItemView extends React.Component {
 
   filterAndSortItems(items) {
     let {
-      sortBy = 'created',
-      sortDesc = false,
-      filter = '',
-      itemComponent: ItemComp
+      sortBy,
+      sortDesc,
+      filter,
+      itemComponent: ItemComp,
+      getItemProp,
     } = this.props;
 
     // NOTE: ItemComp should have properties filterableProps (and sortableProps?)
@@ -58,7 +59,7 @@ class FlexibleItemView extends React.Component {
     // do filtering
     let filteredItems = items.filter(item => {
       for(let prop of ItemComp.filterableProps)
-        if(item[prop].toLowerCase().includes(filter))
+        if(getItemProp(item, prop).toLowerCase().includes(filter))
           return true;
 
       return false;
@@ -66,9 +67,9 @@ class FlexibleItemView extends React.Component {
 
     // do sorting
     let sortedItems = filteredItems.sort((a, b) => {
-      a = a[sortBy], b = b[sortBy];
+      a = getItemProp(a, sortBy), b = getItemProp(b, sortBy);
       if(typeof a == 'string')
-        a = a.toLowerCase(), b = b.toLowerCase();
+        a = a.toUpperCase(), b = b.toUpperCase();
 
       return a < b ? -1 : +(a != b);
     });
@@ -112,14 +113,25 @@ class FlexibleItemView extends React.Component {
   }
 }
 
+FlexibleItemView.defaultProps = {
+  filter: '',
+  placeholder: 'Nothing to show',
+  sortBy: 'created',
+  sortDesc: false,
+  isLoading: false,
+  isSelecting: false,
+  getItemProp: (item, prop) => item[prop]
+}
+
 //props:
 // itemComponent,
 // items[],
+// getItemProp
 // selectedItems,
 // flippedItems
 // onSelect
 // onOpen
-// sort
+// sortBy
 // sortDesc
 // filter
 // isSelecting

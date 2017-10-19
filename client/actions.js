@@ -36,7 +36,7 @@ export function addDeck({name, description}) {
   return {
     type: ADD_DECK,
     id,
-    deckData: { id, name, description, created: date, modified: date },
+    deckData: { id, name, description, created: date, modified: date, cards: [] },
     outbound: true
   }
 }
@@ -46,7 +46,7 @@ export function addDeckCommit(deckData, tempId = false) {
   return {
     type: ADD_DECK_COMMIT,
     id: deckData.id,
-    deckData,
+    deckData: {cards: [], ...deckData},
     tempId,
     shouldDequeueOutbound: true
   }

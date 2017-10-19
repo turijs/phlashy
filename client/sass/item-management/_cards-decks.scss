@@ -60,7 +60,8 @@
 
     .deck-description,
     .deck-created,
-    .deck-modified {
+    .deck-modified,
+    .deck-size {
       display: none;
     }
 
@@ -165,10 +166,11 @@ $flip-speed: .4s;
 }
 
 .list {
-  .deck-name { width: 25%; }
-  .deck-description { width: 35%; }
-  .deck-created { width: 20%; }
-  .deck-modified { width: 20%; }
+  .deck-name { width: 23%; }
+  .deck-description { width: 31%; }
+  .deck-size { width: 12%; }
+  .deck-created { width: 17%; }
+  .deck-modified { width: 17%; }
 
   .card-front { width: 30%; }
   .card-back { width: 30%; }

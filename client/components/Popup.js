@@ -19,6 +19,11 @@ class Popup extends React.Component {
     this.setState({open: false});
   }
 
+  handleMenuClick = () => {
+    if(this.props.closeOnMenuClick)
+      this.toggle();
+  }
+
   render() {
     let {children, label, title, className, id} = this.props;
     let {open} = this.state;
@@ -28,13 +33,17 @@ class Popup extends React.Component {
         <A className="popup-link" onClick={this.toggle} title={title}>
           {label}
         </A>
-        <div className="popup-menu">
+        <div className="popup-menu" onClick={this.handleMenuClick}>
           {children}
         </div>
       </div>
     );
   }
 
+}
+
+Popup.defaultProps = {
+  closeOnMenuClick: false,
 }
 
 export default onClickOutside(Popup);

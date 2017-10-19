@@ -6,6 +6,7 @@ import DecksView from './DecksView';
 import SingleDeckView from './SingleDeckView';
 import Study from './Study';
 import About from './About';
+import Profile from './Profile';
 
 const Main = () => (
   <div className="container">
@@ -15,6 +16,7 @@ const Main = () => (
     <Route path="/decks/:id" component={SingleDeckView} />
     <Route path="/study" component={Study} />
     <Route path="/about" component={About} />
+    <Route path="/profile" component={Profile} />
   </div>
 );
 

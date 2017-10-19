@@ -56,11 +56,12 @@ input, textarea {
   margin-right: auto;
 }
 
-@import "animations";
+@import 'animations';
 @import 'vendor';
 @import 'layout';
 @import 'header';
 @import 'controls';
 @import 'item-management/index.scss';
 @import 'study';
+@import 'profile';
 @import 'misc';

@@ -55,6 +55,7 @@ const AccountNav = ({user, logout}) => {
       <Popup
         id="user-menu"
         label={<span>{user.nickname} <Icon sm slug="chevron-down"/></span>}
+        closeOnMenuClick
       >
         <ul>
           <li><SmartLink to="/profile"><Icon fw slug="user"/> Profile</SmartLink></li>
@@ -63,7 +64,10 @@ const AccountNav = ({user, logout}) => {
       </Popup>
     );
   else
-    content = <SmartLink className="btn" to="/login">Login</SmartLink>;
+    content = <span className="btn-row">
+      <SmartLink className="btn" to="/login">Login</SmartLink>
+      <SmartLink className="btn btn-go" to="/">Sign Up</SmartLink>
+    </span>;
 
   return <div id="account-nav">{content}</div>;
 }

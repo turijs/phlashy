@@ -85,3 +85,33 @@ $header-height: 66px;
     }
   }
 }
+
+@media (max-width: 510px) {
+  $logo-height: 55px;
+  $nav-height: 48px;
+  #header {
+    height: $logo-height + $nav-height;
+  }
+
+  #logo {
+    display: block;
+    text-align: center;
+    margin-right: 0;
+    height: $logo-height;
+  }
+
+  #nav, #account-nav {
+    a:not(.btn) {
+      height: $nav-height;
+      padding-top: 11px;
+    }
+    .btn { margin-top: 3px; margin-bottom: 0; }
+  }
+
+}
+
+@media (max-width: 350px) {
+  #header .container { padding: 0; }
+  #user-menu { margin: 0; }
+  #account-nav .btn-row { margin-right: 16px; }
+}

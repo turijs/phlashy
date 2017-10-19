@@ -29,3 +29,7 @@
 
 .right { float: right; }
 .left { float: left; }
+
+@media (max-width: 350px) {
+  .container { padding: 0 16px; }
+}

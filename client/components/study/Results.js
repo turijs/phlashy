@@ -22,7 +22,9 @@ function Results({
 
       <div className="study-nav-bottom centered">
         <button onClick={repeatAll}>Repeat All Cards</button>
-        <button onClick={repeatUnknown}>Repeat The Cards I Didn't Know</button>
+        {knownCount < cardCount &&
+          <button onClick={repeatUnknown} > Repeat The Cards I Didn't Know </button>
+        }
         <button onClick={exit} className="btn-dark">Done</button>
       </div>
 

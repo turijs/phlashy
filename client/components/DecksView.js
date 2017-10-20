@@ -61,28 +61,31 @@ class DecksView extends React.Component {
           />
         </div>
 
-        <ItemSorter
-          viewMode={viewMode}
-          sortBy={sortBy}
-          sortDesc={sortDesc}
-          onSetSort={setSort}
-          Item={Deck}
-        />
+        <div className="list-wrap">
+          <ItemSorter
+            viewMode={viewMode}
+            sortBy={sortBy}
+            sortDesc={sortDesc}
+            onSetSort={setSort}
+            Item={Deck}
+          />
 
-        <FlexibleItemView
-          items={decks}
-          itemComponent={Deck}
-          getItemProp={getDeckProp}
-          filter={filter}
-          sortBy={sortBy}
-          sortDesc={sortDesc}
-          selectedItems={selectedDecks}
-          onSelect={select}
-          isSelecting={isSelecting}
-          viewMode={viewMode}
-          placeholder="You have no decks. Click '+' (below) to create one"
-          isLoading={!hasHydrated}
-        />
+          <FlexibleItemView
+            items={decks}
+            itemComponent={Deck}
+            getItemProp={getDeckProp}
+            filter={filter}
+            sortBy={sortBy}
+            sortDesc={sortDesc}
+            selectedItems={selectedDecks}
+            onSelect={select}
+            isSelecting={isSelecting}
+            viewMode={viewMode}
+            placeholder="You have no decks. Click '+' (below) to create one"
+            isLoading={!hasHydrated}
+          />
+        </div>
+
 
         <ItemActionsBar
           actions={[

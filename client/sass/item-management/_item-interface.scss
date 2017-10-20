@@ -15,6 +15,7 @@
     @extend .container;
     position: relative;
     padding: 15px 0 5px;
+    margin: 0;
     text-align: center;
   }
 
@@ -31,13 +32,30 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding-bottom: 10px;
+  .item-filter { width: 50%; max-width: 400px; }
+
+  @media (max-width: 500px) {
+    flex-wrap: wrap;
+    .item-filter {
+      order: 3;
+      width: 100%; max-width: none;
+      margin-bottom: 14px;
+    }
+  }
+}
+
+.list .list-wrap {
+  @extend .full-width-breakout;
+  overflow: auto;
+  .item-col-headers, .flexible-item-view {
+    min-width: 600px;
+  }
 }
 
 .item-sort {
   .grid & {
     float: right;
-    margin-top: 20px;
+    margin-top: 16px;
   }
 
   .grid-sort {
@@ -49,7 +67,6 @@
   }
 }
 .item-col-headers {
-  @extend .full-width-breakout;
   @include list-row;
 
   background: $light-button;
@@ -74,8 +91,6 @@
 .flexible-item-view {
   clear: both;
   padding-top: 1px;
-
-  .list & { @extend .full-width-breakout; }
 
   .grid & { margin: 0 -15px; }
 
@@ -102,7 +117,7 @@
   color: white;
   padding: 17px;
   border-radius: 40px;
-  font-size: 220%;
+  font-size: 190%;
   box-shadow: 0 0 20px rgba(0,0,0, .5);
 
   .popup {

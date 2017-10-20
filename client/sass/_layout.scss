@@ -1,19 +1,27 @@
 /*
  * Containers and layout
  */
+
+#app { overflow-x: hidden; }
+
 .container {
   max-width: 1280px;
   @include margin-auto;
   padding: 0 24px;
 }
-.container-narrow {
-  max-width: 300px;
-  @include margin-auto;
-}
 .container-med {
   max-width: 600px;
   @include margin-auto;
 }
+.container-narrow {
+  max-width: 300px;
+  @include margin-auto;
+}
+.container-twig {
+  max-width: 240px;
+  @include margin-auto;
+}
+
 
 .spacious {
   margin-top: 50px;

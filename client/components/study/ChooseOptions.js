@@ -10,12 +10,16 @@ function ChooseOptions({
   return (
     <div className="choose-opts">
       <h2>Choose Study Options</h2>
-      <div className="spacious container-narrow">
-        <Check on={shuffle} onClick={toggleShuffle}/> &nbsp; Shuffle Cards
+
+      <div className="container-twig">
+        <div className="spacious">
+          <Check on={shuffle} onClick={toggleShuffle}/> &nbsp; Shuffle Cards
+        </div>
+        <div className="spacious">
+          <Check on={flip} onClick={toggleFlip}/> &nbsp; Flip Cards
+        </div>
       </div>
-      <div className="spacious container-narrow">
-        <Check on={flip} onClick={toggleFlip}/> &nbsp; Flip Cards
-      </div>
+
 
       <div className="study-nav-bottom">
         <button onClick={onNext} className="right btn-go">

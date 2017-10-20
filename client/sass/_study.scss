@@ -2,14 +2,14 @@
   position: relative;
   max-width: 1000px;
   @include margin-auto;
-  min-height: 300px;
-  padding-bottom: 1px; //prevent margin collapse;
+  min-height: 400px;
+  padding-bottom: 40px; // space for bottom nav;
 }
 
 .study-nav-bottom {
   position: absolute;
   width: 100%;
-  top: 100%;
+  bottom: 0;
 
   &.centered {
     text-align: center;
@@ -18,16 +18,34 @@
 }
 
 .choose-opts {
-  .spacious {font-size: 125%;}
+  .spacious {
+    font-size: 125%;
+  }
 }
 
 .study-cards {
   .study-nav-top {
-    text-align: center;
-    > * { display: inline-block; text-decoration: none; }
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    a { text-decoration: none; }
+
     .progress { margin: 0 16px; width: 60%; }
+    // .study-exit, .study-finish-early { width: 110px; }
     .study-exit { color: $stop-col; }
     .study-finish-early { color: black; }
+
+    @media ( max-width: 550px ) {
+      justify-content: space-between;
+      flex-wrap: wrap;
+      .progress {
+        order: 3;
+        width: 100%;
+        margin: 5px 0 0 0;
+      }
+    }
   }
 
   .study-card-wrap {
@@ -51,7 +69,7 @@
 
   .show-next-card, .show-prev-card {
     position: absolute;
-    top: 260px;
+    top: 280px;
     font-size: 40px;
     &[disabled] { opacity: .3; }
   }

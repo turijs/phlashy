@@ -52,7 +52,7 @@ class ValidForm extends React.Component {
 
     // validate all fields
     let errors = {};
-    for(let field in state.errors)
+    for(let field in state.values)
       errors[field] = props.findError(field, state.values[field]);
 
     // if there are errors, show them and exit
@@ -97,6 +97,9 @@ class ValidForm extends React.Component {
         <AsyncButton className={buttonClass} type="submit" loading={isLoading}>
           {buttonText}
         </AsyncButton>
+
+        {errors._general &&
+          <div className="error-msg">{errors._general}</div>}
       </form>
     );
   }

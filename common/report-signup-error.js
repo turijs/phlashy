@@ -2,6 +2,9 @@ const validate = require('./validate');
 
 function findSignupError(field, value) {
   switch(field) {
+    case 'nickname':
+      if ( validate.nickname(value) ) return false;
+      else return 'Nicknames must be 50 characters or less';
     case 'email':
       if(!value)
         return 'This field is required';

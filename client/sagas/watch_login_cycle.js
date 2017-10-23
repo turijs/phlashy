@@ -6,11 +6,13 @@ import api from '../util/api';
 import watchRefresh from './watch_refresh';
 import autoRefresh from './auto_refresh';
 import watchOutbound from './watch_outbound';
+import watchSync from './watch_sync';
 
 function* subTasks() {
-  yield fork(watchRefresh);
   yield fork(autoRefresh);
+  yield fork(watchRefresh);
   yield fork(watchOutbound);
+  yield fork(watchSync);
 }
 
 export default function* watchLoginCycle() {
@@ -26,9 +28,9 @@ export default function* watchLoginCycle() {
       });
       yield api.post('/logout');
     } catch (e) {
-      if(e == 'LOGGED_OUT')
+      if(e.status == 401)
         yield put( logout() );
-      else throw e;
+      else console.log(e);
     }
   }
 }

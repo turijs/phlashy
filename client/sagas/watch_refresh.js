@@ -22,11 +22,8 @@ export default function* watchRefresh() {
       yield put( refresh_succeeded(decks, cards) );
     } catch (e) {
       yield put( refresh_failed() );
-      switch(e) {
-        case 'SERVER_ERROR': break; // ignore and continue
-        case 'FETCH_FAILED': yield catchOffline(); break;
-        default: throw e;
-      }
+      yield catchOffline(e);
+      if(e.status == 401) throw e;
     }
   }
 }

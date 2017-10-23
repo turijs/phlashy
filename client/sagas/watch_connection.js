@@ -3,7 +3,7 @@ import { delay } from 'redux-saga';
 import api from '../util/api';
 import { CONNECTION_LOST, REFRESH, connectionGained } from '../actions';
 
-const pingInterval = 10 * 1000;
+const pingInterval = 30 * 1000;
 
 export default function* watchConnection() {
   while(true) {
@@ -20,9 +20,7 @@ export default function* watchConnection() {
         yield api.head('/ping');
         yield put( connectionGained() );
         break;
-      } catch (e) {
-        continue; // still offline...
-      }
+      } catch (e) { continue } // still offline...
     }
   }
 }

@@ -8,7 +8,7 @@ class ChooseSource extends React.Component {
 
     this.state = {
       chosen: props.source.decks || [],
-      useCustomSelection: !!props.source.cards.length,
+      useCustomSelection: (props.source.cards || []).length
     };
   }
 

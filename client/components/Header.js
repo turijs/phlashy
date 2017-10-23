@@ -54,11 +54,11 @@ const AccountNav = ({user, logout}) => {
     content = (
       <Popup
         id="user-menu"
-        label={<span>{user.nickname} <Icon sm slug="chevron-down"/></span>}
+        label={<span>{user.nickname || '[user]'} <Icon sm slug="chevron-down"/></span>}
         closeOnMenuClick
       >
         <ul>
-          <li><SmartLink to="/profile"><Icon fw slug="user"/> Profile</SmartLink></li>
+          <li><SmartLink to="/settings"><Icon fw slug="gear"/> Settings</SmartLink></li>
           <li><A onClick={logout}><Icon fw slug="power-off"/> Logout</A></li>
         </ul>
       </Popup>

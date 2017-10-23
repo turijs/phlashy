@@ -23,6 +23,13 @@ form {
   padding-top: 2px;
 }
 
+.saved-msg {
+  font-size: 90%;
+  color: $go-col;
+  animation: 1s linear 2s fadeout;
+  animation-fill-mode: forwards;
+}
+
 @mixin button-color($bg, $txt:black) {
   color: $txt;
   background: $bg;

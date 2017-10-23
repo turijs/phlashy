@@ -15,23 +15,15 @@ class Signup extends React.Component {
 
   async handleSubmit(values) {
     try {
-      let res = await api.post('/user', values);
-
-      if(res.status < 500) {
-        let body = await res.json();
-        if(res.ok)
-          this.props.login(body);
-        else // 401
-          return body.errors;
-      } else { // server error
-        this.setState({
-          networkError: 'Apologies, a server error occurred - please try again'
-        });
-      }
+      let userData = await api.post('/user', values).then(toJSON);
+      this.props.login(userData);
     } catch (e) {
-      this.setState({
-        networkError: 'Failed to login - please check your internet connection'
-      });
+      switch(e.status) {
+        case 401: return (await e.json()).errors;
+        case 500: return {_general: 'Apologies, a server error occurred - please try again later'}
+        case 0: return {_general: 'Failed to login - please check your internet connection'}
+        default: console.log(e);
+      }
     }
   }
 

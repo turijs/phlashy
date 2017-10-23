@@ -2,7 +2,7 @@ import React from 'react';
 import ValidForm from './ValidForm';
 import { connect } from 'react-redux';
 import { Redirect } from 'react-router-dom';
-import api from '../util/api';
+import api, {toJSON} from '../util/api';
 import { LoggedInOnly } from './auth-conditional';
 import querystring from 'querystring';
 
@@ -25,24 +25,15 @@ class Login extends React.Component {
 
   async handleSubmit(values) {
     try {
-      let res = await api.post('/login', values);
-
-      if(res.status < 500) {
-        let body = await res.json();
-        if(res.ok)
-          this.props.login(body);
-        else // 401
-          return body.errors;
-      } else { // server error
-        this.setState({
-          networkError: 'Apologies, a server error occurred - please try again'
-        });
-      }
+      let userData = await api.post('/login', values).then(toJSON);
+      this.props.login(userData);
     } catch (e) {
-      console.log(e);
-      this.setState({
-        networkError: 'Failed to login - please check your internet connection'
-      });
+      switch(e.status) {
+        case 401: return (await e.json()).errors;
+        case 500: return {_general: 'Apologies, a server error occurred - please try again later'}
+        case 0: return {_general: 'Failed to login - please check your internet connection'}
+        default: console.log(e);
+      }
     }
   }
 
@@ -60,9 +51,6 @@ class Login extends React.Component {
             {type: 'password', name: 'password', label: "Password"}
           ]}
         />
-
-        {!!this.state.networkError &&
-          <div className="error-msg">{this.state.networkError}</div>}
 
         <LoggedInOnly>
           <Redirect to={querystring.parse(this.props.location.search.substring(1)).then || '/'}/>

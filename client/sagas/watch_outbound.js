@@ -10,7 +10,7 @@ export default function* watchOutbound() {
       try {
         yield processQueue();
       } catch(e) {
-        yield catchOffline(e);
+        if( ! (yield catchOffline(e)) ) throw e;
       }
     }
   }

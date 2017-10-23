@@ -95,25 +95,62 @@ api.post('/logout', (req, res) => {
 /*
  * Update user details
  */
-api.put('/user', async (req, res, next) => {
-  // FIXME: this method is incomplete
-  let {oldPassword, newPassword, nickname} = req.body;
-  let userID = req.session.userID;
-
-  if(newPassword) {
-    if(!oldPassword)
-      response.status(400).send('Missing current password');
-
-    let allowed = await db.authUser(userID, oldPassword);
-
-
+api.put('/user/nickname', async (req, res, next) => {
+  let {userID, body:{nickname}} = req;
+  let error = findSignupError('nickname', nickname);
+  if(error)
+    res.status(400).send(error);
+  else {
+    try {
+      await db.updateNickname(userID, nickname);
+      res.sendStatus(200);
+    } catch(e) { next(e) }
   }
-  if(newPassword.length < 6)
-    res.status(400).send('Password too short');
 });
 
-api.delete('/user', (req, res) => {
+api.put('/user/email', async (req, res, next) => {
+  let {userID, body:{email}} = req;
+  let error = findSignupError('email', email);
+  if(error)
+    res.status(400).send({error});
+  else {
+    try {
+      await db.updateEmail(userID, email);
+      res.sendStatus(200);
+    } catch(e) {
+      if(e.code == '23505')
+        res.status(409).send({error})
+      else next(e);
+    }
+  }
+});
 
+api.put('/user/password', async (req, res, next) => {
+  let {userID, body:{newPassword, oldPassword}} = req;
+
+  if(!oldPassword)
+    return res.status(400).send({errors: {oldPassword: 'Missing current password'}});
+
+  let newPasswordError = findSignupError('password', newPassword);
+  if(newPasswordError)
+    return res.status(400).send({errors: {newPassword: newPasswordError}});
+
+  try {
+    let allowed = await db.authUser(userID, oldPassword);
+    if(!allowed)
+      return res.status(403).send({errors: {oldPassword: 'Incorrect password'}});
+
+    await db.updatePassword(userID, newPassword);
+    res.sendStatus(200);
+  } catch(e) {next(e)}
+});
+
+/*
+ * Delete entire account
+ */
+
+api.delete('/user', (req, res) => {
+  // FIXME: write this method
 });
 
 

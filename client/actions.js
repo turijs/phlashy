@@ -1,14 +1,18 @@
 import generateTempID from './util/generate-temp-id';
 import itemListToIdMap from './util/item-list-to-id-map';
 
+/*
+ * 'outbound' actions go into the outbound queue, and persisted asynchronously
+ *
+ * 'sync' actions are persisted synchornously
+ *
+ */
+
+/*======== Login/out ==========*/
+
 export const LOGIN = 'LOGIN';
 export function login(userData, automatic = false) {
   return {type: LOGIN, userData, automatic}
-}
-
-export const REQUEST_LOGOUT = 'REQUEST_LOGOUT';
-export function requestLogout() {
-  return {type: REQUEST_LOGOUT}
 }
 
 export const LOGOUT = 'LOGOUT';
@@ -16,15 +20,28 @@ export function logout() {
   return {type: LOGOUT}
 }
 
-export const LOGOUT_FAILED = 'LOGOUT_FAILED';
-export function logoutFailed() {
-  return {type: LOGOUT_FAILED}
+
+/*======== Update User Info =========*/
+
+export const UPDATE_NICKNAME = 'UPDATE_NICKNAME';
+export function updateNickname(value) {
+  return {type: UPDATE_NICKNAME, value, sync: true};
+}
+export const UPDATE_NICKNAME_COMMIT = 'UPDATE_NICKNAME_COMMIT';
+export const updateNicknameCommit = $basicAC(UPDATE_NICKNAME_COMMIT, 'value');
+
+export const UPDATE_EMAIL = 'UPDATE_EMAIL';
+export function updateEmail(value) {
+  return {type: UPDATE_EMAIL, value, sync: true};
+}
+export const UPDATE_EMAIL_COMMIT = 'UPDATE_EMAIL_COMMIT';
+export const updateEmailCommit = $basicAC(UPDATE_EMAIL_COMMIT, 'value');
+
+export const UPDATE_PASSWORD = 'UPDATE_PASSWORD';
+export function updatePassword(value) {
+  return {type: UPDATE_PASSWORD, value, sync: true};
 }
 
-export const UPDATE_USER = 'UPDATE_USER';
-export function updateUser(userData) {
-  return {type: UPDATE_USER, userData}
-}
 
 /*========== Decks ===========*/
 
@@ -255,15 +272,17 @@ export const toggleFrontBack = $basicAC(TOGGLE_FRONT_BACK);
 
 /*========= Other ========== */
 
-export function genericActionCommit(action) {
+export function genericActionCommit(action, extra = {}) {
   return {
+    ...extra,
     type: action.type + '_COMMIT',
     shouldDequeueOutbound: action.outbound
   }
 }
 
-export function genericActionFailed(action) {
+export function genericActionFailed(action, extra = {}) {
   return {
+    ...extra,
     type: action.type + '_FAILED',
     shouldDequeueOutbound: action.outbound
   }

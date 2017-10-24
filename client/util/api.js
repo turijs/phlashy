@@ -1,53 +1,43 @@
 const api = {
   post(path, body) {
-    return fetch('/api' + path, options('POST', body))
-      .catch(transformFailure)
-      .then(rejectErrors);
-
+    return request('/api' + path, options('POST', body))
   },
 
   get(path) {
-    return fetch('/api' + path, options('GET'))
-      .catch(transformFailure)
-      .then(rejectErrors);
-
+    return request('/api' + path, options('GET'))
   },
 
   put(path, body) {
-    return fetch('/api' + path, options('PUT', body))
-      .catch(transformFailure)
-      .then(rejectErrors);
-
+    return request('/api' + path, options('PUT', body))
   },
 
   delete(path, body) {
-    return fetch('/api' + path, options('DELETE'))
-      .catch(transformFailure)
-      .then(rejectErrors);
-
+    return request('/api' + path, options('DELETE'))
   },
 
   head(path) {
-    return fetch('/api' + path, options('HEAD'))
-      .catch(transformFailure)
-      .then(rejectErrors);
-
+    return request('/api' + path, options('HEAD'))
   }
 };
 
 export default api;
 
-export function rejectErrors(res) {
-  if(!res.ok)
-    throw res;
-  return res;
-}
 
 export function toJSON(res) {
   return res.json();
 }
 
+export function HTTPError(status, msg, res = null) {
+  this.status = status;
+  this.message = msg;
+  this.res = response;
+}
+
 /*=== Helper functions ===*/
+
+function request(...args) {
+  return fetch(...args).catch(transformFailure).then(rejectErrors);
+}
 
 function options (method, body) {
   return body ? {
@@ -61,10 +51,12 @@ function options (method, body) {
   };
 }
 
+function rejectErrors(res) {
+  if(!res.ok)
+    throw new HTTPError(res.status, response.statusText, res);
+  return res;
+}
+
 function transformFailure() {
-  throw {
-    ok: false,
-    status: 0,
-    statusText: 'FETCH_FAILED'
-  }
+  throw new HTTPError(0, 'FETCH_FAILED');
 }

@@ -25,21 +25,21 @@ export function logout() {
 
 export const UPDATE_NICKNAME = 'UPDATE_NICKNAME';
 export function updateNickname(value) {
-  return {type: UPDATE_NICKNAME, value, sync: true};
+  return {type: UPDATE_NICKNAME, value, outbound: {sync: true} };
 }
 export const UPDATE_NICKNAME_COMMIT = 'UPDATE_NICKNAME_COMMIT';
 export const updateNicknameCommit = $basicAC(UPDATE_NICKNAME_COMMIT, 'value');
 
 export const UPDATE_EMAIL = 'UPDATE_EMAIL';
 export function updateEmail(value) {
-  return {type: UPDATE_EMAIL, value, sync: true};
+  return {type: UPDATE_EMAIL, value, outbound: {sync: true} };
 }
 export const UPDATE_EMAIL_COMMIT = 'UPDATE_EMAIL_COMMIT';
 export const updateEmailCommit = $basicAC(UPDATE_EMAIL_COMMIT, 'value');
 
 export const UPDATE_PASSWORD = 'UPDATE_PASSWORD';
 export function updatePassword(value) {
-  return {type: UPDATE_PASSWORD, value, sync: true};
+  return {type: UPDATE_PASSWORD, value, outbound: {sync: true} };
 }
 
 
@@ -276,7 +276,7 @@ export function genericActionCommit(action, extra = {}) {
   return {
     ...extra,
     type: action.type + '_COMMIT',
-    shouldDequeueOutbound: action.outbound
+    shouldDequeueOutbound: action.outbound && !action.outbound.sync
   }
 }
 
@@ -284,7 +284,7 @@ export function genericActionFailed(action, extra = {}) {
   return {
     ...extra,
     type: action.type + '_FAILED',
-    shouldDequeueOutbound: action.outbound
+    shouldDequeueOutbound: action.outbound && !action.outbound.sync
   }
 }
 
@@ -318,4 +318,9 @@ function $basicAC(type, ...params) {
       action[params[i]] = args[i];
     return action;
   }
+}
+
+function addOutbound(action, sync) {
+  action.outbound = sync ? {sync} : true;
+  return action;
 }

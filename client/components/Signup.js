@@ -19,7 +19,7 @@ class Signup extends React.Component {
       this.props.login(userData);
     } catch (e) {
       switch(e.status) {
-        case 401: return (await e.json()).errors;
+        case 401: return (await e.res.json()).errors;
         case 500: return {_general: 'Apologies, a server error occurred - please try again later'}
         case 0: return {_general: 'Failed to login - please check your internet connection'}
         default: console.log(e);

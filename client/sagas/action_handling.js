@@ -1,3 +1,4 @@
+import {delay} from 'redux-saga';
 import {put} from 'redux-saga/effects';
 import api from '../util/api';
 import {
@@ -6,6 +7,41 @@ import {
   UPDATE_NICKNAME, UPDATE_EMAIL, UPDATE_PASSWORD
 } from '../actions';
 
+const defaultDelays = [
+  30 * 1000,
+  60 * 1000,
+  5 * 60 * 1000,
+  15 * 60 * 1000,
+  30 * 60 * 1000,
+  60 * 60 * 1000
+];
+
+/*
+ * Robustly (hopefully) handle a single outbound action.
+ * Relies on the three helper functions below
+ */
+export default function* handleAction(action, delays = defaultDelays) {
+  retry:
+  for(let i = 0;; i++) {
+    let mili = delays[i];
+    try {
+      let res = yield sendAction(action);
+      // commit the action!
+      return yield commitAction(action, res);
+    } catch (e) {
+      if(e.status == 0 || e.status == 401)
+        throw e;
+
+      if(e.status >= 500 && seconds) {
+        yield delay(mili);
+        continue;
+      }
+
+      // persist permanently failed
+      return yield failAction(action, e.res);
+    }
+  }
+}
 
 /*
  * Makes the appropriate api request for the provided action

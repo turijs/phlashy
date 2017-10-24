@@ -11,8 +11,9 @@ export function* online() {
 import { connectionLost } from '../actions';
 
 export function* catchOffline(e) {
-  if(e.statusText == 'FETCH_FAILED') {
-    yield put( connectionLost() );
+  if(e.status === 0) {
+    if( yield online() )
+      yield put( connectionLost() );
     return true;
   }
   return false;

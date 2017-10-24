@@ -8,12 +8,12 @@ import {
  */
 
 function outbound(state = [], action) {
-  if(action.outbound)
+  if(action.outbound && !action.outbound.sync)
     return [...state, action];
 
   else if(action.shouldDequeueOutbound)
     switch(action.type) {
-      // replace IDs in queued actions
+      // replace IDs in rest of queued actions
       case ADD_DECK_COMMIT:
       case ADD_CARD_COMMIT:
         return state.slice(1).map( idResolver(action.tempId, action.id) );

@@ -1,11 +1,6 @@
 import {delay} from 'redux-saga';
 import {put} from 'redux-saga/effects';
 import api from '../util/api';
-import {
-  ADD_DECK, DELETE_DECK, UPDATE_DECK,
-  ADD_CARD, DELETE_CARD, UPDATE_CARD,
-  UPDATE_NICKNAME, UPDATE_EMAIL, UPDATE_PASSWORD
-} from '../actions';
 
 const defaultDelays = [
   30 * 1000,
@@ -21,19 +16,24 @@ const defaultDelays = [
  * Relies on the three helper functions below
  */
 export default function* handleAction(action, delays = defaultDelays) {
-  retry:
-  for(let i = 0;; i++) {
-    let mili = delays[i];
+  console.log('handle action!');
+  for(let i = 0; ; i++) {
+    let interval = delays[i];
     try {
       let res = yield sendAction(action);
+
       // commit the action!
       return yield commitAction(action, res);
-    } catch (e) {
-      if(e.status == 0 || e.status == 401)
-        throw e;
 
-      if(e.status >= 500 && seconds) {
-        yield delay(mili);
+    } catch (e) {
+      if(e.status == 0 || e.status == 401) {
+        if(action.outbound.sync)
+          yield failAction(action, e);
+        throw e;
+      }
+
+      if(e.status >= 500 && interval) {
+        yield delay(interval);
         continue;
       }
 
@@ -42,6 +42,12 @@ export default function* handleAction(action, delays = defaultDelays) {
     }
   }
 }
+
+import {
+  ADD_DECK, DELETE_DECK, UPDATE_DECK,
+  ADD_CARD, DELETE_CARD, UPDATE_CARD,
+  UPDATE_NICKNAME, UPDATE_EMAIL, UPDATE_PASSWORD
+} from '../actions';
 
 /*
  * Makes the appropriate api request for the provided action
@@ -124,11 +130,11 @@ export function* failAction(action, res) {
     case UPDATE_EMAIL:
     case UPDATE_PASSWORD: {
       let error;
-      if(e.status == 0) {
-        error = 'Lost connection';
-      } else {
-        let body = yield res.json();
+      if(e.res) {
+        let body = yield e.res.json();
         error = body.error || body.errors;
+      } else {
+        error = 'Lost connection';
       }
       return yield put.resolve( genericActionFailed(action, {error}) );
     }

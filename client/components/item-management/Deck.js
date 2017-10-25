@@ -3,6 +3,7 @@ import {Link} from 'react-router-dom';
 import Pressable from '../Pressable';
 import renderDate from '../../util/render-date';
 import cn from 'classnames';
+import slug from 'slug';
 
 function Deck({
   id,
@@ -18,7 +19,7 @@ function Deck({
 }) {
   let selClass = isSelected ? 'selected' : '';
   return (
-    <Link to={`/decks/${id}`}>
+    <Link to={`/decks/${id}-${slug(name)}`}>
       <Pressable
         className={cn('deck', {selected: isSelected})}
         onDown={onMouseDown}

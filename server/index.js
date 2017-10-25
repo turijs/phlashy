@@ -60,7 +60,7 @@ app.get('*', (req, res, next) => {
 });
 
 // preload specific deck details
-app.get('/decks/:id', (req, res, next) => {
+app.get('/decks/:id-:name', (req, res, next) => {
   db.getDeckBasic(req.userID, req.params.id).then(deck => {
     req.preloadedData.decks = {[deck.id]: deck};
     next();

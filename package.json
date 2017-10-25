@@ -53,6 +53,7 @@
     "resolve-url-loader": "^2.1.0",
     "sass-loader": "^6.0.6",
     "shortid": "^2.2.8",
+    "slug": "^0.9.1",
     "style-loader": "^0.18.2",
     "webpack": "^3.3.0"
   },

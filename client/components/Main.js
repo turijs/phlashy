@@ -13,7 +13,7 @@ const Main = () => (
     <Route exact path="/" component={Home} />
     <Route path="/login" component={Login} />
     <Route exact path="/decks" component={DecksView} />
-    <Route path="/decks/:id" component={SingleDeckView} />
+    <Route path="/decks/:id-:name" component={SingleDeckView} />
     <Route path="/study" component={Study} />
     <Route path="/about" component={About} />
     <Route path="/settings" component={Settings} />

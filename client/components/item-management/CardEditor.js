@@ -15,7 +15,7 @@ class CardEditor extends React.Component {
       this.setState( this.getNewState(nextProps) );
   }
 
-  getNewState({card}) {
+  getNewState({card} = {}) {
     if(!card)
       return {front: '', back: ''}
 
@@ -31,6 +31,7 @@ class CardEditor extends React.Component {
     e.preventDefault();
     let {front, back} = this.state;
     this.props.onSave({front, back});
+    this.setState( this.getNewState() )
   }
 
   render() {

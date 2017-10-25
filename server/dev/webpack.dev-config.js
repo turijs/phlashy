@@ -1,14 +1,18 @@
 const webpack = require('webpack');
 const path = require('path');
-const ExtractTextPlugin = require("extract-text-webpack-plugin");
 
 module.exports = {
-  entry: ['babel-polyfill', './client/index.js'],
+  entry: [
+    'webpack-hot-middleware/client?reload=true',
+    'babel-polyfill',
+    './client/index.js'
+  ],
   output: {
     path: path.resolve(__dirname, 'client/dist'),
     filename: 'bundle.js',
     publicPath: '/static/'
   },
+  devtool: 'cheap-module-eval-source-map',
   module: {
     rules: [
       {
@@ -32,22 +36,11 @@ module.exports = {
       },
       {
         test: /\.css$/,
-        use: ExtractTextPlugin.extract({
-          fallback: 'style-loader',
-          use: 'css-loader'
-        })
+        use: [ 'style-loader', 'css-loader']
       },
       {
         test: /\.scss$/,
-        use: ExtractTextPlugin.extract({
-          fallback: 'style-loader',
-          use: [
-            {loader: 'css-loader', options: {importLoaders: 3} },
-            'postcss-loader',
-            'resolve-url-loader',
-            'sass-loader?sourceMap'
-          ]
-        })
+        use: [ 'style-loader', 'css-loader', 'resolve-url-loader',  'sass-loader?sourceMap', ]
       },
       {
         test: /\.(eot|woff|woff2|ttf|svg)/,
@@ -69,7 +62,7 @@ module.exports = {
     ]
   },
   plugins: [
-    new ExtractTextPlugin('styles.css'),
-    new webpack.optimize.UglifyJsPlugin({minimize: true})
+    new webpack.HotModuleReplacementPlugin(),
+    new webpack.NoEmitOnErrorsPlugin()
   ],
 }

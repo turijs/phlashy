@@ -27,10 +27,12 @@ app.engine('.hbs', exphbs({
 }));
 app.set('view engine', '.hbs');
 
+// make production status available in views etc.
+app.locals.prod = process.env.NODE_ENV == 'production';
 
 // DEV environment only
-if(process.env.NODE_ENV !== 'production') {
-  app.use( require('./dev-middleware') );
+if(!app.locals.prod) {
+  app.use( require('./dev/middleware') );
 }
 
 app.use('/static', express.static( path.resolve(__dirname, '../client/dist') ));
@@ -48,7 +50,6 @@ app.get('*', (req, res, next) => {
     res.render('main');
   else
     res.redirect('/login?then=' + querystring.escape(req.path));
-
 }, auth.loadUserID);
 
 // preload user details
@@ -72,7 +73,7 @@ app.get('/decks/:id-:name', (req, res, next) => {
 // final response for logged in users
 app.get('*', (req, res) => {
   res.render('main', {
-    preloaded: JSON.stringify(req.preloadedData).replace(/</g, '\\u003c')
+    preloaded: JSON.stringify(req.preloadedData).replace(/</g, '\\u003c'),
   });
 });
 

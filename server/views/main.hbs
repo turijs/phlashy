@@ -5,7 +5,11 @@
     <title>Phlashy</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    {{#if preloaded}}
+    {{#if prod }}
+      <link rel="stylesheet" type="text/css" href="/static/styles.css">
+    {{/if}}
+
+    {{#if preloaded }}
       <script type="text/javascript">
         window.PRELOADED_STATE = {{{preloaded}}};
       </script>

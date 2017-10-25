@@ -12,10 +12,11 @@ form {
     font-size: 120%;
     border: 1px solid navy;
     border-radius: $standard-br;
-    &.error { border-color: $stop-col; }
   }
   textarea { min-height: 6em}
 }
+
+input.error { border-color: $stop-col; }
 
 .error-msg {
   color: $stop-col;
@@ -26,7 +27,7 @@ form {
 .saved-msg {
   font-size: 90%;
   color: $go-col;
-  animation: 1s linear 2s fadeout;
+  animation: 1s linear 10s fadeout;
   animation-fill-mode: forwards;
 }
 
@@ -69,6 +70,9 @@ button, .btn {
   button, .btn {
     margin-left: 8px;
     margin-right: 8px;
+
+    &.btn-slim {margin: 0 4px}
+
     &:first-child { margin-left: 0; }
     &:last-child { margin-right: 0; }
   }
@@ -89,6 +93,7 @@ button, .btn {
   border-bottom: none;
   border: 1px solid grey;
   padding: 5px 12px;
+  margin: 0;
 }
 
 .btn-slim.active {
@@ -104,7 +109,7 @@ button, .btn {
 }
 
 .slim-txt {
-  padding: 6px 13px;
+  padding: 6px 0;
 }
 
 .radio-bar {

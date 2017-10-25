@@ -32,6 +32,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+  margin: 10px 0;
   .item-filter { width: 50%; max-width: 400px; }
 
   @media (max-width: 500px) {
@@ -172,10 +173,10 @@
 
     &:hover { transform: scale(1.05); }
 
-    &[disabled] {
-      pointer-events: none;
-      opacity: .4;
-    }
+    // &[disabled] {
+    //   pointer-events: none;
+    //   opacity: .4;
+    // }
   }
 
   // icon tweaks

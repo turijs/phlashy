@@ -33,7 +33,10 @@ h2 { text-align: center; }
 
 a {
   color: inherit;
-  &[disabled] { pointer-events: none; }
+  &[disabled] {
+    pointer-events: none;
+    &:not(.btn) { opacity: .35; }
+  }
 }
 
 article {
@@ -63,5 +66,5 @@ input, textarea {
 @import 'controls';
 @import 'item-management/index.scss';
 @import 'study';
-@import 'profile';
+@import 'settings';
 @import 'misc';

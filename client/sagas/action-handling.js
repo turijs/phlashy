@@ -16,7 +16,6 @@ const defaultDelays = [
  * Relies on the three helper functions below
  */
 export default function* handleAction(action, delays = defaultDelays) {
-  console.log('handle action!');
   for(let i = 0; ; i++) {
     let interval = delays[i];
     try {
@@ -38,7 +37,7 @@ export default function* handleAction(action, delays = defaultDelays) {
       }
 
       // persist permanently failed
-      return yield failAction(action, e.res);
+      return yield failAction(action, e);
     }
   }
 }
@@ -124,7 +123,7 @@ export function* commitAction(action, res) {
 /*
  * Issues an appropriate failure action
  */
-export function* failAction(action, res) {
+export function* failAction(action, e = {}) {
   switch(action.type) {
     case UPDATE_NICKNAME:
     case UPDATE_EMAIL:

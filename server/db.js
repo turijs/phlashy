@@ -85,7 +85,7 @@ module.exports = {
     return pool.query(`UPDATE users SET email = $1 WHERE ID = $2`, [newEmail, userID]);
   },
   updatePassword(userID, newPw) {
-    return bcrypt.hash(pw, SALT_ROUNDS).then(hash => {
+    return bcrypt.hash(newPw, SALT_ROUNDS).then(hash => {
       return pool.query(`UPDATE users SET password = $1 WHERE ID = $2`, [hash, userID]);
     });
   },

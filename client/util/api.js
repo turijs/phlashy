@@ -30,7 +30,7 @@ export function toJSON(res) {
 export function HTTPError(status, msg, res = null) {
   this.status = status;
   this.message = msg;
-  this.res = response;
+  this.res = res;
 }
 
 /*=== Helper functions ===*/
@@ -53,7 +53,7 @@ function options (method, body) {
 
 function rejectErrors(res) {
   if(!res.ok)
-    throw new HTTPError(res.status, response.statusText, res);
+    throw new HTTPError(res.status, res.statusText, res);
   return res;
 }
 

@@ -1,0 +1,36 @@
+.setting {
+  display: flex;
+  align-items: flex-start;
+}
+
+.setting-title {
+  flex-shrink: 0;
+  width: 150px;
+  margin: 13px 0;
+  padding-right: 30px;
+  font-weight: bold;
+  text-align: right;
+}
+
+@mixin setting-wrapped {
+  flex-wrap: wrap;
+  input, .btn-row { width: 100%; max-width: 250px; }
+}
+
+.setting-field {
+  display: flex;
+  align-items: center;
+  margin: 10px 0;
+
+  > * { margin: 4px; }
+  .error-msg { width: 100%; margin-top: -5px; }
+
+  .icon, .saved-msg { margin-left: 5px; }
+
+  @media (max-width: 550px) { @include setting-wrapped; }
+}
+
+.password-setting {
+  @extend .setting-field;
+  @include setting-wrapped;
+}

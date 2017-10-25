@@ -38,8 +38,8 @@ export const UPDATE_EMAIL_COMMIT = 'UPDATE_EMAIL_COMMIT';
 export const updateEmailCommit = $basicAC(UPDATE_EMAIL_COMMIT, 'value');
 
 export const UPDATE_PASSWORD = 'UPDATE_PASSWORD';
-export function updatePassword(value) {
-  return {type: UPDATE_PASSWORD, value, outbound: {sync: true} };
+export function updatePassword(oldPw, newPw) {
+  return {type: UPDATE_PASSWORD, oldPw, newPw, outbound: {sync: true} };
 }
 
 

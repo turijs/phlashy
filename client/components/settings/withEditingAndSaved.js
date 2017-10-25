@@ -27,8 +27,11 @@ function withEditingAndSaved(Wrapped) {
     render() {
       let {props, state, toggleEditing, handleSave} = this;
       let saved = state.saveAttempted && !props.saving && !props.error;
+      let error = state.saveAttempted && props.error;
+
       return <Wrapped
         {...props}
+        error={error}
         editing={state.editing}
         onToggle={toggleEditing}
         onSave={handleSave}

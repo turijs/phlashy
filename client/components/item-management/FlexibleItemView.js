@@ -80,6 +80,13 @@ class FlexibleItemView extends React.Component {
     return sortedItems;
   }
 
+  getPlaceholder = () => {
+    let {isLoading, filter, placeholder} = this.props;
+    if(isLoading) return <Spinner />;
+    if(filter) return 'No matches';
+    return placeholder;
+  }
+
   render() {
     let {
       items,
@@ -105,7 +112,7 @@ class FlexibleItemView extends React.Component {
           />
         )) : (
           <div className="placeholder">
-            {isLoading ? <Spinner /> : placeholder}
+            {this.getPlaceholder()}
           </div>
         ) }
       </div>

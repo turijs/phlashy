@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css?family=Zilla+Slab');
+@import url('https://fonts.googleapis.com/css?family=Zilla+Slab:400,600');
 
 $header-bg: rgb(46,66,107);
 $select-col: mix($header-bg, white, 80%); // rgb(43,128,255); //rgb(43,96,255);
@@ -50,9 +50,10 @@ input, textarea {
   font-family: inherit;
 }
 
-:focus::placeholder {
-  color: transparent;
+::placeholder {
+  opacity: .5;
 }
+
 
 @mixin margin-auto {
   margin-left: auto;

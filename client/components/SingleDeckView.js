@@ -34,6 +34,12 @@ class SingleDeckView extends React.Component {
     }
   }
 
+  getPlaceholder = () => {
+    return !this.props.filter ?
+      'This deck is currently empty. Click '+' (below) to add a card'
+    : 'No matches';
+  }
+
   render() {
     let {
       noSuchDeck,

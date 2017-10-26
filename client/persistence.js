@@ -1,12 +1,27 @@
-import { createPersistor, getStoredState } from 'redux-persist';
+import { createPersistor, getStoredState, createTransform } from 'redux-persist';
 import localForage from 'localforage';
 import { skipRehydration } from './actions';
+
+// only persist the user's ID
+const transformUser = createTransform(
+  (user, _) => user && {id: user.id},
+  null,
+  {whitelist: 'user'}
+);
 
 const persistConfig = {
   storage: localForage,
   keyPrefix: 'phlashy:',
-  blacklist: ['router']
-}
+  whitelist: [
+    'user',
+    'decks',
+    'cards',
+    'prefs',
+    'study',
+    'outbound'
+  ],
+  transforms: [transformUser]
+};
 
 async function handlePersistence(store) {
 

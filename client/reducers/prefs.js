@@ -56,6 +56,10 @@ function studyPrefs(state = defaultStudyPrefs, action) {
     case TOGGLE_FRONT_BACK:
       return {...state, backToFront: !state.backToFront};
 
+    case REHYDRATE:
+      let {prefs} = action.payload;
+      return (prefs && prefs.study) || state;
+
     default: return state;
   }
 }

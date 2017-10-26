@@ -29,6 +29,9 @@ function decks(state = {}, action) {
     case REFRESH_SUCCEEDED: {
       return action.decks;
     }
+    case REHYDRATE:
+      return action.payload.decks || state;
+
     case ADD_CARD:
     case ADD_CARD_COMMIT:
     case UPDATE_CARD:

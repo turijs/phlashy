@@ -12,7 +12,7 @@ import settingsMeta from './settings-meta';
 import outbound from './outbound';
 import { routerReducer as router } from 'react-router-redux';
 
-export default combineReducers({
+let reducer = combineReducers({
   user,
   decks,
   cards,
@@ -25,3 +25,16 @@ export default combineReducers({
   outbound,
   router
 });
+
+import {LOGOUT} from '../actions';
+import pick from '../util/pick';
+
+/*
+ * Automatically restore (most) reducers to default on logout
+ */
+export default function rootReducer(state, action) {
+  if(action.type == LOGOUT)
+    return reducer(pick(state, 'offline', 'router'), action);
+
+  return reducer(state, action);
+}

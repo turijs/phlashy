@@ -1,19 +1,13 @@
-import { combineReducers } from 'redux';
-import {
-  LOGIN, LOGOUT,
-  UPDATE_NICKNAME_COMMIT, UPDATE_EMAIL_COMMIT
-} from '../actions';
+import { LOGIN, UPDATE_NICKNAME_COMMIT, UPDATE_EMAIL_COMMIT } from '../actions';
 
 function user(state = null, action) {
   switch(action.type) {
     case LOGIN:
       return {...state, ...action.userData};
 
-    case LOGOUT:
-      return null;
-
     case UPDATE_NICKNAME_COMMIT:
       return {...state, nickname: action.value};
+
     case UPDATE_EMAIL_COMMIT:
       return {...state, email: action.value};
 

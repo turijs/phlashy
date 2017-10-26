@@ -9,15 +9,12 @@ function withEditingAndSaved(Wrapped) {
 
     componentWillReceiveProps({saving, error}) {
       if(!saving && !error)
-        this.toggleEditing();
+        this.stopEdit();
     }
 
-    toggleEditing = () => {
-      this.setState(({editing, saveAttempted}) => ({
-        editing: !editing,
-        saveAttempted: editing ? saveAttempted : false
-      }));
-    }
+    startEdit = () => this.setState({editing: true, saveAttempted: false});
+
+    stopEdit = () => this.setState({editing: false});
 
     handleSave = (...args) => {
       this.setState({saveAttempted: true});
@@ -25,7 +22,7 @@ function withEditingAndSaved(Wrapped) {
     }
 
     render() {
-      let {props, state, toggleEditing, handleSave} = this;
+      let {props, state, startEdit, stopEdit, handleSave} = this;
       let saved = state.saveAttempted && !props.saving && !props.error;
       let error = state.saveAttempted && props.error;
 
@@ -33,8 +30,9 @@ function withEditingAndSaved(Wrapped) {
         {...props}
         error={error}
         editing={state.editing}
-        onToggle={toggleEditing}
+        onEdit={startEdit}
         onSave={handleSave}
+        onCancel={stopEdit}
         saved={saved}
       />
     }

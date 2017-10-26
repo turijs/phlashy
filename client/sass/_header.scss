@@ -1,4 +1,15 @@
 /*
+ * Offline indicator
+ */
+
+#offline-indicator {
+  font-size: 95%;
+  padding: 8px 24px;
+  background: $stop-col;
+  color: rgb(85,0,0);
+}
+
+/*
  * App header styles
  */
 
@@ -45,6 +56,7 @@ $header-height: 66px;
 
 #account-nav {
   float: right;
+  .btn { margin-top: 15px; }
 }
 
 #user-menu {
@@ -100,12 +112,15 @@ $header-height: 66px;
     height: $logo-height;
   }
 
-  #nav, #account-nav {
-    a:not(.btn) {
+  #nav, #user-menu {
+    a {
       height: $nav-height;
       padding-top: 11px;
     }
-    .btn { margin-top: 3px; margin-bottom: 0; }
+  }
+
+  #account-nav .btn {
+    margin-top: 3px; margin-bottom: 0;
   }
 
 }

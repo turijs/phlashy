@@ -7,3 +7,12 @@
     width: 1px;
     overflow: hidden;
 }
+
+.caution-box {
+  padding: 8px 24px;
+  margin-bottom: 10px;
+  background: lighten($slow-col, 10%);
+  color: darken($slow-col, 20%);
+  border: 2px solid;
+  border-radius: $standard-br;
+}

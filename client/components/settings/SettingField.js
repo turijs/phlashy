@@ -8,7 +8,8 @@ import cn from 'classnames';
 function SettingField({
   value,
   editing,
-  onToggle,
+  onEdit,
+  onCancel,
   saving,
   onSave,
   saved,
@@ -20,7 +21,7 @@ function SettingField({
   return !editing ? (
     <div className="setting-field">
       <span className="slim-txt">{value}</span>
-      <A onClick={onToggle} disabled={disabled}><Icon slug="pencil"/></A>
+      <A onClick={onEdit} disabled={disabled}><Icon slug="pencil"/></A>
       {saved && <span className="saved-msg">Saved!</span>}
     </div>
   ) : (
@@ -28,7 +29,7 @@ function SettingField({
       <input className={cn('input-slim', {error})} defaultValue={value}
         disabled={saving} ref={node => input = node} />
       <div className="btn-row">
-        <button className="btn-slim" onClick={onToggle} disabled={saving}>Cancel</button>
+        <button className="btn-slim" onClick={onCancel} disabled={saving}>Cancel</button>
         <AsyncButton className="btn-slim btn-go" onClick={() => onSave(input.value)}
           loading={saving}>Save</AsyncButton>
       </div>

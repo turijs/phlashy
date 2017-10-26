@@ -1,7 +1,7 @@
 import React from 'react';
 import Signup from './Signup';
 import Spinner from './Spinner';
-import { LoggedInOnly, LoggedOutOnly } from './auth-conditional';
+import { LoggedInOnly, LoggedOutOnly } from './app-conditional';
 
 const Home = () => (
   <div id="home">

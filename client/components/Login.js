@@ -3,7 +3,7 @@ import ValidForm from './ValidForm';
 import { connect } from 'react-redux';
 import { Redirect } from 'react-router-dom';
 import api, {toJSON} from '../util/api';
-import { LoggedInOnly } from './auth-conditional';
+import { LoggedInOnly } from './app-conditional';
 import querystring from 'querystring';
 
 

@@ -6,7 +6,8 @@ import cn from 'classnames';
 
 function PasswordSetting({
   editing,
-  onToggle,
+  onEdit,
+  onCancel,
   saving,
   onSave,
   saved,
@@ -23,7 +24,8 @@ function PasswordSetting({
 
   return !editing ? (
     <div className="password-setting">
-      <button onClick={onToggle} className="btn-slim">Update Password</button>
+      <button onClick={onEdit} className="btn-slim"
+        disabled={disabled}>Update Password</button>
       {saved && <span className="saved-msg">Password updated!</span>}
     </div>
   ) : (
@@ -33,13 +35,13 @@ function PasswordSetting({
       {oldErr &&
         <div className="error-msg">{oldErr}</div>}
 
-      <input className={cn('input-slim', {error: newErr})} type="password" 
+      <input className={cn('input-slim', {error: newErr})} type="password"
         placeholder="New password" disabled={saving} ref={node => newInput = node} />
       {newErr &&
         <div className="error-msg">{newErr}</div>}
 
       <div className="btn-row">
-        <button className="btn-slim" onClick={onToggle} disabled={saving}>Cancel</button>
+        <button className="btn-slim" onClick={onCancel} disabled={saving}>Cancel</button>
 
         <AsyncButton className="btn-slim btn-go" loading={saving}
           onClick={() => onSave(oldInput.value, newInput.value)}>Save</AsyncButton>

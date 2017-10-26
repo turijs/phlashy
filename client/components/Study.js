@@ -5,7 +5,7 @@ import ChooseSource from './study/ChooseSource';
 import ChooseOptions from './study/ChooseOptions';
 import StudyCards from './study/StudyCards';
 import Results from './study/Results';
-import { LoggedOutOnly } from './auth-conditional';
+import { LoggedOutOnly } from './app-conditional';
 import { Redirect } from 'react-router-dom';
 
 function Study({ stage }) {

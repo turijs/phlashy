@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 
 import Modal from './Modal';
 import { Link, Redirect } from 'react-router-dom';
-import {LoggedOutOnly} from './auth-conditional';
+import {LoggedOutOnly} from './app-conditional';
 
 import FlexibleItemView from './item-management/FlexibleItemView';
 import Card from './item-management/Card';

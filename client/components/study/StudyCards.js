@@ -1,4 +1,5 @@
 import React from 'react';
+import mousetrap from 'mousetrap';
 import {connect} from 'react-redux';
 import A from '../A';
 import Icon from '../Icon';
@@ -11,13 +12,29 @@ class StudyCards extends React.Component {
   constructor(props) {
     super(props);
     this.state = {isCurFlipped: props.backToFront}
-    this.handleFlip = () => this.setState({isCurFlipped: !this.state.isCurFlipped});
+  }
+
+  componentDidMount() {
+    let { handleFlip } = this;
+    let { showNextCard, showPrevCard, cardKnown, cardUnknown } = this.props;
+
+    mousetrap.bind('left', showPrevCard);
+    mousetrap.bind('right', showNextCard);
+    mousetrap.bind('space', handleFlip);
+    mousetrap.bind('1', cardUnknown);
+    mousetrap.bind('2', cardKnown);
+  }
+
+  componentWillUnmount() {
+    mousetrap.unbind(['left', 'right', 'space', '1', '2']);
   }
 
   componentWillReceiveProps(next) {
     if(next.curCard != this.props.curCard)
       this.setState({isCurFlipped: next.backToFront});
   }
+
+  handleFlip = () => this.setState({isCurFlipped: !this.state.isCurFlipped});
 
   render() {
     let {
@@ -49,9 +66,9 @@ class StudyCards extends React.Component {
 
         <div className="study-nav-bottom centered">
           <button tabIndex="2" className="btn-slow"
-            onClick={cardUnknown} disabled={isRevisit}>Uh.. no</button>
+            onClick={cardUnknown} disabled={isRevisit}>Uh.. no [1]</button>
           <button tabIndex="1" className="btn-go"
-            onClick={cardKnown} disabled={isRevisit}>Know it!</button>
+            onClick={cardKnown} disabled={isRevisit}>Know it! [2]</button>
         </div>
 
         <A className="show-prev-card" onClick={showPrevCard} disabled={!prevCard}>

@@ -77,6 +77,7 @@ class Pressable extends React.Component {
         onTouchEnd={this.resetPressTimer}
         onTouchMove={this.resetPressTimer}
         onContextMenu={e => {
+          // prevent press from triggering context menu
           if(this.touchStarted || this.press)
             e.preventDefault();
         }}

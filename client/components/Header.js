@@ -2,7 +2,6 @@ import React from 'react';
 import { withRouter, NavLink, Link } from 'react-router-dom';
 import A from './A';
 import Popup from './Popup';
-import SmartLink from './SmartLink';
 import Icon from './Icon';
 
 import { connect } from 'react-redux';
@@ -58,15 +57,15 @@ const AccountNav = ({user, logout}) => {
         closeOnMenuClick
       >
         <ul>
-          <li><SmartLink to="/settings"><Icon fw slug="gear"/> Settings</SmartLink></li>
+          <li><Link to="/settings"><Icon fw slug="gear"/> Settings</Link></li>
           <li><A onClick={logout}><Icon fw slug="power-off"/> Logout</A></li>
         </ul>
       </Popup>
     );
   else
     content = <span className="btn-row">
-      <SmartLink className="btn" to="/login">Login</SmartLink>
-      <SmartLink className="btn btn-go" to="/">Sign Up</SmartLink>
+      <Link className="btn" to="/login">Login</Link>
+      <Link className="btn btn-go" to="/">Sign Up</Link>
     </span>;
 
   return <div id="account-nav">{content}</div>;

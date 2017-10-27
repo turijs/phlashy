@@ -1,6 +1,5 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import createHistory from 'history/createBrowserHistory';
 import { createStore, combineReducers, applyMiddleware, compose } from 'redux';
 import { Provider } from 'react-redux';
 import { ConnectedRouter, routerReducer, routerMiddleware } from 'react-router-redux';
@@ -9,13 +8,11 @@ import App from './components/App';
 import reducer from './reducers';
 import rootSaga from './sagas';
 import handlePersistence from './persistence';
+import history from './history';
 import { login, skipRehydration } from './actions';
 
 // styles
 import './sass/base.scss';
-
-// init history object for router
-const history = createHistory();
 
 // init Redux Saga middleware
 const sagaMiddleware = createSagaMiddleware();

@@ -22,11 +22,11 @@ class SingleDeckView extends React.Component {
     this.handleClose = () => this.setState({ isAdding: false, isEditing: false });
     this.handleAdd = () => this.setState({ isAdding: true });
     this.handleEdit = () => this.setState({ isEditing: true });
-    this.handleDelete = () => this.props.selectedCards.forEach(id => props.deleteCard(id));
+    this.handleDelete = () => this.props.selectedCards.forEach(card => props.deleteCard(card.id));
 
     this.handleSave = (cardData) => {
       if(this.state.isEditing)
-        this.props.updateCard(this.props.selectedCards[0], cardData);
+        this.props.updateCard(this.props.selectedCards[0].id, cardData);
       else
         this.props.addCard(cardData);
 
@@ -45,7 +45,7 @@ class SingleDeckView extends React.Component {
       noSuchDeck,
       deck,
       cards, addCard, updateCard, deleteCard,
-      selectedCards, isSelecting, select, toggleSelecting,
+      selectedCards, isSelecting, select, deselect, toggleSelecting,
       sortBy, sortDesc, setSort,
       filter, setFilter, clearFilter,
       viewMode, setViewMode,
@@ -86,10 +86,8 @@ class SingleDeckView extends React.Component {
           items={cards}
           itemComponent={Card}
           filter={filter}
-          sortBy={sortBy}
-          sortDesc={sortDesc}
-          selectedItems={selectedCards}
           onSelect={select}
+          onDeselect={deselect}
           isSelecting={isSelecting}
           viewMode={viewMode}
           onOpen={flip}
@@ -109,7 +107,7 @@ class SingleDeckView extends React.Component {
 
         <CardEditor
           show={isEditing || isAdding}
-          card={isEditing && cards.find(({id}) => id == selectedCards[0])}
+          card={isEditing && selectedCards[0]}
           onSave={this.handleSave}
           onCancel={this.handleClose}
         />
@@ -121,11 +119,34 @@ class SingleDeckView extends React.Component {
 }
 
 const defaultDeck = {
+  id: 'anything',
   name: '...',
   description: '...',
   cards: [],
   created: '...',
   modified: '...'
+}
+
+import {getDeck, getFlaggedCardsByDeck, getSelectedCardsByDeck} from '../selectors';
+
+function mapStateToProps(state, ownProps) {
+  let deck = getDeck(state, ownProps.match.params);
+  if(!deck)
+    if(state.hasHydrated) // assume deck doesn't exist
+      return {noSuchDeck: true};
+    else deck = defaultDeck; // temporary values until real ones are loaded
+
+  return {
+    deck,
+    cards: getFlaggedCardsByDeck(state, deck),
+    sortBy: state.prefs.view.sort.cards.by,
+    sortDesc: state.prefs.view.sort.cards.desc,
+    viewMode: state.prefs.view.mode.cards,
+    selectedCards: getSelectedCardsByDeck(state, deck),
+    isSelecting: state.activeView.isSelecting,
+    filter: state.activeView.filter,
+    hasHydrated: state.hasHydrated
+  };
 }
 
 import {
@@ -135,33 +156,6 @@ import {
   select, deselect, toggleSelecting,
   flipCards
 } from '../actions';
-
-function mapStateToProps(state, ownProps) {
-  let deckId = ownProps.match.params.id;
-  let deck = state.decks[deckId];
-
-  if(!deck) {
-    if(state.hasHydrated) // assume deck doesn't exist
-      return {noSuchDeck: true};
-    else
-      deck = defaultDeck; // temporary values until real ones are loaded
-  }
-
-  let flipped = state.activeView.flipped;
-  let cards = deck.cards.map(id => ({ ...state.cards[id], isFlipped: flipped[id], }));
-
-  return {
-    deck,
-    cards,
-    sortBy: state.prefs.view.sort.cards.by,
-    sortDesc: state.prefs.view.sort.cards.desc,
-    viewMode: state.prefs.view.mode.cards,
-    selectedCards: state.activeView.selected,
-    isSelecting: state.activeView.isSelecting,
-    filter: state.activeView.filter,
-    hasHydrated: state.hasHydrated
-  };
-}
 
 function mapDispatchToProps(dispatch, ownProps) {
   let deckId = ownProps.match.params.id;
@@ -173,8 +167,8 @@ function mapDispatchToProps(dispatch, ownProps) {
     clearFilter: () => dispatch( clearFilter() ),
     setSort: (by, desc) => dispatch( setSort('cards', by, desc) ),
     setViewMode: (mode) => dispatch( setViewMode('cards', mode) ),
-    select: (items, e) => dispatch( select(items) ),
-    deselect: () => dispatch( deselect() ),
+    select: (id) => dispatch( select(id) ),
+    deselect: (id) => dispatch( deselect(id) ),
     toggleSelecting: () => dispatch( toggleSelecting() ),
     flip: (id) => dispatch( flipCards([id]) )
   }

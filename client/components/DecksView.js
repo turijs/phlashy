@@ -22,11 +22,11 @@ class DecksView extends React.Component {
     this.handleClose = () => this.setState({ isAdding: false, isEditing: false });
     this.handleAdd = () => this.setState({ isAdding: true });
     this.handleEdit = () => {this.setState({ isEditing: true })};
-    this.handleDelete = () => this.props.selectedDecks.forEach(id => props.deleteDeck(id));
+    this.handleDelete = () => this.props.selectedDecks.forEach(deck => props.deleteDeck(deck.id));
 
     this.handleSave = (deckData) => {
       if(this.state.isEditing)
-        this.props.updateDeck(this.props.selectedDecks[0], deckData);
+        this.props.updateDeck(this.props.selectedDecks[0].id, deckData);
       else
         this.props.addDeck(deckData);
 
@@ -34,10 +34,15 @@ class DecksView extends React.Component {
     };
   }
 
+  handleBaseClick = e => {
+    if( e.target.getAttribute('data-deselect') && this.props.isSelecting )
+      this.props.toggleSelecting();
+  }
+
   render() {
     let {
       decks, addDeck, updateDeck, deleteDeck,
-      selectedDecks, isSelecting, select, toggleSelecting,
+      selectedDecks, isSelecting, select, deselect, toggleSelecting,
       sortBy, sortDesc, setSort,
       filter, setFilter, clearFilter,
       viewMode, setViewMode,
@@ -47,7 +52,11 @@ class DecksView extends React.Component {
     let {isEditing, isAdding} = this.state;
 
     return (
-      <div id="decks" className={`flexible-item-manager ${viewMode}`}>
+      <div
+        id="decks"
+        className={`flexible-item-manager ${viewMode}`}
+        onClick={this.handleBaseClick}
+      >
 
         <div className="item-manager-header">
           <h1>Decks</h1>
@@ -61,7 +70,7 @@ class DecksView extends React.Component {
           />
         </div>
 
-        <div className="list-wrap">
+        <div className="list-wrap" data-deselect>
           <ItemSorter
             viewMode={viewMode}
             sortBy={sortBy}
@@ -73,12 +82,10 @@ class DecksView extends React.Component {
           <FlexibleItemView
             items={decks}
             itemComponent={Deck}
-            getItemProp={getDeckProp}
             filter={filter}
             sortBy={sortBy}
-            sortDesc={sortDesc}
-            selectedItems={selectedDecks}
             onSelect={select}
+            onDeselect={deselect}
             isSelecting={isSelecting}
             viewMode={viewMode}
             placeholder="You have no decks. Click '+' (below) to create one"
@@ -99,7 +106,7 @@ class DecksView extends React.Component {
 
         <DeckEditor
           show={isEditing || isAdding}
-          deck={isEditing && decks.find(({id}) => id == selectedDecks[0])}
+          deck={isEditing && selectedDecks[0]}
           onSave={this.handleSave}
           onCancel={this.handleClose}
         />
@@ -110,26 +117,28 @@ class DecksView extends React.Component {
   }
 }
 
-import {
-  addDeck, deleteDeck, updateDeck,
-  setFilter, clearFilter,
-  setSort, setViewMode,
-  select, deselect, toggleSelecting,
-  beginEdit, cancelEdit
-} from '../actions';
+import { getFlaggedDecks, getSelectedDecks } from '../selectors';
 
 function mapStateToProps(state) {
+  console.log(getSelectedDecks(state));
   return {
-    decks: Object.values(state.decks),
+    decks: getFlaggedDecks(state),
     sortBy: state.prefs.view.sort.decks.by,
     sortDesc: state.prefs.view.sort.decks.desc,
     viewMode: state.prefs.view.mode.decks,
-    selectedDecks: state.activeView.selected,
+    selectedDecks: getSelectedDecks(state),
     isSelecting: state.activeView.isSelecting,
     filter: state.activeView.filter,
     hasHydrated: state.hasHydrated
   };
 }
+
+import {
+  addDeck, deleteDeck, updateDeck,
+  setFilter, clearFilter,
+  setSort, setViewMode,
+  select, deselect, toggleSelecting,
+} from '../actions';
 
 function mapDispatchToProps(dispatch) {
   return {
@@ -140,11 +149,9 @@ function mapDispatchToProps(dispatch) {
     clearFilter: () => dispatch( clearFilter() ),
     setSort: (by, desc) => dispatch( setSort('decks', by, desc) ),
     setViewMode: (mode) => dispatch( setViewMode('decks', mode) ),
-    select: (items, e) => dispatch( select(items) ),
-    deselect: () => dispatch( deselect() ),
+    select: (id) => dispatch( select(id) ),
+    deselect: (id) => dispatch( deselect(id) ),
     toggleSelecting: () => dispatch( toggleSelecting() ),
-    beginEdit: () => dispatch( beginEdit() ),
-    cancelEdit: () => dispatch( cancelEdit() ),
   }
 }
 

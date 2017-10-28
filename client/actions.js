@@ -160,24 +160,14 @@ export function refresh_failed() {
 
 /*====== Active Item View =======*/
 
-export const BEGIN_EDIT = 'BEGIN_EDIT';
-export function beginEdit() {
-  return {type: BEGIN_EDIT}
-}
-
-export const CANCEL_EDIT = 'CANCEL_EDIT';
-export function cancelEdit() {
-  return {type: CANCEL_EDIT}
-}
-
 export const SELECT = 'SELECT';
-export function select(items) {
-  return {type: SELECT, items}
+export function select(id, shift) {
+  return {type: SELECT, id, shift}
 }
 
 export const DESELECT = 'DESELECT';
-export function deselect() {
-  return {type: DESELECT}
+export function deselect(id) {
+  return {type: DESELECT, id}
 }
 
 export const TOGGLE_SELECTING = 'TOGGLE_SELECTING';

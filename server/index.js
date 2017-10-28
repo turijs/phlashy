@@ -84,6 +84,5 @@ app.get('*', (req, res) => {
 // Start listening for requests
 // ============================
 db.setupTablesIfNecessary().then(() => {
-  // db.createCard(1, 7, 'one', 'uno').then(res => console.log(res))
   app.listen(port, () => console.log(`listening on port ${ port }`) );
 }).catch(err => console.log(err));

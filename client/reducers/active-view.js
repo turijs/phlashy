@@ -7,7 +7,7 @@ import {
 } from '../actions';
 
 const defaultActiveView = {
-  selected: [],
+  selected: {},
   flipped: {},
   filter: '',
   isSelecting: false,
@@ -16,13 +16,13 @@ const defaultActiveView = {
 function activeView(state = defaultActiveView, action) {
   switch(action.type) {
     case SELECT:
-      return {...state, selected: action.items, isSelecting: true};
+      return {...state, selected: {...state.selected, [action.id]: true}, isSelecting: true};
 
     case DESELECT:
-      return {...state, selected: [], isSelecting: false};
+      return {...state, selected: {...state.selected, [action.id]: false} };
 
     case TOGGLE_SELECTING:
-      return {...state, selected: [], isSelecting: !state.isSelecting};
+      return {...state, selected: {}, isSelecting: !state.isSelecting};
 
     case SET_FILTER:
       return {...state, filter: action.filter};
@@ -41,8 +41,8 @@ function activeView(state = defaultActiveView, action) {
     case ADD_DECK_COMMIT:
     case ADD_CARD_COMMIT: {
       let {flipped, selected} = state;
-      let newSelected = selected.map(id => id === action.tempId ? action.id : id);
-      let newFlipped = flipped[action.tempId] ? {...state.flipped, [action.id]: true} : flipped;
+      let newSelected = selected[action.tempId] ? {...selected, [action.id]: true} : selected;
+      let newFlipped = flipped[action.tempId] ? {...flipped, [action.id]: true} : flipped;
       return {...state, flipped: newFlipped, selected: newSelected};
     }
 

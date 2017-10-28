@@ -10,7 +10,6 @@ class DeckEditor extends React.Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    // console.log(nextProps);
     if(nextProps.deck != this.props.deck)
       this.setState( this.getNewState(nextProps) );
   }

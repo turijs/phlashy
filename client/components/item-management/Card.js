@@ -4,24 +4,28 @@ import Pressable from '../Pressable';
 import renderDate from '../../util/render-date';
 import cn from 'classnames';
 
-function Card({
-  id,
-  front,
-  back,
-  created,
-  modified,
-  onMouseDown,
-  onClick,
-  onPress,
-  isSelected,
-  isFlipped
-}) {
-  return (
+class Card extends React.PureComponent {
+  render() {
+    let {
+      id,
+      front,
+      back,
+      created,
+      modified,
+      onMouseDown,
+      onClick,
+      onPress,
+      selected,
+      flipped
+    } = this.props;
+    let item = {id, selected}
+
+    return (
       <Pressable
-        className={cn('card', {selected: isSelected, flipped: isFlipped})}
-        onDown={onMouseDown}
-        onClick={onClick}
-        onPress={onPress}
+        className={cn('card', {selected, flipped})}
+        onDown={e => onMouseDown(e, item)}
+        onClick={e => onClick(e, item)}
+        onPress={e => onPress(e, item)}
         pressDelay={600}
       >
         <div className="card-front">
@@ -37,8 +41,10 @@ function Card({
         <div className="card-modified">{renderDate(modified)}</div>
         <div className="card-created">{renderDate(created)}</div>
       </Pressable>
-  )
+    )
+  }
 }
+
 Card.publicProps = [
   {value: 'front', label: 'Front'},
   {value: 'back', label: 'Back'},

@@ -1,54 +1,26 @@
 import React from 'react';
-import Modal from '../Modal';
+import itemEditorWrap from './itemEditorBoilerplate';
 
-class DeckEditor extends React.Component {
-  constructor(props) {
-    super(props);
-    this.handleChange = this.handleChange.bind(this);
-    this.handleSubmit = this.handleSubmit.bind(this);
-    this.state = this.getNewState(props);
-  }
-
-  componentWillReceiveProps(nextProps) {
-    if(nextProps.deck != this.props.deck)
-      this.setState( this.getNewState(nextProps) );
-  }
-
-  getNewState({deck}) {
-    if(!deck)
-      return {name: '', description: ''}
-
-    return {name: deck.name, description: deck.description};
-  }
-
-  handleChange(e) {
-    let {name, value} = e.target;
-    this.setState({[name]: value});
-  }
-
-  handleSubmit(e) {
-    e.preventDefault();
-    let {name, description} = this.state;
-    this.props.onSave({name, description});
-  }
-
-  render() {
-    let {deck, onCancel, onSave, ...rest} = this.props;
-    let {name, description} = this.state;
-
-    return (
-      <Modal onClickOutside={onCancel} className="deck-editor" {...rest}>
-        <form onSubmit={this.handleSubmit} onChange={this.handleChange}>
-          <input type="text" name="name" defaultValue={name} placeholder="Name" />
-          <textarea name="description" defaultValue={description} placeholder="Description" />
-        </form>
-        <div className="btn-row">
-          <button onClick={onCancel}>Cancel</button>
-          <button className="btn-go" onClick={this.handleSubmit}>Save</button>
-        </div>
-      </Modal>
-    );
-  }
+function DeckEditor({
+  onChange,
+  onSubmit,
+  onCancel,
+  values: {name = '', description = ''}
+}) {
+  return (
+    <div className="deck-editor2">
+      <form onSubmit={onSubmit}>
+        <input tabIndex="1" autoFocus type="text" name="name" value={name}
+          placeholder="Name" onChange={onChange} />
+        <textarea tabIndex="2" name="description" defaultValue={description}
+          placeholder="Description" onChange={onChange} />
+      </form>
+      <div className="btn-row">
+        <button tabIndex="4" onClick={onCancel}>Cancel</button>
+        <button tabIndex="3" className="btn-go" onClick={onSubmit}>Save</button>
+      </div>
+    </div>
+  )
 }
 
-export default DeckEditor;
+export default itemEditorWrap(DeckEditor);

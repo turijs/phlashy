@@ -41,8 +41,9 @@ class DecksView extends React.Component {
 
   render() {
     let {
-      decks, addDeck, updateDeck, deleteDeck,
-      selectedDecks, isSelecting, select, deselect, toggleSelecting,
+      decks, selectedDecks,
+      addDeck, updateDeck, deleteDeck,
+      isSelecting, select, deselect, toggleSelecting,
       sortBy, sortDesc, setSort,
       filter, setFilter, clearFilter,
       viewMode, setViewMode,
@@ -120,7 +121,6 @@ class DecksView extends React.Component {
 import { getFlaggedDecks, getSelectedDecks } from '../selectors';
 
 function mapStateToProps(state) {
-  console.log(getSelectedDecks(state));
   return {
     decks: getFlaggedDecks(state),
     sortBy: state.prefs.view.sort.decks.by,

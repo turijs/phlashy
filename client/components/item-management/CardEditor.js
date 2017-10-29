@@ -1,56 +1,26 @@
 import React from 'react';
-import Modal from '../Modal';
+import itemEditorWrap from './itemEditorBoilerplate'
 
-class CardEditor extends React.Component {
-  constructor(props) {
-    super(props);
-    this.handleChange = this.handleChange.bind(this);
-    this.handleSubmit = this.handleSubmit.bind(this);
-    this.state = this.getNewState(props);
-  }
-
-  componentWillReceiveProps(nextProps) {
-    // console.log(nextProps);
-    if(nextProps.card != this.props.card)
-      this.setState( this.getNewState(nextProps) );
-  }
-
-  getNewState({card} = {}) {
-    if(!card)
-      return {front: '', back: ''}
-
-    return {front: card.front, back: card.back};
-  }
-
-  handleChange(e) {
-    let {name, value} = e.target;
-    this.setState({[name]: value});
-  }
-
-  handleSubmit(e) {
-    e.preventDefault();
-    let {front, back} = this.state;
-    this.props.onSave({front, back});
-    this.setState( this.getNewState() )
-  }
-
-  render() {
-    let {card, onCancel, onSave, ...rest} = this.props;
-    let {front, back} = this.state;
-
-    return (
-      <Modal onClickOutside={onCancel} className="card-editor" {...rest}>
-        <form onSubmit={this.handleSubmit} onChange={this.handleChange}>
-          <textarea autoFocus name="front" defaultValue={front} placeholder="Front" />
-          <textarea name="back" defaultValue={back} placeholder="Back" />
-        </form>
-        <div className="btn-row">
-          <button onClick={onCancel}>Cancel</button>
-          <button className="btn-go" onClick={this.handleSubmit}>Save</button>
-        </div>
-      </Modal>
-    );
-  }
+function CardEditor({
+  onChange,
+  onSubmit,
+  onCancel,
+  values: {front = '', back = ''}
+}) {
+  return (
+    <div className="card-editor">
+      <form onSubmit={onSubmit}>
+        <textarea tabIndex="1" autoFocus name="front" value={front}
+          placeholder="Front" onChange={onChange} />
+        <textarea tabIndex="2" name="back" value={back}
+          placeholder="Back" onChange={onChange} />
+      </form>
+      <div className="btn-row">
+        <button tabIndex="4" onClick={onCancel}>Cancel</button>
+        <button tabIndex="3" className="btn-go" onClick={onSubmit}>Save</button>
+      </div>
+    </div>
+  )
 }
 
-export default CardEditor;
+export default itemEditorWrap(CardEditor);

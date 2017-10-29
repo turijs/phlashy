@@ -41,8 +41,10 @@ function activeView(state = defaultActiveView, action) {
     case ADD_DECK_COMMIT:
     case ADD_CARD_COMMIT: {
       let {flipped, selected} = state;
-      let newSelected = selected[action.tempId] ? {...selected, [action.id]: true} : selected;
-      let newFlipped = flipped[action.tempId] ? {...flipped, [action.id]: true} : flipped;
+      let newSelected = selected[action.tempId] ?
+        {...selected, [action.tempId]: false, [action.id]: true} : selected;
+      let newFlipped = flipped[action.tempId] ?
+        {...flipped, [action.tempId]: false, [action.id]: true} : flipped;
       return {...state, flipped: newFlipped, selected: newSelected};
     }
 

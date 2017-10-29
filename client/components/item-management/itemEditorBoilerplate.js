@@ -5,11 +5,11 @@ export default function itemEditorWrap(Editor) {
   class EditorWrap extends React.Component  {
     constructor(props) {
       super(props);
-      this.state = props.initializeFrom;
+      this.state = props.initializeFrom || {};
     }
 
     componentWillReceiveProps(nextProps) {
-      this.setState( nextProps.initializeFrom );
+      this.setState( nextProps.initializeFrom || {} );
     }
 
     handleChange = e => {

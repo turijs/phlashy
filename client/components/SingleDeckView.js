@@ -21,11 +21,11 @@ class SingleDeckView extends React.Component {
     this.handleClose = () => this.setState({ isAdding: false, isEditing: false });
     this.handleAdd = () => this.setState({ isAdding: true });
     this.handleEdit = () => this.setState({ isEditing: true });
-    this.handleDelete = () => this.props.selectedCards.forEach(card => props.deleteCard(card.id));
+    this.handleDelete = () => this.props.selected.forEach(id => props.deleteCard(id));
 
     this.handleSave = (cardData) => {
       if(this.state.isEditing)
-        this.props.updateCard(this.props.selectedCards[0].id, cardData);
+        this.props.updateCard(this.props.selected[0], cardData);
       else
         this.props.addCard(cardData);
 
@@ -44,7 +44,7 @@ class SingleDeckView extends React.Component {
       noSuchDeck,
       deck,
       cards, addCard, updateCard, deleteCard,
-      selectedCards, isSelecting, select, deselect, toggleSelecting,
+      selected, isSelecting, select, deselect, toggleSelecting,
       sortBy, sortDesc, setSort,
       filter, setFilter, clearFilter,
       viewMode, setViewMode,
@@ -97,8 +97,8 @@ class SingleDeckView extends React.Component {
         <ItemActionsBar
           actions={[
             {label:'Add Card', icon:'plus', call: this.handleAdd},
-            {label:'Edit Card', icon:'pencil', call: this.handleEdit, disabled:selectedCards.length != 1},
-            {label:'Delete Card', icon:'trash', call: this.handleDelete, disabled:!selectedCards.length},
+            {label:'Edit Card', icon:'pencil', call: this.handleEdit, disabled:selected.length != 1},
+            {label:'Delete Card', icon:'trash', call: this.handleDelete, disabled:!selected.length},
             {label:'Pull Cards', icon:'hand-lizard-o', call: _=>_}
           ]}
           numPrimary={3}
@@ -106,7 +106,7 @@ class SingleDeckView extends React.Component {
 
         <CardEditor
           show={isEditing || isAdding}
-          card={isEditing && selectedCards[0]}
+          initializeFrom={isEditing && selected.cards[0]}
           onSave={this.handleSave}
           onCancel={this.handleClose}
         />
@@ -126,7 +126,7 @@ const defaultDeck = {
   modified: '...'
 }
 
-import {getDeck, getFlaggedCardsByDeck, getSelectedCardsByDeck} from '../selectors';
+import {getDeck, getFlaggedCardsByDeck, getSelectedCards} from '../selectors';
 
 function mapStateToProps(state, ownProps) {
   let deck = getDeck(state, ownProps.match.params);
@@ -141,7 +141,7 @@ function mapStateToProps(state, ownProps) {
     sortBy: state.prefs.view.sort.cards.by,
     sortDesc: state.prefs.view.sort.cards.desc,
     viewMode: state.prefs.view.mode.cards,
-    selectedCards: getSelectedCardsByDeck(state, deck),
+    selected: getSelectedCards(state),
     isSelecting: state.activeView.isSelecting,
     filter: state.activeView.filter,
     hasHydrated: state.hasHydrated

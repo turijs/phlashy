@@ -1,6 +1,6 @@
 import {createSelector} from 'reselect';
 import {getProp, filterableProps} from '../item-types/DECKS';
-import {getNormalizedFilter, getSelected} from './active-view';
+import {getNormalizedFilter, getSelected, listSelected} from './active-view';
 import {filterItems, sortItems} from './helpers';
 
 export const getDecks = state => state.decks;
@@ -34,7 +34,10 @@ export const getFlaggedDecks = createSelector(
 );
 
 export const getSelectedDecks = createSelector(
-  getDecksList,
-  getSelected,
-  (decks, selected) => decks.filter(deck => selected[deck.id])
+  getDecks,
+  listSelected,
+  (decks, selected) => {
+    selected.decks = selected.map(id => decks[id]);
+    return selected;
+  }
 )

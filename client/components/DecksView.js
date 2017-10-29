@@ -21,11 +21,11 @@ class DecksView extends React.Component {
     this.handleClose = () => this.setState({ isAdding: false, isEditing: false });
     this.handleAdd = () => this.setState({ isAdding: true });
     this.handleEdit = () => {this.setState({ isEditing: true })};
-    this.handleDelete = () => this.props.selectedDecks.forEach(deck => props.deleteDeck(deck.id));
+    this.handleDelete = () => this.props.selected.forEach(id => props.deleteDeck(id));
 
     this.handleSave = (deckData) => {
       if(this.state.isEditing)
-        this.props.updateDeck(this.props.selectedDecks[0].id, deckData);
+        this.props.updateDeck(this.props.selected[0], deckData);
       else
         this.props.addDeck(deckData);
 
@@ -40,7 +40,7 @@ class DecksView extends React.Component {
 
   render() {
     let {
-      decks, selectedDecks,
+      decks, selected,
       addDeck, updateDeck, deleteDeck,
       isSelecting, select, deselect, toggleSelecting,
       sortBy, sortDesc, setSort,
@@ -97,8 +97,8 @@ class DecksView extends React.Component {
         <ItemActionsBar
           actions={[
             {label:'Add Deck', icon:'plus', call: this.handleAdd},
-            {label:'Edit Deck', icon:'pencil', call: this.handleEdit, disabled:selectedDecks.length != 1},
-            {label:'Delete Deck', icon:'trash', call: this.handleDelete, disabled:!selectedDecks.length},
+            {label:'Edit Deck', icon:'pencil', call: this.handleEdit, disabled:selected.length != 1},
+            {label:'Delete Deck', icon:'trash', call: this.handleDelete, disabled:!selected.length},
             {label:'Pull Decks', icon:'hand-lizard-o', call: _=>_}
           ]}
           numPrimary={3}
@@ -106,7 +106,7 @@ class DecksView extends React.Component {
 
         <DeckEditor
           show={isEditing || isAdding}
-          deck={isEditing && selectedDecks[0]}
+          initializeFrom={isEditing && selected.decks[0]}
           onSave={this.handleSave}
           onCancel={this.handleClose}
         />
@@ -125,7 +125,7 @@ function mapStateToProps(state) {
     sortBy: state.prefs.view.sort.decks.by,
     sortDesc: state.prefs.view.sort.decks.desc,
     viewMode: state.prefs.view.mode.decks,
-    selectedDecks: getSelectedDecks(state),
+    selected: getSelectedDecks(state),
     isSelecting: state.activeView.isSelecting,
     filter: state.activeView.filter,
     hasHydrated: state.hasHydrated

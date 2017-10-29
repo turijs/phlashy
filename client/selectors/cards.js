@@ -24,7 +24,7 @@ export const getCardOfDay = createSelector(
 
 import {getDeck} from './decks';
 import {getProp, filterableProps} from '../item-types/CARDS';
-import {getNormalizedFilter, getSelected, getFlipped} from './active-view';
+import {getNormalizedFilter, getSelected, listSelected, getFlipped} from './active-view';
 import {filterItems, sortItems} from './helpers';
 
 export const getCardsByDeck = createSelector(
@@ -58,8 +58,11 @@ export const getFlaggedCardsByDeck = createSelector(
   })
 );
 
-export const getSelectedCardsByDeck = createSelector(
-  getCardsByDeck,
-  getSelected,
-  (cards, selected) => cards.filter(card => selected[card.id])
+export const getSelectedCards = createSelector(
+  getCards,
+  listSelected,
+  (cards, selected) => {
+    selected.cards = selected.map(id => cards[id]);
+    return selected;
+  }
 )

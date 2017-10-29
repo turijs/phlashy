@@ -1,5 +1,5 @@
 import React from 'react';
-import mousetrap from 'mousetrap';
+import combokeys from '../../util/combokeys';
 import {connect} from 'react-redux';
 import A from '../A';
 import Icon from '../Icon';
@@ -18,15 +18,15 @@ class StudyCards extends React.Component {
     let { handleFlip } = this;
     let { showNextCard, showPrevCard, cardKnown, cardUnknown } = this.props;
 
-    mousetrap.bind('left', showPrevCard);
-    mousetrap.bind('right', showNextCard);
-    mousetrap.bind('space', handleFlip);
-    mousetrap.bind('1', cardUnknown);
-    mousetrap.bind('2', cardKnown);
+    combokeys.bind('left', showPrevCard);
+    combokeys.bind('right', showNextCard);
+    combokeys.bind('space', handleFlip);
+    combokeys.bind('1', cardUnknown);
+    combokeys.bind('2', cardKnown);
   }
 
   componentWillUnmount() {
-    mousetrap.unbind(['left', 'right', 'space', '1', '2']);
+    combokeys.unbind(['left', 'right', 'space', '1', '2']);
   }
 
   componentWillReceiveProps(next) {

@@ -28,7 +28,7 @@ export default function itemEditorWrap(Editor) {
       let {name, description} = this.state;
 
       return (
-        <Modal onClickOutside={onCancel} className="item-editor" show={show}>
+        <Modal onClose={onCancel} className="item-editor" show={show}>
           <Editor
             onChange={this.handleChange}
             onSubmit={this.handleSubmit}

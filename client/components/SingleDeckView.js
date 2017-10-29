@@ -1,7 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
 
-import Modal from './Modal';
 import { Link, Redirect } from 'react-router-dom';
 import {LoggedOutOnly} from './app-conditional';
 

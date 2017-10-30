@@ -3,7 +3,7 @@
  */
 import React from 'react';
 
-const A = ({onClick, ...rest}) => (
+const A = ({onClick, disabled, ...rest}) => (
   <a
     href="#"
     onClick={e => {
@@ -11,10 +11,10 @@ const A = ({onClick, ...rest}) => (
       onClick(e);
     }}
     role="button"
+    disabled={disabled}
+    tabIndex={disabled ? -1 : undefined}
     {...rest}
-  >
-    {/* {children} */}
-  </a>
+  />
 );
 
 export default A;

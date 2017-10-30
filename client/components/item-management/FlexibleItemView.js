@@ -2,14 +2,7 @@ import React from 'react';
 import Spinner from '../Spinner';
 
 class FlexibleItemView extends React.Component {
-  constructor(props) {
-    super(props);
-
-    this.handleMouseDown = this.handleMouseDown.bind(this);
-    this.handleClick = this.handleClick.bind(this);
-    this.handlePress = this.handlePress.bind(this);
-  }
-
+  
   handleMouseDown(e, item) {
     let { isSelecting, onSelect, onDeselect } = this.props;
 
@@ -50,9 +43,9 @@ class FlexibleItemView extends React.Component {
         { items.length ? items.map(item => (
           <ItemComp
             key={item.id}
-            onMouseDown={this.handleMouseDown}
-            onClick={this.handleClick}
-            onPress={this.handlePress}
+            onMouseDown={e => this.handleMouseDown(e, item)}
+            onClick={e => this.handleClick(e, item)}
+            onPress={e => this.handlePress(e, item)}
             {...item}
           />
         )) : (

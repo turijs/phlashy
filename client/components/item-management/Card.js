@@ -4,29 +4,30 @@ import Pressable from '../Pressable';
 import renderDate from '../../util/render-date';
 import cn from 'classnames';
 
-class Card extends React.PureComponent {
+const updateProps = ['front', 'back', 'created', 'modified', 'flipped', 'selected'];
+
+class Card extends React.Component {
+  shouldComponentUpdate(nextProps) {
+    for(let prop of updateProps)
+      if(nextProps[prop] !== this.props[prop])
+        return true;
+    return false;
+  }
   render() {
     let {
-      id,
-      front,
-      back,
-      created,
-      modified,
-      onMouseDown,
-      onClick,
-      onPress,
+      front, back,
+      created, modified,
+      onMouseDown, onClick, onPress,
       selected,
       flipped
     } = this.props;
-    let item = {id, selected}
 
     return (
       <Pressable
         className={cn('card', {selected, flipped})}
-        onDown={e => onMouseDown(e, item)}
-        onClick={e => onClick(e, item)}
-        onPress={e => onPress(e, item)}
-        pressDelay={600}
+        onMouseDown={onMouseDown}
+        onClick={onClick}
+        onPress={onPress}
       >
         <div className="card-front">
           <div className="card-text-wrap">
@@ -44,14 +45,5 @@ class Card extends React.PureComponent {
     )
   }
 }
-
-Card.publicProps = [
-  {value: 'front', label: 'Front'},
-  {value: 'back', label: 'Back'},
-  {value: 'modified', label: 'Date Modified'},
-  {value: 'created', label: 'Date Created'},
-]
-Card.filterableProps = ['front', 'back'];
-Card.prefix = 'card';
 
 export default Card;

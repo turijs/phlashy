@@ -1,8 +1,8 @@
 export const slug = 'deck';
 
-export const publicProps = {
+export const labels = {
   name         : 'Name',
-  decscription : 'Description',
+  description : 'Description',
   created      : 'Date Created',
   modified     : 'Date Modified',
   size         : 'Size',

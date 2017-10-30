@@ -1,6 +1,6 @@
 export const slug = 'card';
 
-export const publicProps = {
+export const labels = {
   front    : 'Name',
   back     : 'Description',
   created  : 'Date Created',

@@ -1,5 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
+import * as cardMeta from '../item-types/CARDS';
 
 import { Link, Redirect } from 'react-router-dom';
 import {LoggedOutOnly} from './app-conditional';
@@ -34,6 +35,8 @@ class SingleDeckView extends React.Component {
       this.handleClose();
     }
   }
+
+
 
   render() {
     let {
@@ -77,7 +80,7 @@ class SingleDeckView extends React.Component {
             sortBy={sortBy}
             sortDesc={sortDesc}
             onSetSort={setSort}
-            Item={Card}
+            itemMeta={cardMeta}
           />
 
           <FlexibleItemView

@@ -36,10 +36,6 @@ const store = createStore(
 
 sagaMiddleware.run(rootSaga);
 
-// // login with preloaded user, BEFORE persistor created
-// if(window.USER)
-//   store.dispatch( login(USER) );
-
 handlePersistence(store);
 
 

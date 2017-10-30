@@ -7,14 +7,17 @@ import Icon from '../Icon';
 const ItemSorter = ({
   viewMode,
   sortBy, sortDesc, onSetSort,
-  Item,
+  itemMeta,
 }) => (
   <div className="item-sort">
     {viewMode == 'grid' ? (
       <div className="grid-sort">
         <Select
           value={sortBy}
-          options={Item.publicProps}
+          options={itemMeta.sortableProps.map(prop => ({
+            value: prop,
+            label: itemMeta.labels[prop]
+          }))}
           onChange={o => onSetSort(o.value, sortDesc)}
           clearable={false}
         />
@@ -29,15 +32,15 @@ const ItemSorter = ({
       </div>
     ) : (
       <div className="item-col-headers">
-        {Item.publicProps.map(opt => {
-          let active = opt.value == sortBy;
+        {itemMeta.sortableProps.map(prop => {
+          let active = prop == sortBy;
           return (
             <div
-              key={opt.value}
-              className={`item-col-header ${Item.prefix}-${opt.value} ${active ? ' active' : ''}`}
+              key={prop}
+              className={`item-col-header ${itemMeta.slug}-${prop} ${active ? ' active' : ''}`}
             >
-              <A onClick={() => onSetSort(opt.value, active ? !sortDesc : false)} >
-                <div className="item-col-header-inner">{opt.label}</div>
+              <A onClick={() => onSetSort(prop, active ? !sortDesc : false)} >
+                <div className="item-col-header-inner">{itemMeta.labels[prop]}</div>
                 {active &&
                   <Icon sm slug={'chevron-'+(sortDesc ? 'down' : 'up')} />}
               </A>

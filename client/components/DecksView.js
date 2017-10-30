@@ -3,6 +3,7 @@ import { connect } from 'react-redux';
 
 import { Link, Redirect } from 'react-router-dom';
 import {LoggedOutOnly} from './app-conditional';
+import * as deckMeta from '../item-types/DECKS';
 
 import ItemWrap from './item-management/ItemWrap';
 import FlexibleItemView from './item-management/FlexibleItemView';
@@ -34,16 +35,11 @@ class DecksView extends React.Component {
     };
   }
 
-  handleBaseClick = e => {
-    if( e.target.getAttribute('data-deselect') && this.props.isSelecting )
-      this.props.toggleSelecting();
-  }
-
   render() {
     let {
       decks, selected,
       addDeck, updateDeck, deleteDeck,
-      isSelecting, select, deselect, toggleSelecting,
+      isSelecting, select, deselect, toggleSelecting, stopSelecting,
       sortBy, sortDesc, setSort,
       filter, setFilter, clearFilter,
       viewMode, setViewMode,
@@ -56,7 +52,6 @@ class DecksView extends React.Component {
       <div
         id="decks"
         className={`flexible-item-manager ${viewMode}`}
-        onClick={this.handleBaseClick}
       >
 
         <div className="item-manager-header">
@@ -71,13 +66,13 @@ class DecksView extends React.Component {
           />
         </div>
 
-        <ItemWrap>
+        <ItemWrap stopSelecting={stopSelecting}>
           <ItemSorter
             viewMode={viewMode}
             sortBy={sortBy}
             sortDesc={sortDesc}
             onSetSort={setSort}
-            Item={Deck}
+            itemMeta={deckMeta}
           />
 
           <FlexibleItemView
@@ -133,25 +128,21 @@ function mapStateToProps(state) {
   };
 }
 
-import {
-  addDeck, deleteDeck, updateDeck,
-  setFilter, clearFilter,
-  setSort, setViewMode,
-  select, deselect, toggleSelecting,
-} from '../actions';
+import * as a from '../actions';
 
 function mapDispatchToProps(dispatch) {
   return {
-    addDeck: (deckData) => dispatch( addDeck(deckData) ),
-    updateDeck: (id, deckData) => dispatch( updateDeck(id, deckData) ),
-    deleteDeck: (id) => dispatch( deleteDeck(id) ),
-    setFilter: (filter) => dispatch( setFilter(filter) ),
-    clearFilter: () => dispatch( clearFilter() ),
-    setSort: (by, desc) => dispatch( setSort('decks', by, desc) ),
-    setViewMode: (mode) => dispatch( setViewMode('decks', mode) ),
-    select: (id) => dispatch( select(id) ),
-    deselect: (id) => dispatch( deselect(id) ),
-    toggleSelecting: () => dispatch( toggleSelecting() ),
+    addDeck: (deckData) => dispatch( a.addDeck(deckData) ),
+    updateDeck: (id, deckData) => dispatch( a.updateDeck(id, deckData) ),
+    deleteDeck: (id) => dispatch( a.deleteDeck(id) ),
+    setFilter: (filter) => dispatch( a.setFilter(filter) ),
+    clearFilter: () => dispatch( a.clearFilter() ),
+    setSort: (by, desc) => dispatch( a.setSort('decks', by, desc) ),
+    setViewMode: (mode) => dispatch( a.setViewMode('decks', mode) ),
+    select: (id) => dispatch( a.select(id) ),
+    deselect: (id) => dispatch( a.deselect(id) ),
+    toggleSelecting: () => dispatch( a.toggleSelecting() ),
+    stopSelecting: () => dispatch( a.stopSelecting() ),
   }
 }
 

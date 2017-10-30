@@ -1,7 +1,8 @@
 .flexible-item-manager {
   position: relative;
-  margin-bottom: 182px;
 }
+
+.item-wrap { padding-bottom: 182px; }
 
 .item-manager-header {
   @extend .full-width-breakout;
@@ -14,7 +15,7 @@
   h1 {
     @extend .container;
     position: relative;
-    padding: 15px 0 5px;
+    padding: 10px 0;
     margin: 0;
     text-align: center;
   }
@@ -32,7 +33,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin: 10px 0;
+  > * { margin-bottom: 10px; }
   .item-filter { width: 50%; max-width: 400px; }
 
   @media (max-width: 500px) {
@@ -40,12 +41,11 @@
     .item-filter {
       order: 3;
       width: 100%; max-width: none;
-      margin-bottom: 14px;
     }
   }
 }
 
-.list .list-wrap {
+.list .item-wrap {
   @extend .full-width-breakout;
   overflow: auto;
   .item-col-headers, .flexible-item-view {
@@ -211,7 +211,7 @@
   }
 }
 
-.item-editor .modal-window {
+.item-editor {
   border: 2px solid navy;
   background: $header-bg;
 }

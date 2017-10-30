@@ -31,12 +31,12 @@ class Pressable extends React.Component {
   }
 
   handleMouseDown(e) {
-    let {onDown, onPress, pressDelay = defaultPressDelay} = this.props;
+    let {onMouseDown, onPress, pressDelay = defaultPressDelay} = this.props;
 
     this.press = false;
 
-    if(onDown)
-      onDown(e);
+    if(onMouseDown)
+      onMouseDown(e);
 
     if(onPress && !this.pressTimer && e.button == 0)
       this.pressTimer = setTimeout(this.handlePress, pressDelay)
@@ -63,7 +63,7 @@ class Pressable extends React.Component {
     let {
       children,
       onClick,
-      onDown,
+      onMouseDown,
       pressDelay,
       onPress,
       ...rest

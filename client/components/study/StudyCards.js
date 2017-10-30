@@ -1,10 +1,10 @@
 import React from 'react';
-import combokeys from '../../util/combokeys';
 import {connect} from 'react-redux';
 import A from '../A';
 import Icon from '../Icon';
 import Progress from '../Progress';
 import Card from '../item-management/Card';
+import Keyboard from '../Keyboard';
 
 
 
@@ -12,21 +12,6 @@ class StudyCards extends React.Component {
   constructor(props) {
     super(props);
     this.state = {isCurFlipped: props.backToFront}
-  }
-
-  componentDidMount() {
-    let { handleFlip } = this;
-    let { showNextCard, showPrevCard, cardKnown, cardUnknown } = this.props;
-
-    combokeys.bind('left', showPrevCard);
-    combokeys.bind('right', showNextCard);
-    combokeys.bind('space', handleFlip);
-    combokeys.bind('1', cardUnknown);
-    combokeys.bind('2', cardKnown);
-  }
-
-  componentWillUnmount() {
-    combokeys.unbind(['left', 'right', 'space', '1', '2']);
   }
 
   componentWillReceiveProps(next) {
@@ -77,6 +62,15 @@ class StudyCards extends React.Component {
         <A className="show-next-card" onClick={showNextCard} disabled={!isRevisit}>
           <Icon slug="chevron-right" />
         </A>
+
+        <Keyboard shortcuts={{
+          'left' : showPrevCard,
+          'right': showNextCard,
+          'space': this.handleFlip,
+          '1'    : cardUnknown,
+          '2'    : cardKnown,
+        }}/>
+
       </div>
     )
   }
@@ -120,7 +114,7 @@ export default connect(mapState, mapDispatch)(StudyCards);
 function generateCard(card, clss, flipped) {
   return card ? (
     <div className={`card-wrap ${clss}`} key={card.id}>
-      <Card {...card} isFlipped={flipped} />
+      <Card {...card} flipped={flipped} />
     </div>
   ) : null;
 }

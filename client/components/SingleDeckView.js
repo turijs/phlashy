@@ -3,7 +3,9 @@ import { connect } from 'react-redux';
 
 import { Link, Redirect } from 'react-router-dom';
 import {LoggedOutOnly} from './app-conditional';
+import Keyboard from './Keyboard';
 
+import ItemWrap from './item-management/ItemWrap';
 import FlexibleItemView from './item-management/FlexibleItemView';
 import Card from './item-management/Card';
 import CardEditor from './item-management/CardEditor';
@@ -33,18 +35,12 @@ class SingleDeckView extends React.Component {
     }
   }
 
-  getPlaceholder = () => {
-    return !this.props.filter ?
-      'This deck is currently empty. Click '+' (below) to add a card'
-    : 'No matches';
-  }
-
   render() {
     let {
       noSuchDeck,
       deck,
       cards, addCard, updateCard, deleteCard,
-      selected, isSelecting, select, deselect, toggleSelecting,
+      selected, isSelecting, select, deselect, toggleSelecting, stopSelecting,
       sortBy, sortDesc, setSort,
       filter, setFilter, clearFilter,
       viewMode, setViewMode,
@@ -57,6 +53,8 @@ class SingleDeckView extends React.Component {
 
     return (
       <div id="cards" className={`flexible-item-manager ${viewMode}`}>
+
+        <Keyboard />
 
         <div className="item-manager-header">
           <h1>
@@ -73,33 +71,35 @@ class SingleDeckView extends React.Component {
           />
         </div>
 
-        <ItemSorter
-          viewMode={viewMode}
-          sortBy={sortBy}
-          sortDesc={sortDesc}
-          onSetSort={setSort}
-          Item={Card}
-        />
+        <ItemWrap stopSelecting={stopSelecting}>
+          <ItemSorter
+            viewMode={viewMode}
+            sortBy={sortBy}
+            sortDesc={sortDesc}
+            onSetSort={setSort}
+            Item={Card}
+          />
 
-        <FlexibleItemView
-          items={cards}
-          itemComponent={Card}
-          filter={filter}
-          onSelect={select}
-          onDeselect={deselect}
-          isSelecting={isSelecting}
-          viewMode={viewMode}
-          onOpen={flip}
-          placeholder="This deck is currently empty. Click '+' (below) to add a card"
-          isLoading={!hasHydrated}
-        />
+          <FlexibleItemView
+            items={cards}
+            itemComponent={Card}
+            filter={filter}
+            onSelect={select}
+            onDeselect={deselect}
+            isSelecting={isSelecting}
+            viewMode={viewMode}
+            onOpen={flip}
+            placeholder="This deck is currently empty. Click '+' (below) to add a card"
+            isLoading={!hasHydrated}
+          />
+        </ItemWrap>
+
 
         <ItemActionsBar
           actions={[
             {label:'Add Card', icon:'plus', call: this.handleAdd},
             {label:'Edit Card', icon:'pencil', call: this.handleEdit, disabled:selected.length != 1},
             {label:'Delete Card', icon:'trash', call: this.handleDelete, disabled:!selected.length},
-            {label:'Pull Cards', icon:'hand-lizard-o', call: _=>_}
           ]}
           numPrimary={3}
         />
@@ -148,28 +148,23 @@ function mapStateToProps(state, ownProps) {
   };
 }
 
-import {
-  addCard, updateCard, deleteCard,
-  setFilter, clearFilter,
-  setSort, setViewMode,
-  select, deselect, toggleSelecting,
-  flipCards
-} from '../actions';
+import * as a from '../actions';
 
 function mapDispatchToProps(dispatch, ownProps) {
   let deckId = ownProps.match.params.id;
   return {
-    addCard: (cardData) => dispatch( addCard(cardData, deckId) ),
-    updateCard: (id, cardData) => dispatch( updateCard(id, cardData, deckId) ),
-    deleteCard: (id) => dispatch( deleteCard(id, deckId) ),
-    setFilter: (filter) => dispatch( setFilter(filter) ),
-    clearFilter: () => dispatch( clearFilter() ),
-    setSort: (by, desc) => dispatch( setSort('cards', by, desc) ),
-    setViewMode: (mode) => dispatch( setViewMode('cards', mode) ),
-    select: (id) => dispatch( select(id) ),
-    deselect: (id) => dispatch( deselect(id) ),
-    toggleSelecting: () => dispatch( toggleSelecting() ),
-    flip: (id) => dispatch( flipCards([id]) )
+    addCard: (cardData) => dispatch( a.addCard(cardData, deckId) ),
+    updateCard: (id, cardData) => dispatch( a.updateCard(id, cardData, deckId) ),
+    deleteCard: (id) => dispatch( a.deleteCard(id, deckId) ),
+    setFilter: (filter) => dispatch( a.setFilter(filter) ),
+    clearFilter: () => dispatch( a.clearFilter() ),
+    setSort: (by, desc) => dispatch( a.setSort('cards', by, desc) ),
+    setViewMode: (mode) => dispatch( a.setViewMode('cards', mode) ),
+    select: (id) => dispatch( a.select(id) ),
+    deselect: (id) => dispatch( a.deselect(id) ),
+    toggleSelecting: () => dispatch( a.toggleSelecting() ),
+    stopSelecting: () => dispatch( a.stopSelecting() ),
+    flip: (id) => dispatch( a.flip([id]) )
   }
 }
 

@@ -4,6 +4,7 @@ import { connect } from 'react-redux';
 import { Link, Redirect } from 'react-router-dom';
 import {LoggedOutOnly} from './app-conditional';
 
+import ItemWrap from './item-management/ItemWrap';
 import FlexibleItemView from './item-management/FlexibleItemView';
 import Deck from './item-management/Deck';
 import DeckEditor from './item-management/DeckEditor';
@@ -70,7 +71,7 @@ class DecksView extends React.Component {
           />
         </div>
 
-        <div className="list-wrap" data-deselect>
+        <ItemWrap>
           <ItemSorter
             viewMode={viewMode}
             sortBy={sortBy}
@@ -91,7 +92,7 @@ class DecksView extends React.Component {
             placeholder="You have no decks. Click '+' (below) to create one"
             isLoading={!hasHydrated}
           />
-        </div>
+        </ItemWrap>
 
 
         <ItemActionsBar

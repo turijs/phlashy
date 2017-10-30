@@ -24,7 +24,7 @@ class Deck extends React.Component {
       selected
     } = this.props;
     return (
-      <Link to={`/decks/${id}-${slugify(name)}`}>
+      <Link to={`/decks/${id}-${slugify(name)}`} className="deck-link">
         <Pressable
           className={cn('deck', {selected})}
           onMouseDown={onMouseDown}

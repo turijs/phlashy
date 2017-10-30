@@ -1,11 +1,23 @@
-@mixin card-basic {
-  display: inline-block;
+$flip-speed: .4s;
+$card-bg: white;
+
+@mixin card-dims {
   width: 210px;
   height: 260px;
-  margin: 20px;
-  cursor: pointer;
+}
+
+@mixin card-border {
   border: 2px solid navy;
   border-radius: 5px;
+}
+
+@mixin card-text {
+  font-size: 120%;
+  text-align: center;
+  position: absolute;
+  width: 100%;
+  top: 50%;
+  transform: translateY(-50%);
 }
 
 @mixin list-row {
@@ -19,15 +31,13 @@
 }
 
 .deck {
-  background: white;
-
-
+  background: $card-bg;
 
   .grid & {
-    @include card-basic;
+    @include card-dims;
+    @include card-border;
 
     position: relative;
-    margin: 20px 25px 20px 15px;
 
     // "stacked" effect
     &:before, &:after {
@@ -49,13 +59,8 @@
     }
 
     .deck-name {
-      text-align: center;
-      position: absolute;
-      width: 100%;
-      top: 50%;
-      transform: translateY(-50%);
+      @include card-text;
       font-weight: 600;
-      font-size: 120%;
     }
 
     .deck-description,
@@ -64,8 +69,6 @@
     .deck-size {
       display: none;
     }
-
-
   }
 
   .list & {
@@ -81,26 +84,23 @@
 
 }
 
-$flip-speed: .4s;
+.grid .deck-link {
+  display: block;
+  margin: 20px 25px 20px 15px;
+}
+
+
 
 .card {
   .grid & {
     position: relative;
-    display: inline-block;
     perspective: 1000px;
-    transform: translateX(0);
     transition: transform $flip-speed;
 
-    width: 210px;
-    height: 260px;
+    @include card-dims;
     margin: 20px;
 
-    font-size: 120%;
-    // font-weight: bold;
-    text-align: center;
-
     .card-front, .card-back {
-      cursor: pointer;
       transition: transform $flip-speed, left .4s;
       position: absolute;
       width: 100%; height: 100%;
@@ -108,15 +108,15 @@ $flip-speed: .4s;
       backface-visibility: hidden;
       transform-origin: left top;
 
-      box-shadow: 0 0 20px -6px black;
-      background: white;
-      border: 2px solid navy;
-      border-radius: 5px;
+      cursor: pointer;
+      box-shadow: 2px 2px 15px -6px black;
+      background: $card-bg;
+      @include card-border;
     }
-
     .card-front {
       transform: rotateY(0deg);
       z-index: 2;
+      left: 0;
     }
     .card-back {
       transform-origin: right top;
@@ -127,15 +127,10 @@ $flip-speed: .4s;
     }
 
     .card-text-wrap {
-      position: absolute;
-      width: 100%;
-      top: 50%;
-      transform: translateY(-50%);
+      @include card-text;
     }
 
     &.flipped {
-      // transform: translateX(100%);
-
       .card-front { transform: rotateY(-180deg); left: 100%; }
       .card-back { transform: rotateY(0deg); left: 0;}
     }
@@ -154,7 +149,7 @@ $flip-speed: .4s;
   .list & {
     @include list-row;
     cursor: pointer;
-    background: white;
+    background: $card-bg;
 
     &.selected {
       background: $select-col;
@@ -166,14 +161,14 @@ $flip-speed: .4s;
 }
 
 .list {
-  .deck-name { width: 23%; }
-  .deck-description { width: 31%; }
-  .deck-size { width: 12%; }
-  .deck-created { width: 17%; }
-  .deck-modified { width: 17%; }
+  .deck-name { flex: 2 }
+  .deck-description { flex: 3 }
+  .deck-size { flex: 1 }
+  .deck-created { flex: 1.5 }
+  .deck-modified { flex: 1.5 }
 
-  .card-front { width: 30%; }
-  .card-back { width: 30%; }
-  .card-modified { width: 20%; }
-  .card-created { width: 20%; }
+  .card-front { flex: 2; }
+  .card-back { flex: 2; }
+  .card-modified { flex: 1.3; }
+  .card-created { flex: 1.3; }
 }

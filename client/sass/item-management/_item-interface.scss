@@ -93,7 +93,11 @@
   clear: both;
   padding-top: 1px;
 
-  .grid & { margin: 0 -15px; }
+  .grid & {
+    margin: 0 -15px;
+    display: flex;
+    flex-wrap: wrap;
+  }
 
   .placeholder {
     @extend .spacious;

@@ -158,17 +158,22 @@ export function refresh_failed() {
   return {type: REFRESH_FAILED};
 }
 
-/*====== Active Item View =======*/
+/*====== Item View =======*/
 
 export const SELECT = 'SELECT';
-export function select(id, shift) {
-  return {type: SELECT, id, shift}
-}
+export const select = $basicAC(SELECT, 'id');
+
+export const SELECT_ALL = 'SELECT_ALL';
+export const selectAll = $basicAC(SELECT_ALL);
 
 export const DESELECT = 'DESELECT';
-export function deselect(id) {
-  return {type: DESELECT, id}
-}
+export const deselect = $basicAC(DESELECT, 'id');
+
+export const SELECT_NONE = 'SELECT_NONE';
+export const selectNone = $basicAC(SELECT_NONE);
+
+export const STOP_SELECTING = 'STOP_SELECTING';
+export const stopSelecting = $basicAC(STOP_SELECTING);
 
 export const TOGGLE_SELECTING = 'TOGGLE_SELECTING';
 export const toggleSelecting = $basicAC(TOGGLE_SELECTING);
@@ -197,8 +202,11 @@ export function setViewMode(itemType, mode) {
   return {type: SET_VIEW_MODE, itemType, mode}
 }
 
-export const FLIP_CARDS = 'FLIP_CARDS';
-export const flipCards = $basicAC(FLIP_CARDS, 'ids');
+export const FLIP = 'FLIP';
+export function flip(ids) {
+  if(!ids.pop) ids = [ids];
+  return {type: FLIP, ids}
+}
 
 
 /*======== Connection ========== */

@@ -1,8 +1,9 @@
 import {
-  SELECT, DESELECT, TOGGLE_SELECTING,
+  SELECT, DESELECT, SELECT_ALL, SELECT_NONE,
+  TOGGLE_SELECTING, STOP_SELECTING,
   SET_FILTER, CLEAR_FILTER,
   BEGIN_EDIT, CANCEL_EDIT,
-  FLIP_CARDS,
+  FLIP,
   ADD_DECK_COMMIT, ADD_CARD_COMMIT
 } from '../actions';
 
@@ -18,11 +19,23 @@ function activeView(state = defaultActiveView, action) {
     case SELECT:
       return {...state, selected: {...state.selected, [action.id]: true}, isSelecting: true};
 
+    case SELECT_ALL: {
+
+    }
+
     case DESELECT:
       return {...state, selected: {...state.selected, [action.id]: false} };
 
+    case SELECT_NONE:
+      return {...state, selected: {}}
+
     case TOGGLE_SELECTING:
       return {...state, selected: {}, isSelecting: !state.isSelecting};
+
+    case STOP_SELECTING:
+      return {...state, selected: {}, isSelecting: false}
+
+
 
     case SET_FILTER:
       return {...state, filter: action.filter};
@@ -30,7 +43,7 @@ function activeView(state = defaultActiveView, action) {
     case CLEAR_FILTER:
       return {...state, filter: ''};
 
-    case FLIP_CARDS: {
+    case FLIP: {
       let newFlipped = {...state.flipped};
       for(let id of action.ids)
         newFlipped[id] = !newFlipped[id];

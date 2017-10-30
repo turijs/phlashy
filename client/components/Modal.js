@@ -1,23 +1,40 @@
 import React from 'react';
-import combokeys from '../util/combokeys';
+import AriaModal from 'react-aria-modal';
+import cn from 'classnames';
+import Keyboard from './Keyboard';
 
-class Modal extends React.Component {
-  componentDidMount() {
-    if(this.props.onClose)
-      combokeys.bindGlobal('esc', this.props.onClose)
-  }
-  componentWillUnmount() { combokeys.unbind('esc') }
+const getApplicationNode = () => document.getElementById('root');
 
-  render() {
-    let { show, children, onClose, ...rest } = this.props
+// const Modal = ({show, className, onClose, ...rest}) => show ? (
+//   <div {...rest}>
+//     <div className="modal-window">{children}</div>
+//     <div className="modal-bg" onMouseDown={onClose} />
+//   </div>
+// ) : null;
 
-    return show ? (
-      <div {...rest}>
-        <div className="modal-window">{children}</div>
-        <div className="modal-bg" onMouseDown={onClose} />
-      </div>
-    ) : null;
-  }
+const Modal = ({
+  show,
+  children,
+  className,
+  onClose,
+  ...rest
+}) => {
+  if( !(rest.titleText || rest.titleId) ) rest.titleText = 'Dialog';
+  return (
+    <AriaModal
+      mounted={show}
+      onExit={onClose}
+      getApplicationNode={getApplicationNode}
+      includeDefaultStyles={false}
+      dialogClass={cn('modal-window', className)}
+      underlayClass="modal-bg"
+      {...rest}
+    >
+      {children}
+      <Keyboard newScope />
+    </AriaModal>
+  )
 }
+
 
 export default Modal;

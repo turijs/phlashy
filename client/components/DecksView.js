@@ -13,43 +13,35 @@ import DeckEditor from './item-management/DeckEditor';
 import ItemViewToolbar from './item-management/ItemViewToolbar';
 import ItemSorter from './item-management/ItemSorter';
 import ItemActionsBar from './item-management/ItemActionsBar';
+import DeleteDecksConfirm from './item-management/DeleteDecksConfirm';
 
 class DecksView extends React.Component {
-  constructor(props) {
-    super(props);
+  handleDelete = () => {
+    let {selected, deleteSelected, confirmDelete} = this.props;
 
-    this.state = { isAdding: false, isEditing: false };
+    this.selectedDecksCardCount = selected.decks.reduce( (sum, deck) => sum + deck.cards.length, 0 );
 
-    // helper functions
-    this.handleClose = () => this.setState({ isAdding: false, isEditing: false });
-    this.handleAdd = () => this.setState({ isAdding: true });
-    this.handleEdit = () => {this.setState({ isEditing: true })};
-    this.handleDelete = () => this.props.selected.forEach(id => props.deleteDeck(id));
-
-    this.handleSave = (deckData) => {
-      if(this.state.isEditing)
-        this.props.updateDeck(this.props.selected[0], deckData);
-      else
-        this.props.addDeck(deckData);
-
-      this.handleClose();
-    };
+    if(this.selectedDecksCardCount > 0)
+      confirmDelete()
+    else
+      deleteSelected()
   }
 
   render() {
     let {
       decks, selected,
-      addDeck, updateDeck, deleteDeck,
+      addDeck, updateSelected, deleteSelected,
+      beginAdd, beginEdit, confirmDelete, endActivity,
       isSelecting, allSelected,
       select, deselect, selectAll, selectNone,
       toggleSelecting, stopSelecting,
       sortBy, sortDesc, setSort,
       filter, setFilter, clearFilter,
       viewMode, setViewMode,
+      activity,
       hasHydrated,
     } = this.props;
-
-    let {isEditing, isAdding} = this.state;
+    let {handleDelete} = this;
 
     return (
       <div
@@ -98,19 +90,32 @@ class DecksView extends React.Component {
 
         <ItemActionsBar
           actions={[
-            {label:'Add Deck', icon:'plus', call: this.handleAdd},
-            {label:'Edit Deck', icon:'pencil', call: this.handleEdit, disabled:selected.length != 1},
-            {label:'Delete Deck', icon:'trash', call: this.handleDelete, disabled:!selected.length},
-            {label:'Pull Decks', icon:'hand-lizard-o', call: _=>_}
+            {label:'Add Deck', icon:'plus', call: beginAdd},
+            {label:'Edit Deck', icon:'pencil', call: beginEdit, disabled: selected.length != 1},
+            {label:'Delete Deck', icon:'trash', call: handleDelete, disabled: !selected.length},
           ]}
           numPrimary={3}
         />
 
         <DeckEditor
-          show={isEditing || isAdding}
-          initializeFrom={isEditing && selected.decks[0]}
-          onSave={this.handleSave}
-          onCancel={this.handleClose}
+          show={activity == 'adding'}
+          onSave={addDeck}
+          onClose={endActivity}
+        />
+
+        <DeckEditor
+          show={activity == 'editing'}
+          initializeFrom={selected.decks[0]}
+          onSave={updateSelected}
+          onClose={endActivity}
+        />
+
+        <DeleteDecksConfirm
+          show={activity == 'deleting'}
+          onConfirm={deleteSelected}
+          onClose={endActivity}
+          decksCount={selected.length}
+          cardsCount={this.selectedDecksCardCount}
         />
 
         <LoggedOutOnly><Redirect to="/login" /></LoggedOutOnly>
@@ -121,7 +126,7 @@ class DecksView extends React.Component {
 
 import { getFlaggedDecks, getSelectedDecks, areAllSelected } from '../selectors';
 
-function mapStateToProps(state) {
+function mapState(state) {
   return {
     decks: getFlaggedDecks(state),
     sortBy: state.prefs.view.sort.decks.by,
@@ -131,13 +136,14 @@ function mapStateToProps(state) {
     isSelecting: state.activeView.isSelecting,
     allSelected: areAllSelected(state),
     filter: state.activeView.filter,
+    activity: state.activeView.activity,
     hasHydrated: state.hasHydrated
   };
 }
 
 import * as a from '../actions';
 
-function mapDispatchToProps(dispatch) {
+function mapDispatch(dispatch) {
   return {
     addDeck: (deckData) => dispatch( a.addDeck(deckData) ),
     updateDeck: (id, deckData) => dispatch( a.updateDeck(id, deckData) ),
@@ -152,7 +158,18 @@ function mapDispatchToProps(dispatch) {
     selectNone: () => dispatch( a.selectNone() ),
     toggleSelecting: () => dispatch( a.toggleSelecting() ),
     stopSelecting: () => dispatch( a.stopSelecting() ),
+    beginAdd: () => dispatch( a.beginActivity('adding') ),
+    beginEdit: () => dispatch( a.beginActivity('editing') ),
+    confirmDelete: () => dispatch( a.beginActivity('deleting') ),
+    endActivity: () => dispatch( a.endActivity() ),
   }
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(DecksView);
+function mergeProps(stateProps, actionProps, ownProps) {
+  return {...stateProps, ...actionProps, ...ownProps,
+    updateSelected: deckData => actionProps.updateDeck(stateProps.selected[0], deckData),
+    deleteSelected: () => stateProps.selected.forEach(id => actionProps.deleteDeck(id)),
+  }
+}
+
+export default connect(mapState, mapDispatch, mergeProps)(DecksView);

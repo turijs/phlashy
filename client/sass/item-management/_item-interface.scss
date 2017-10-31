@@ -15,7 +15,7 @@
   h1 {
     @extend .container;
     position: relative;
-    padding: 10px 0;
+    padding: 10px 0 15px;
     margin-bottom: 0;
     text-align: center;
   }
@@ -114,7 +114,11 @@
   }
 
   a { text-decoration: none; }
+
+
 }
+
+
 
 /*==== Actions Bar ====*/
 
@@ -225,4 +229,8 @@
 .item-editor {
   border: 2px solid navy;
   background: $header-bg;
+}
+
+.delete-confirm {
+  width: 400px;
 }

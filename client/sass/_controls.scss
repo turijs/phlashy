@@ -130,13 +130,13 @@ button, .btn {
 
 .check {
   position: relative;
-  width: 25px; height: 25px;
+  width: 22px; height: 22px;
   padding: 0;
 
   &.fixalign { bottom: 2px; }
 
   .icon {
-    font-size: 25px;
+    font-size: 22px;
     position: absolute;
     bottom: 0; left: 0;
   }
@@ -172,7 +172,7 @@ button, .btn {
 .modal-window {
   position: fixed;
   min-width: 300px;
-  max-width: 100%;
+  max-width: calc(100% - 20px);
   top: 42%; left: 50%;
   transform: translate(-50%, -50%);
   background: white;
@@ -181,7 +181,12 @@ button, .btn {
   box-shadow: 0 0 30px rgba(0,0,0,.5);
   z-index: 102;
 
+  &[role='alertdialog'] {
+    border: 2px solid $stop-col;
+    color: black;
+  }
 }
+
 .modal-bg {
   position: fixed;
   top: 0; left: 0;

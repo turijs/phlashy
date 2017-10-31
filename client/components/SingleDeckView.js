@@ -16,49 +16,27 @@ import ItemSorter from './item-management/ItemSorter';
 import ItemActionsBar from './item-management/ItemActionsBar';
 
 class SingleDeckView extends React.Component {
-  constructor(props) {
-    super(props);
-
-    this.state = { isAdding: false, isEditing: false };
-
-    /* helper functions */
-    this.handleClose = () => this.setState({ isAdding: false, isEditing: false });
-    this.handleAdd = () => this.setState({ isAdding: true });
-    this.handleEdit = () => this.setState({ isEditing: true });
-    this.handleDelete = () => this.props.selected.forEach(id => props.deleteCard(id));
-
-    this.handleSave = (cardData) => {
-      if(this.state.isEditing)
-        this.props.updateCard(this.props.selected[0], cardData);
-      else
-        this.props.addCard(cardData);
-
-      this.handleClose();
-    }
-  }
-
-
-
   render() {
     let {
       noSuchDeck,
       deck, cards, selected,
-      addCard, updateCard, deleteCard,
+      addCard, updateSelected, deleteSelected,
+      beginAdd, beginEdit, endActivity,
       isSelecting, allSelected,
       select, deselect, selectAll, selectNone,
       toggleSelecting, stopSelecting,
       sortBy, sortDesc, setSort,
       filter, setFilter, clearFilter,
       viewMode, setViewMode,
-      flip,
+      activity,
+      flip, flipSelected,
       hasHydrated,
     } = this.props;
-    let {isEditing, isAdding} = this.state;
 
     if(noSuchDeck) return <Redirect to="/decks" />
 
     return (
-      <div id="cards" className={cn('flexible-item-manager', viewMode, {selecting: isSelecting})}>
+      <div id="single-deck" className={cn('flexible-item-manager', viewMode, {selecting: isSelecting})}>
 
         <Keyboard />
 
@@ -106,18 +84,24 @@ class SingleDeckView extends React.Component {
 
         <ItemActionsBar
           actions={[
-            {label:'Add Card', icon:'plus', call: this.handleAdd},
-            {label:'Edit Card', icon:'pencil', call: this.handleEdit, disabled:selected.length != 1},
-            {label:'Delete Card', icon:'trash', call: this.handleDelete, disabled:!selected.length},
+            {label:'Add Card', icon:'plus', call: beginAdd},
+            {label:'Edit Card', icon:'pencil', call: beginEdit, disabled:selected.length != 1},
+            {label:'Delete Card', icon:'trash', call: deleteSelected, disabled:!selected.length},
+            {label:'Flip Selected', icon:'repeat', call: flipSelected, disabled: !selected.length},
           ]}
           numPrimary={3}
         />
 
         <CardEditor
-          show={isEditing || isAdding}
-          initializeFrom={isEditing && selected.cards[0]}
-          onSave={this.handleSave}
-          onCancel={this.handleClose}
+          show={activity == 'adding'}
+          onSave={addCard}
+          onClose={endActivity}
+        />
+        <CardEditor
+          show={activity == 'editing'}
+          initializeFrom={selected.cards[0]}
+          onSave={updateSelected}
+          onCancel={endActivity}
         />
 
         <LoggedOutOnly><Redirect to="/login" /></LoggedOutOnly>
@@ -142,7 +126,7 @@ import {
   areAllSelected
 } from '../selectors';
 
-function mapStateToProps(state, ownProps) {
+function mapState(state, ownProps) {
   let deck = getDeck(state, ownProps.match.params);
   if(!deck)
     if(state.hasHydrated) // assume deck doesn't exist
@@ -159,13 +143,14 @@ function mapStateToProps(state, ownProps) {
     isSelecting: state.activeView.isSelecting,
     allSelected: areAllSelected(state),
     filter: state.activeView.filter,
+    activity: state.activeView.activity,
     hasHydrated: state.hasHydrated
   };
 }
 
 import * as a from '../actions';
 
-function mapDispatchToProps(dispatch, ownProps) {
+function mapDispatch(dispatch, ownProps) {
   let deckId = ownProps.match.params.id;
   return {
     addCard: (cardData) => dispatch( a.addCard(cardData, deckId) ),
@@ -181,9 +166,20 @@ function mapDispatchToProps(dispatch, ownProps) {
     selectNone: () => dispatch( a.selectNone() ),
     toggleSelecting: () => dispatch( a.toggleSelecting() ),
     stopSelecting: () => dispatch( a.stopSelecting() ),
-    flip: (id) => dispatch( a.flip([id]) )
+    flip: (ids) => dispatch( a.flip(ids) ),
+    beginAdd: () => dispatch( a.beginActivity('adding') ),
+    beginEdit: () => dispatch( a.beginActivity('editing') ),
+    endActivity: () => dispatch( a.endActivity() ),
+  }
+}
+
+function mergeProps(stateProps, actionProps, ownProps) {
+  return {...stateProps, ...actionProps, ...ownProps,
+    updateSelected: cardData => actionProps.updateCard(stateProps.selected[0], cardData),
+    deleteSelected: () => stateProps.selected.forEach(id => actionProps.deleteCard(id)),
+    flipSelected: () => actionProps.flip( stateProps.selected ),
   }
 }
 
 
-export default connect(mapStateToProps, mapDispatchToProps)(SingleDeckView);
+export default connect(mapState, mapDispatch, mergeProps)(SingleDeckView);

@@ -13,8 +13,8 @@ const getApplicationNode = () => document.getElementById('root');
 // ) : null;
 
 const Modal = ({
-  show,
-  children,
+  show = false,
+  children = <div />,
   className,
   onClose,
   ...rest

@@ -1,12 +1,6 @@
 import generateTempID from './util/generate-temp-id';
 import itemListToIdMap from './util/item-list-to-id-map';
 
-/*
- * 'outbound' actions go into the outbound queue, and persisted asynchronously
- *
- * 'sync' actions are persisted synchornously
- *
- */
 
 /*======== Login/out ==========*/
 
@@ -207,6 +201,17 @@ export function flip(ids) {
   if(!ids.pop) ids = [ids];
   return {type: FLIP, ids}
 }
+
+/*
+ * An activity is anything that disrupts the normal flow in the active view.
+ * Typically activities take place in modals. Only one activity may be taking place
+ * at a time. Actions are allowed to supply the activity names
+ */
+export const BEGIN_ACTIVITY = 'BEGIN_ACTIVITY';
+export const beginActivity = $basicAC(BEGIN_ACTIVITY, 'name');
+
+export const END_ACTIVITY = 'END_ACTIVITY';
+export const endActivity = $basicAC(END_ACTIVITY);
 
 
 /*======== Connection ========== */

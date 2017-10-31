@@ -23,4 +23,6 @@ function DeckEditor({
   )
 }
 
-export default itemEditorWrap(DeckEditor);
+export default itemEditorWrap(DeckEditor, {
+  initializeDefault: {name: '', description: ''}
+});

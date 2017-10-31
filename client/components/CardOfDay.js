@@ -13,17 +13,15 @@ class CardOfDay extends React.Component {
     let {card} = this.props;
     let {flipped} = this.state;
     return (
-      <div className="card-of-day">
+      <div className="card-of-day grid">
         <h2>Your Card of the Day</h2>
 
         {card ? (
-          <div className="grid">
-            <Card
-              {...card}
-              isFlipped={flipped}
-              onClick={() => this.setState({flipped: !flipped})}
-            />
-          </div>
+          <Card
+            {...card}
+            flipped={flipped}
+            onClick={() => this.setState({flipped: !flipped})}
+          />
         ) : (
           <p>You don't have any cards. Head on over to the <Link to="/decks">Decks</Link> tab to get started.</p>
         )}

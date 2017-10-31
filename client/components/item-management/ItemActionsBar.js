@@ -3,7 +3,6 @@ import A from '../A';
 import Icon from '../Icon';
 import Popup from '../Popup';
 
-// wrapper is necessary for css positioning
 const ItemActionsBar = ({actions, numPrimary}) => {
   let primary = actions.slice(0, numPrimary);
   let additional = actions.slice(numPrimary);
@@ -20,7 +19,7 @@ const ItemActionsBar = ({actions, numPrimary}) => {
             <Icon slug={action.icon}/>
           </A>
         ))}
-        {additional &&
+        {!!additional.length &&
           <Popup label={<Icon slug="ellipsis-h"/>} title="More actions...">
             {additional.map(action => (
               <A

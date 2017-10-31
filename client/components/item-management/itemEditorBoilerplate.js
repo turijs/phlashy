@@ -1,15 +1,19 @@
 import React from 'react';
 import Modal from '../Modal';
 
-export default function itemEditorWrap(Editor) {
+export default function itemEditorWrap(Editor, options = {}) {
+  const {
+    initializeDefault = {}
+  } = options;
+
   class EditorWrap extends React.Component  {
     constructor(props) {
       super(props);
-      this.state = props.initializeFrom || {};
+      this.state = props.initializeFrom || initializeDefault;
     }
 
-    componentWillReceiveProps(nextProps) {
-      this.setState( nextProps.initializeFrom || {} );
+    componentWillReceiveProps({initializeFrom}) {
+      this.setState( initializeFrom || initializeDefault );
     }
 
     handleChange = e => {
@@ -20,29 +24,26 @@ export default function itemEditorWrap(Editor) {
     handleSubmit = e => {
       e.preventDefault();
       this.props.onSave(this.state);
-      this.setState({});
+      this.props.onClose();
+      // this.setState(this.props.initializeFrom);
     }
 
     render() {
-      let {show, onCancel, onSave, initializeFrom, ...rest} = this.props;
+      let {show, onClose, onSave, initializeFrom, ...rest} = this.props;
       let {name, description} = this.state;
 
       return (
-        <Modal onClose={onCancel} className="item-editor" show={show}>
+        <Modal onClose={onClose} className="item-editor" show={show}>
           <Editor
             onChange={this.handleChange}
             onSubmit={this.handleSubmit}
-            onCancel={onCancel}
+            onCancel={onClose}
             values={this.state}
             {...rest}
           />
         </Modal>
       )
     }
-  }
-
-  EditorWrap.defaultProps = {
-    initializeFrom: {}
   }
 
   return EditorWrap

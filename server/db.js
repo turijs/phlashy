@@ -102,15 +102,15 @@ module.exports = {
   // Deck functions //
   ////////////////////
 
-  createDeck(userID, deckName, description, created = new Date()) {
+  createDeck(userID, name = '', description = '', created = new Date()) {
     return pool.query(`
       INSERT INTO decks (userID, name, description, created, modified)
       VALUES ($1, $2, $3, $4, $4)
       RETURNING ID, name, description, created, modified`,
-      [userID, deckName, description, created]
+      [userID, name, description, created]
     ).then(res => res.rows[0]);
   },
-  updateDeck(userID, deckID, newName, newDescription, modified = new Date()) {
+  updateDeck(userID, deckID, newName='', newDescription='', modified = new Date()) {
     return pool.query(`
       UPDATE decks SET
         name = $3,
@@ -161,7 +161,7 @@ module.exports = {
   // Card functions  //
   /////////////////////
 
-  async createCard(userID, deckID, front, back, created = new Date()) {
+  async createCard(userID, deckID, front='', back='', created = new Date()) {
     return transaction(async (query, commit) => {
       let {rows:[card]} = await query(
         `INSERT INTO cards (userID, deckID, front, back, created, modified)
@@ -177,7 +177,7 @@ module.exports = {
       return card;
     });
   },
-  updateCard(userID, cardID, newFront, newBack, modified = new Date()) {
+  updateCard(userID, cardID, newFront='', newBack='', modified = new Date()) {
     return transaction(async (query, commit) => {
       let {rows:[card]} = await query(`
         UPDATE cards SET

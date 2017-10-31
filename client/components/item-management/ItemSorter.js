@@ -3,15 +3,22 @@ import Select from 'react-select';
 import RadioBar from '../RadioBar';
 import A from '../A';
 import Icon from '../Icon';
+import Check from '../Check';
 
 const ItemSorter = ({
   viewMode,
   sortBy, sortDesc, onSetSort,
+  allSelected, onSelectAll, onSelectNone,
   itemMeta,
-}) => (
-  <div className="item-sort">
-    {viewMode == 'grid' ? (
-      <div className="grid-sort">
+}) => {
+  let toggleAll = allSelected ? onSelectNone : onSelectAll;
+  return (
+  <div className="item-headers">
+    {viewMode == 'grid' ? [
+      <div className="select-all-none" key="0">
+        <Check title="Select all/none" on={allSelected} onClick={toggleAll} />
+      </div>,
+      <div className="grid-sort" key="1">
         <Select
           value={sortBy}
           options={itemMeta.sortableProps.map(prop => ({
@@ -30,10 +37,11 @@ const ItemSorter = ({
           onChange={o => onSetSort(sortBy, o.value == 'DESC')}
         />
       </div>
-    ) : (
-      <div className="item-col-headers">
-        <div className={`${itemMeta.slug}-select`} style={{width: 40}}></div>
-        {itemMeta.sortableProps.map(prop => {
+    ] : [
+        <div className="select-all-none item-col-header" key="0">
+          <Check title="Select all/none" on={allSelected} inline={false} onClick={toggleAll} />
+        </div>,
+        itemMeta.sortableProps.map(prop => {
           let active = prop == sortBy;
           return (
             <div
@@ -43,14 +51,14 @@ const ItemSorter = ({
               <A onClick={() => onSetSort(prop, active ? !sortDesc : false)} >
                 <div className="item-col-header-inner">{itemMeta.labels[prop]}</div>
                 {active &&
-                  <Icon sm slug={'chevron-'+(sortDesc ? 'down' : 'up')} />}
+                  <Icon sm slug={'chevron-'+(sortDesc ? 'down' : 'up')} className="chevron" />}
               </A>
             </div>
           )
-        })}
-      </div>
-    )}
-  </div>
-);
+        })
+
+    ]}
+  </div>)
+};
 
 export default ItemSorter;

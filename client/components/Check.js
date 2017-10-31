@@ -3,9 +3,12 @@ import A from './A';
 import Icon from './Icon';
 import cn from 'classnames';
 
-function Check({on: active, onClick}) {
-  return <A className={cn('btn btn-slim check', {active})} onClick={onClick} >
-    {active && <Icon slug="check" />}
+function Check({on, inline = true, ...rest}) {
+  return <A
+    className={cn('btn btn-slim check', {active: on, fixalign: inline})}
+    {...rest}
+  >
+    {on && <Icon slug="check" />}
   </A>
 }
 

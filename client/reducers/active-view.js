@@ -6,6 +6,7 @@ import {
   FLIP,
   ADD_DECK_COMMIT, ADD_CARD_COMMIT
 } from '../actions';
+import {getActiveFilteredIds} from '../selectors';
 
 const defaultActiveView = {
   selected: {},
@@ -14,13 +15,18 @@ const defaultActiveView = {
   isSelecting: false,
 }
 
-function activeView(state = defaultActiveView, action) {
+function activeView(state = defaultActiveView, action, fullState) {
   switch(action.type) {
     case SELECT:
       return {...state, selected: {...state.selected, [action.id]: true}, isSelecting: true};
 
     case SELECT_ALL: {
-
+      let ids = getActiveFilteredIds(fullState);
+      console.log(ids);
+      let newSelected = {...state.selected};
+      for(let id of ids)
+        newSelected[id] = true;
+      return {...state, selected: newSelected, isSelecting: true};
     }
 
     case DESELECT:

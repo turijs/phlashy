@@ -119,7 +119,7 @@ $card-bg: white;
     transition: transform $flip-speed;
 
     @include card-dims;
-    margin: 20px;
+    margin: 15px 15px;
 
     .card-front, .card-back {
       transition: transform $flip-speed, left .4s;
@@ -202,4 +202,9 @@ $card-bg: white;
   .card-back { flex: 2; }
   .card-modified { flex: 1.3; }
   .card-created { flex: 1.3; }
+
+  .card-select, .deck-select {
+    width: 47px;
+    padding-left: 12px;
+  }
 }

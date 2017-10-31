@@ -42,9 +42,11 @@ class SingleDeckView extends React.Component {
   render() {
     let {
       noSuchDeck,
-      deck,
-      cards, addCard, updateCard, deleteCard,
-      selected, isSelecting, select, deselect, toggleSelecting, stopSelecting,
+      deck, cards, selected,
+      addCard, updateCard, deleteCard,
+      isSelecting, allSelected,
+      select, deselect, selectAll, selectNone,
+      toggleSelecting, stopSelecting,
       sortBy, sortDesc, setSort,
       filter, setFilter, clearFilter,
       viewMode, setViewMode,
@@ -81,6 +83,9 @@ class SingleDeckView extends React.Component {
             sortBy={sortBy}
             sortDesc={sortDesc}
             onSetSort={setSort}
+            onSelectAll={selectAll}
+            onSelectNone={selectNone}
+            allSelected={allSelected}
             itemMeta={cardMeta}
           />
 
@@ -130,7 +135,12 @@ const defaultDeck = {
   modified: '...'
 }
 
-import {getDeck, getFlaggedCardsByDeck, getSelectedCards} from '../selectors';
+import {
+  getDeck,
+  getFlaggedCardsByDeck,
+  getSelectedCards,
+  areAllSelected
+} from '../selectors';
 
 function mapStateToProps(state, ownProps) {
   let deck = getDeck(state, ownProps.match.params);
@@ -147,6 +157,7 @@ function mapStateToProps(state, ownProps) {
     viewMode: state.prefs.view.mode.cards,
     selected: getSelectedCards(state),
     isSelecting: state.activeView.isSelecting,
+    allSelected: areAllSelected(state),
     filter: state.activeView.filter,
     hasHydrated: state.hasHydrated
   };
@@ -166,6 +177,8 @@ function mapDispatchToProps(dispatch, ownProps) {
     setViewMode: (mode) => dispatch( a.setViewMode('cards', mode) ),
     select: (id) => dispatch( a.select(id) ),
     deselect: (id) => dispatch( a.deselect(id) ),
+    selectAll: () => dispatch( a.selectAll() ),
+    selectNone: () => dispatch( a.selectNone() ),
     toggleSelecting: () => dispatch( a.toggleSelecting() ),
     stopSelecting: () => dispatch( a.stopSelecting() ),
     flip: (id) => dispatch( a.flip([id]) )

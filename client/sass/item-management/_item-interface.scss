@@ -53,10 +53,38 @@
   }
 }
 
-.item-sort {
+.item-headers {
   .grid & {
-    float: right;
     margin-top: 16px;
+    .grid-sort { float: right; }
+    .select-all-none { padding-top: 4px; float: left; }
+  }
+
+  .list & {
+    @include list-row;
+
+    background: $light-button;
+    color: black;
+    border-bottom: 1px solid gray;
+    white-space: nowrap;
+
+    > .active { color: $select-col; }
+
+    a { text-decoration: none; }
+
+    // fix chevron spacing issues
+    .item-col-header-inner, .chevron {
+      display: inline-block;
+      vertical-align: middle;
+      white-space: normal;
+      max-width: calc(100% - 15px);
+    }
+    .chevron { margin-left: 5px; }
+  }
+
+  .select-all-none {
+    display: none;
+    .selecting & {display: block;}
   }
 
   .grid-sort {
@@ -66,27 +94,6 @@
     .Select { width: 160px; margin-right: 5px; }
     .btn { padding: 5px 7px; margin: 0; }
   }
-}
-.item-col-headers {
-  @include list-row;
-
-  background: $light-button;
-  color: black;
-  border-bottom: 1px solid gray;
-  white-space: nowrap;
-
-  .active { color: $select-col; }
-
-  a { text-decoration: none; }
-
-  // fix chevron spacing issues
-  .item-col-header-inner, .fa {
-    display: inline-block;
-    vertical-align: middle;
-    white-space: normal;
-    max-width: calc(100% - 15px);
-  }
-  .fa { margin-left: 5px; }
 }
 
 .flexible-item-view {
@@ -101,6 +108,7 @@
   .placeholder {
     @extend .spacious;
     opacity: .5;
+    width: 100%;
     text-align: center;
     font-size: 140%;
   }

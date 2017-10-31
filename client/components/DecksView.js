@@ -40,7 +40,9 @@ class DecksView extends React.Component {
     let {
       decks, selected,
       addDeck, updateDeck, deleteDeck,
-      isSelecting, select, deselect, toggleSelecting, stopSelecting,
+      isSelecting, allSelected,
+      select, deselect, selectAll, selectNone,
+      toggleSelecting, stopSelecting,
       sortBy, sortDesc, setSort,
       filter, setFilter, clearFilter,
       viewMode, setViewMode,
@@ -73,6 +75,9 @@ class DecksView extends React.Component {
             sortBy={sortBy}
             sortDesc={sortDesc}
             onSetSort={setSort}
+            onSelectAll={selectAll}
+            onSelectNone={selectNone}
+            allSelected={allSelected}
             itemMeta={deckMeta}
           />
 
@@ -114,7 +119,7 @@ class DecksView extends React.Component {
   }
 }
 
-import { getFlaggedDecks, getSelectedDecks } from '../selectors';
+import { getFlaggedDecks, getSelectedDecks, areAllSelected } from '../selectors';
 
 function mapStateToProps(state) {
   return {
@@ -124,6 +129,7 @@ function mapStateToProps(state) {
     viewMode: state.prefs.view.mode.decks,
     selected: getSelectedDecks(state),
     isSelecting: state.activeView.isSelecting,
+    allSelected: areAllSelected(state),
     filter: state.activeView.filter,
     hasHydrated: state.hasHydrated
   };
@@ -142,15 +148,11 @@ function mapDispatchToProps(dispatch) {
     setViewMode: (mode) => dispatch( a.setViewMode('decks', mode) ),
     select: (id) => dispatch( a.select(id) ),
     deselect: (id) => dispatch( a.deselect(id) ),
+    selectAll: () => dispatch( a.selectAll() ),
+    selectNone: () => dispatch( a.selectNone() ),
     toggleSelecting: () => dispatch( a.toggleSelecting() ),
     stopSelecting: () => dispatch( a.stopSelecting() ),
   }
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(DecksView);
-
-function getDeckProp(deck, prop) {
-  if(prop == 'size')
-    return deck.cards.length;
-  else return deck[prop];
-}

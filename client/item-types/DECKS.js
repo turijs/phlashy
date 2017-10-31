@@ -13,9 +13,9 @@ export const filterableProps = [ 'name' ];
 export const sortableProps = [
   'name',
   'description',
+  'size',
   'created',
   'modified',
-  'size'
 ];
 
 export function getProp(deck, prop) {

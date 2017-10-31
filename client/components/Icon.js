@@ -1,12 +1,14 @@
 import React from 'react';
+import cn from 'classnames';
 
-const Icon = ({slug, sm, lg, xl, fw, alt, ...rest}) => {
-  let classes = 'icon fa';
-  if(slug) classes += ` fa-${slug}`
-  if(sm) classes += ' fa-sm';
-  if(lg) classes += ' fa-lg';
-  if(xl) classes += ' fa-2x';
-  if(fw) classes += ' fa-fw';
+const Icon = ({className, slug, sm, lg, xl, fw, alt, ...rest}) => {
+  let classes = cn(className, 'icon fa', {
+    [`fa-${slug}`]: slug,
+    'fa-sm': sm,
+    'fa-lg': lg,
+    'fa-2x': xl,
+    'fa-fw': fw
+  });
 
   return (
     <span className={classes} {...rest}>

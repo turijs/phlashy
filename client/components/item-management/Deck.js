@@ -1,6 +1,7 @@
 import React from 'react';
 import {Link} from 'react-router-dom';
 import Pressable from '../Pressable';
+import Icon from '../Icon';
 import renderDate from '../../util/render-date';
 import cn from 'classnames';
 import slugify from '../../util/slugify';
@@ -31,10 +32,10 @@ class Deck extends React.Component {
           onClick={onClick}
           onPress={onPress}
         >
+          <Icon className="deck-select" lg slug={selected ? 'check-square-o' : 'square-o'} />
           <div className="deck-name">{name}</div>
           <div className="deck-description">{description}</div>
           <div className="deck-size">{cards.length}</div>
-
           <div className="deck-modified">{renderDate(modified)}</div>
           <div className="deck-created">{renderDate(created)}</div>
         </Pressable>

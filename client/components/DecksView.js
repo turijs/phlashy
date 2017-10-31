@@ -1,5 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
+import cn from 'classnames';
 
 import { Link, Redirect } from 'react-router-dom';
 import {LoggedOutOnly} from './app-conditional';
@@ -51,7 +52,7 @@ class DecksView extends React.Component {
     return (
       <div
         id="decks"
-        className={`flexible-item-manager ${viewMode}`}
+        className={cn('flexible-item-manager', viewMode, {selecting: isSelecting})}
       >
 
         <div className="item-manager-header">

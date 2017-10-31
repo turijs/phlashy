@@ -1,6 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import * as cardMeta from '../item-types/CARDS';
+import cn from 'classnames'
 
 import { Link, Redirect } from 'react-router-dom';
 import {LoggedOutOnly} from './app-conditional';
@@ -55,7 +56,7 @@ class SingleDeckView extends React.Component {
     if(noSuchDeck) return <Redirect to="/decks" />
 
     return (
-      <div id="cards" className={`flexible-item-manager ${viewMode}`}>
+      <div id="cards" className={cn('flexible-item-manager', viewMode, {selecting: isSelecting})}>
 
         <Keyboard />
 

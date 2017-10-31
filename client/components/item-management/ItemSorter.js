@@ -32,6 +32,7 @@ const ItemSorter = ({
       </div>
     ) : (
       <div className="item-col-headers">
+        <div className={`${itemMeta.slug}-select`} style={{width: 40}}></div>
         {itemMeta.sortableProps.map(prop => {
           let active = prop == sortBy;
           return (

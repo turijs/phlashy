@@ -8,7 +8,7 @@ const A = ({onClick, disabled, ...rest}) => (
     href="#"
     onClick={e => {
       e.preventDefault();
-      onClick(e);
+      if(onClick) onClick(e);
     }}
     role="button"
     disabled={disabled}

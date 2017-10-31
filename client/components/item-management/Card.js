@@ -1,6 +1,7 @@
 import React from 'react';
 import {Link} from 'react-router-dom';
 import Pressable from '../Pressable';
+import Icon from '../Icon';
 import renderDate from '../../util/render-date';
 import cn from 'classnames';
 
@@ -29,6 +30,7 @@ class Card extends React.Component {
         onClick={onClick}
         onPress={onPress}
       >
+        <Icon className="card-select" lg slug={selected ? 'check-square-o' : 'square-o'} />
         <div className="card-front">
           <div className="card-text-wrap">
             {front}

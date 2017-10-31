@@ -156,9 +156,7 @@ $card-bg: white;
     }
 
     &.selected {
-      .card-front,
-      .card-back,
-      .card-select { color: white; }
+      .card-front, .card-back, .card-select { color: white; }
       .card-front { background: $select-col; }
       .card-back { background: rgb(109,168,140); }
     }

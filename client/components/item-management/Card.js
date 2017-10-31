@@ -23,6 +23,8 @@ class Card extends React.Component {
       flipped
     } = this.props;
 
+    let selectIcon = <Icon className="card-select" lg slug={selected ? 'check-square-o' : 'square-o'} />
+
     return (
       <Pressable
         className={cn('card', {selected, flipped})}
@@ -30,13 +32,15 @@ class Card extends React.Component {
         onClick={onClick}
         onPress={onPress}
       >
-        <Icon className="card-select" lg slug={selected ? 'check-square-o' : 'square-o'} />
+
         <div className="card-front">
+          {selectIcon}
           <div className="card-text-wrap">
             {front}
           </div>
         </div>
         <div className="card-back">
+          {selectIcon}
           <div className="card-text-wrap">
             {back}
           </div>

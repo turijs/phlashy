@@ -172,10 +172,7 @@ api.put('/decks/:id', async (req, res, next) => {
   try {
     let deck = await db.updateDeck(req.userID, req.params.id, name, description, modified);
     res.send(deck);
-  } catch(e) {
-    if(e == 'NOT_FOUND') res.send('No such deck');
-    else next(e);
-  }
+  } catch(e) { next(e) }
 });
 
 /*
@@ -215,18 +212,21 @@ api.post('/cards', async (req, res, next) => {
   } catch(e) { next(e) }
 });
 
+/*
+ * Update a card
+ */
 api.put('/cards/:id', async (req, res, next) => {
   let {front, back, modified} = req.body;
   modified = maybeDate(modified);
   try {
     let card = await db.updateCard(req.userID, req.params.id, front, back, modified);
     res.send(card);
-  } catch(e) {
-    if(e == 'NOT_FOUND') res.send('No such card');
-    else next(e);
-  }
+  } catch(e) { next(e) }
 });
 
+/*
+ * Get all cards for the user
+ */
 api.get('/cards', async (req, res, next) => {
   try {
     let cards = await db.getCards(req.userID);
@@ -234,17 +234,33 @@ api.get('/cards', async (req, res, next) => {
   } catch(e) { next(e) }
 });
 
+/*
+ * Delete a card
+ */
 api.delete('/cards/:id', async (req, res, next) => {
   let when = maybeDate(req.query.when);
-  console.log(when);
   try {
     await db.deleteCard(req.userID, req.params.id, when);
     res.sendStatus(200);
   } catch (e) { next(e) }
 });
 
+/*
+ * Move some cards to a different deck
+ */
+api.post('/move-cards', async (req, res, next) => {
+  let {cards, toDeck, when} = req.body;
+  try {
+    await db.moveCards(req.userID, toDeck, cards, when);
+    res.sendStatus(200);
+  } catch (e) { next(e) }
+});
+
 /*==== Error Handling ====*/
 api.use((e, req, res, next) => {
+  if(e == 'NOT_FOUND')
+    return res.sendStatus(404);
+
   console.log(e);
   res.sendStatus(500);
 });

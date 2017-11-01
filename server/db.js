@@ -127,7 +127,7 @@ module.exports = {
     return pool.query(
       `DELETE FROM decks WHERE ID = $1 AND userID = $2 RETURNING ID`,
       [deckID, userID]
-    ).then(res => res.rowCount);
+    ).then(throwIfEmpty);
   },
   getDecks(userID) {
     return pool.query(`
@@ -161,8 +161,10 @@ module.exports = {
   // Card functions  //
   /////////////////////
 
-  async createCard(userID, deckID, front='', back='', created = new Date()) {
+  createCard(userID, deckID, front='', back='', created = new Date()) {
     return transaction(async (query, commit) => {
+      await checkDeckWithUser(deckID, userID, query);
+
       let {rows:[card]} = await query(
         `INSERT INTO cards (userID, deckID, front, back, created, modified)
          VALUES ($1, $2, $3, $4, $5, $5)
@@ -200,16 +202,50 @@ module.exports = {
   deleteCard(userID, cardID, when = new Date()) {
     return transaction(async (query, commit) => {
       let res = await query(
-        `DELETE FROM cards WHERE ID = $1 AND userID = $2
-         RETURNING ID, deckID`,
-        [cardID, userID]
+        `DELETE FROM cards WHERE ID = $2 AND userID = $1
+         RETURNING ID`,
+        [userID, cardID]
+      ).then(throwIfEmpty);
+
+      await query(
+        `UPDATE decks SET modified = $3 WHERE ID = $2 AND userID = $1`,
+        [userID, res.rows[0].deckid, when]
       );
-      if(res.rowCount > 0) {
-        await query(
-          `UPDATE decks SET modified = $3 WHERE ID = $2 AND userID = $1`,
-          [userID, res.rows[0].deckid, when]
-        );
-      }
+
+      await commit();
+      return res.rowCount;
+    });
+  },
+  moveCards(userID, toDeckID, cardIDs, when = new Date()) {
+    return transaction(async (query, commit) => {
+      await checkDeckWithUser(deckID, userID, query);
+
+      let {rows: cards} = query(`
+        SELECT deckID FROM cards WHERE ID = ANY ($2) AND userID = $1`,
+        [userID, cardIDs]
+      );
+
+      if(cards.length != cardIDs.length) throw 'NOT_FOUND';
+      
+      await query(`
+        UPDATE cards SET
+          deckID = $2,
+          modified = $4
+        WHERE ID = ANY ($3) AND userID = $1
+        RETURNING ID`,
+        [userID, toDeckID, cardID, when]
+      );
+
+      // assemble a list of all affected decks
+      let deckIDs = cards.map(card => card.deckid);
+      deckIDs.push(toDeckID);
+      let deckIDsUnique = Array.from(new Set(deckIDs));
+
+      // mark them modified
+      await query(
+        `UPDATE decks SET modified = $3 WHERE ID = $2 AND userID = $1`,
+        [userID, deckIDsUnique, when]
+      );
       await commit();
       return res.rowCount;
     });
@@ -245,12 +281,11 @@ async function transaction(execute) {
   } finally { client.release() }
 }
 
-// CREATE OR REPLACE VIEW decks_v AS
-//   SELECT
-//     ID,
-//     userID,
-//     name,
-//     description,
-//     round(extract(epoch from created) * 1000) AS created,
-//     round(extract(epoch from modified) * 1000) AS modified,
-//   FROM decks;
+// check to see if there is in fact a deck with the given ID
+// associated with the given user
+function checkDeckWithUser(deckID, userID, query) {
+  return query(
+    'SELECT 1 from decks WHERE userID = $1 AND ID = $2',
+    [userID, deckID]
+  ).then(throwIfEmpty);
+}

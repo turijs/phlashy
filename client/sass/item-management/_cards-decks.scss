@@ -164,6 +164,8 @@ $card-bg: white;
     .card-select {
       @include grid-mode-card-checkbox;
     }
+    // hide the non-flippable checkbox
+    > .card-select { display: none;}
 
     .card-created,
     .card-modified { display: none; }
@@ -173,6 +175,11 @@ $card-bg: white;
     @include list-row;
     cursor: pointer;
     background: $card-bg;
+
+    // hide the flippable select indicators
+    .card-front, .card-back {
+      .card-select { display: none; }
+    }
 
     &.selected {
       background: $select-col;

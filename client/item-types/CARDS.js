@@ -1,8 +1,8 @@
 export const slug = 'card';
 
 export const labels = {
-  front    : 'Name',
-  back     : 'Description',
+  front    : 'Front',
+  back     : 'Back',
   created  : 'Date Created',
   modified : 'Date Modified',
 }
@@ -12,8 +12,8 @@ export const filterableProps = [ 'front', 'back' ];
 export const sortableProps = [
   'front',
   'back',
-  'created',
   'modified',
+  'created',
 ];
 
 export function getProp(card, prop) {

@@ -32,7 +32,7 @@ class Card extends React.Component {
         onClick={onClick}
         onPress={onPress}
       >
-
+        {selectIcon}
         <div className="card-front">
           {selectIcon}
           <div className="card-text-wrap">

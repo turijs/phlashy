@@ -6,6 +6,7 @@ import {
   BEGIN_ACTIVITY, END_ACTIVITY,
   ADD_DECK_COMMIT, ADD_CARD_COMMIT
 } from '../actions';
+import {LOCATION_CHANGE} from 'react-router-redux';
 import {getActiveFilteredIds} from '../selectors';
 
 const defaultActiveView = {
@@ -55,7 +56,7 @@ function activeView(state = defaultActiveView, action, fullState) {
 
     case CLEAR_FILTER:
       return {...state, filter: ''};
-      
+
 
     case BEGIN_ACTIVITY:
       return {...state, activity: action.name}
@@ -74,6 +75,9 @@ function activeView(state = defaultActiveView, action, fullState) {
         {...flipped, [action.tempId]: false, [action.id]: true} : flipped;
       return {...state, flipped: newFlipped, selected: newSelected};
     }
+
+  case LOCATION_CHANGE:
+    return defaultActiveView;
 
     default:
       return state;

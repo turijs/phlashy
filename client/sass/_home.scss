@@ -1,1 +1,4 @@
-.card-of-day .card { @include margin-auto; }
+.card-of-day {
+  padding-bottom: 50px;
+  .card { @include margin-auto; }
+}
